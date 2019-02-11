@@ -13,5 +13,5 @@
     "module": "commonjs",
     "esModuleInterop": true
   },
-  "files": ["./src/core/index.ts"]
+  "files": ["./src/core/index.ts", "./src/final-form/index.ts"]
 }
