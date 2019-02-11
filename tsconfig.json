@@ -1,0 +1,17 @@
+{
+  "compilerOptions": {
+    "jsx": "react",
+    "rootDirs": ["./src"],
+    "outDir": "./lib",
+    "lib": ["es7", "dom"],
+    "moduleResolution": "node",
+    "removeComments": true,
+    "sourceMap": true,
+    "declaration": true,
+    "declarationMap": true,
+    "target": "es5",
+    "module": "commonjs",
+    "esModuleInterop": true
+  },
+  "files": ["./src/core/index.ts"]
+}
