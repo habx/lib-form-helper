@@ -5,7 +5,7 @@ import { ActionBarProps } from './ImageUploader.interface'
 import { ActionBarContainer } from './ImageUploader.style'
 
 
-const ActionBar: React.StatelessComponent<ActionBarProps> = ({ status, onSelect, onCustomize, onValidateCustomization, canCustomize }) => (
+const ActionBar: React.FunctionComponent<ActionBarProps> = ({ status, onSelect, onCustomize, onValidateCustomization, canCustomize }) => (
   <ActionBarContainer>
     {
       status === 'directory' && (

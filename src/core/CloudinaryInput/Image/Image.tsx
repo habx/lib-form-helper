@@ -11,7 +11,7 @@ export const buildURL = (id, { size, transforms = [] }) => createCloudinaryURL({
   ]
 })
 
-const Image: React.StatelessComponent<ImageProps> = ({ id, size, transforms, ...props }) => (
+const Image: React.FunctionComponent<ImageProps> = ({ id, size, transforms, ...props }) => (
   <img
     src={buildURL(id, { size, transforms })}
     alt='Cloudinary image'

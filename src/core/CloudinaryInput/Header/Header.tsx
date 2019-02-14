@@ -4,7 +4,7 @@ import { FontIcon } from '@habx/lib-client-backoffx'
 import { HeaderContainer, Title, Uploader } from './Header.style'
 import HeaderProps from './Header.interface'
 
-const Header: React.StatelessComponent<HeaderProps> = ({ goTo, onUploadImages, title, status }) => (
+const Header: React.FunctionComponent<HeaderProps> = ({ goTo, onUploadImages, title, status }) => (
   <HeaderContainer>
     <FontIcon icon='home' onClick={() => goTo('home')} />
     <Title>{ title }</Title>
