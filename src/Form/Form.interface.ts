@@ -6,6 +6,6 @@ export default interface FormProps extends FinalFormProps {
 }
 
 export interface FormContentProps extends FormRenderProps {
-  children: (props: FormRenderProps) => JSX.Element
+  innerRender: (props: FormRenderProps) => JSX.Element
   disabled?: boolean
 }

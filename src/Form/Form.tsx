@@ -1,5 +1,4 @@
 import * as React from 'react'
-import PropTypes from 'prop-types'
 import { Form as FinalForm } from 'react-final-form'
 import arrayMutators from 'final-form-arrays'
 
@@ -7,8 +6,11 @@ import { StatusContext } from '../contexts'
 
 import FormProps, { FormContentProps } from './Form.interface'
 
-const FormContent: React.FunctionComponent<FormContentProps> = ({ children, ...props }) => {
+const FormContext = React.createContext<any>({})
+
+const FormContent: React.FunctionComponent<FormContentProps> = props => {
   const [sectionStatuses, setSectionStatuses] = React.useState({})
+  const { render } = React.useContext(FormContext)
 
   const context = React.useMemo(
     () => ({
@@ -26,28 +28,20 @@ const FormContent: React.FunctionComponent<FormContentProps> = ({ children, ...p
 
   return (
     <StatusContext.Provider value={context}>
-      {children(props)}
+      {render(props)}
     </StatusContext.Provider>
   )
 }
 
-const Form: React.FunctionComponent<FormProps> = ({ disabled, render, ...props }) => {
-  return (
+const Form: React.FunctionComponent<FormProps> = ({ disabled, render, ...props }) => (
+  <FormContext.Provider value={{ render }}>
     <FinalForm
       {...props}
       mutators={arrayMutators as { [key: string]: any }}
       component={FormContent}
-    >
-      render
-    </FinalForm>
-  )
-}
-
-Form.propTypes = {
-  disabled: PropTypes.bool,
-  children: PropTypes.node,
-  render: PropTypes.func
-}
+    />
+  </FormContext.Provider>
+)
 
 Form.defaultProps = {
   disabled: false

@@ -1,5 +1,4 @@
 import * as React from 'react'
-import PropTypes from 'prop-types'
 import { omit, isEmpty } from 'lodash'
 
 import { StatusContext, SectionContext } from '../contexts'
@@ -41,10 +40,6 @@ const FormSection = ({ name, children }) => {
       { children }
     </SectionContext.Provider>
   )
-}
-
-FormSection.propTypes = {
-  name: PropTypes.string.isRequired
 }
 
 export default FormSection
