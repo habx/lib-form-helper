@@ -6,11 +6,8 @@ import { StatusContext } from '../contexts'
 
 import FormProps, { FormContentProps } from './Form.interface'
 
-const FormContext = React.createContext<any>({})
-
-const FormContent: React.FunctionComponent<FormContentProps> = props => {
+const FormContent: React.FunctionComponent<FormContentProps> = ({ render, ...props }) => {
   const [sectionStatuses, setSectionStatuses] = React.useState({})
-  const { render } = React.useContext(FormContext)
 
   const context = React.useMemo(
     () => ({
@@ -34,13 +31,11 @@ const FormContent: React.FunctionComponent<FormContentProps> = props => {
 }
 
 const Form: React.FunctionComponent<FormProps> = ({ disabled, render, ...props }) => (
-  <FormContext.Provider value={{ render }}>
-    <FinalForm
-      {...props}
-      mutators={arrayMutators as { [key: string]: any }}
-      component={FormContent}
-    />
-  </FormContext.Provider>
+  <FinalForm
+    {...props}
+    mutators={arrayMutators as { [key: string]: any }}
+    render={props => <FormContent {...props} render={render} disabled={disabled} />}
+  />
 )
 
 Form.defaultProps = {
