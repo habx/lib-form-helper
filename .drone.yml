@@ -54,7 +54,7 @@ pipeline:
     environment:
       - NPM_TOKEN=${NPM_TOKEN}
     commands:
-      - npm run publish
+      - npm publish
     when:
       event: tag
 
