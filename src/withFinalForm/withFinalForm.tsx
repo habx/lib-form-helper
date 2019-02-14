@@ -132,6 +132,8 @@ const withFinalForm = (inputConfig: InputConfig = {}) => (WrappedComponent: Reac
   }
 
   const FieldWrapper: React.FunctionComponent<FieldWrapperProps> = props => {
+    const sectionContext = React.useContext(SectionContext)
+
     const format = value => {
       const fieldFormattedValue = isFunction(inputConfig.format)
         ? inputConfig.format(value, props)
@@ -173,19 +175,15 @@ const withFinalForm = (inputConfig: InputConfig = {}) => (WrappedComponent: Reac
     }
 
     return (
-      <SectionContext.Consumer>
-        {sectionContext => (
-          <Field
-            {...props}
-            innerName={props.name}
-            format={format}
-            parse={parse}
-            validate={validate}
-            component={FieldContent}
-            sectionContext={sectionContext}
-          />
-        )}
-      </SectionContext.Consumer>
+      <Field
+        {...props}
+        innerName={props.name}
+        format={format}
+        parse={parse}
+        validate={validate}
+        component={FieldContent}
+        sectionContext={sectionContext}
+      />
     )
   }
 
