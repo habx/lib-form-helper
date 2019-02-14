@@ -4,7 +4,6 @@ import { TextButton } from '@habx/lib-client-backoffx'
 import { ActionBarProps } from './ImageUploader.interface'
 import { ActionBarContainer } from './ImageUploader.style'
 
-
 const ActionBar: React.FunctionComponent<ActionBarProps> = ({ status, onSelect, onCustomize, onValidateCustomization, canCustomize }) => (
   <ActionBarContainer>
     {
