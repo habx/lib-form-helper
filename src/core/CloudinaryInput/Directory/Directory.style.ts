@@ -21,6 +21,8 @@ export const QueryBar = styled.div`
 export const ImageList = styled.div`
   display: flex;
   flex-wrap: wrap;
+  flex: 1 1 100%;
+  overflow: auto;
 `
 
 export const ImageContainer = styled.div`

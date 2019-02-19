@@ -1,5 +1,5 @@
 import * as React from 'react'
-import { map, filter } from 'lodash'
+import { map, filter, max } from 'lodash'
 import { Spinner, TextInput } from '@habx/lib-client-backoffx'
 import * as habxFilter from '@habx/lib-client-backoffx/Spotlight/filter'
 
@@ -15,10 +15,23 @@ const Directory: React.FunctionComponent<DirectoryProps> = ({
   onImageClick
 }) => {
   const [query, setQuery] = React.useState('')
+  const ref = React.useRef(null)
   const matchingImages = React.useMemo(
     () => filter(images, image => habxFilter.some('public_id')(query, image)),
     [query, images]
   )
+
+  React.useLayoutEffect(() => {
+    if (!loading && ref.current) {
+      const selectedImageRef = ref.current.querySelector('*[data-selected="true"]')
+      console.log('SCROLLED')
+      ref.current.scrollTop = max([
+        selectedImageRef.offsetTop - (ref.current.offsetHeight - selectedImageRef.offsetHeight) / 2,
+        0
+      ])
+    }
+
+  }, [loading, matchingImages, ref])
 
   return (
     <DirectoryContainer data-loading={loading}>
@@ -30,9 +43,12 @@ const Directory: React.FunctionComponent<DirectoryProps> = ({
               <QueryBar>
                 <TextInput placeholder='Filtrer' value={query} onChange={setQuery as (query: string) => void} />
               </QueryBar>
-              <ImageList>
+              <ImageList ref={ref}>
                 {map(matchingImages, image => (
-                  <ImageContainer key={image.public_id}>
+                  <ImageContainer
+                    key={image.public_id}
+                    data-selected={image.public_id === selectedImage.public_id}
+                  >
                     <Image
                       size='thumbnail'
                       onClick={() => onImageClick(image)}
