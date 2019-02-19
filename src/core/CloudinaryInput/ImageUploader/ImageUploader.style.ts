@@ -27,40 +27,6 @@ export const Content = styled.div`
   }
 `
 
-export const ImageList = styled.div`
-  position: relative;
-  margin: 32px 0;
-  flex: 1 1 100%;
-  display: flex;
-  flex-wrap: wrap;
-
-  &[data-loading="true"] {
-    align-items: center;
-    justify-content: center;
-  }
-`
-
-export const ImageContainer = styled.div`
-  flex: 0 0 33%;
-  box-sizing: border-box;
-  padding: 16px;
-
-  img {
-    width: 100%;
-    transition: box-shadow, opacity 150ms ease-in-out;
-    cursor: pointer;
-
-    &:hover {
-      box-shadow: ${shadows.strong};
-    }
-
-    &[data-fade="true"] {
-      opacity: 0.5;
-      filter: grayscale();
-    }
-  }
-`
-
 export const Directories = styled.ul`
   list-style-type: none;
   margin: 0;
@@ -71,7 +37,7 @@ export const Directories = styled.ul`
   align-items: stretch;
 `
 
-export const Directory = styled.li`
+export const DirectoryLine = styled.li`
   display: flex;
   align-items: center;
 
