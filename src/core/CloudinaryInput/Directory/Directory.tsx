@@ -24,7 +24,7 @@ const Directory: React.FunctionComponent<DirectoryProps> = ({
   React.useLayoutEffect(() => {
     if (!loading && ref.current) {
       const selectedImageRef = ref.current.querySelector('*[data-selected="true"]')
-      console.log('SCROLLED')
+      console.log(selectedImageRef.offsetTop - (ref.current.offsetHeight - selectedImageRef.offsetHeight) / 2)
       ref.current.scrollTop = max([
         selectedImageRef.offsetTop - (ref.current.offsetHeight - selectedImageRef.offsetHeight) / 2,
         0
@@ -47,7 +47,7 @@ const Directory: React.FunctionComponent<DirectoryProps> = ({
                 {map(matchingImages, image => (
                   <ImageContainer
                     key={image.public_id}
-                    data-selected={image.public_id === selectedImage.public_id}
+                    data-selected={selectedImage && image.public_id === selectedImage.public_id}
                   >
                     <Image
                       size='thumbnail'
