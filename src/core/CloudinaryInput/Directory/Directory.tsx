@@ -65,5 +65,4 @@ const Directory: React.FunctionComponent<DirectoryProps> = ({
   )
 }
 
-
 export default Directory
