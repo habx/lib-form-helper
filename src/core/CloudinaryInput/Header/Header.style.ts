@@ -35,4 +35,8 @@ export const Uploader = styled.div`
   & input {
     display: none;
   }
+
+  & i {
+    margin-left: 8px;
+  }
 `

@@ -1,5 +1,5 @@
 import * as React from 'react'
-import { map, filter, max } from 'lodash'
+import { map, filter, max, find } from 'lodash'
 import { Spinner, TextInput } from '@habx/lib-client-backoffx'
 import * as habxFilter from '@habx/lib-client-backoffx/Spotlight/filter'
 
@@ -21,14 +21,23 @@ const Directory: React.FunctionComponent<DirectoryProps> = ({
     [query, images]
   )
 
+  const matchingImage = React.useMemo(() => (
+    selectedImage
+      ? find(matchingImages, image => image.public_id === selectedImage.public_id)
+      : null
+    ), [selectedImage, matchingImages]
+  )
+
   React.useLayoutEffect(() => {
     if (!loading && ref.current) {
       const selectedImageRef = ref.current.querySelector('*[data-selected="true"]')
-      console.log(selectedImageRef.offsetTop - (ref.current.offsetHeight - selectedImageRef.offsetHeight) / 2)
-      ref.current.scrollTop = max([
-        selectedImageRef.offsetTop - (ref.current.offsetHeight - selectedImageRef.offsetHeight) / 2,
-        0
-      ])
+
+      if (selectedImageRef) {
+        ref.current.scrollTop = max([
+          selectedImageRef.offsetTop - (ref.current.offsetHeight - selectedImageRef.offsetHeight) / 2,
+          0
+        ])
+      }
     }
 
   }, [loading, matchingImages, ref])
@@ -47,13 +56,13 @@ const Directory: React.FunctionComponent<DirectoryProps> = ({
                 {map(matchingImages, image => (
                   <ImageContainer
                     key={image.public_id}
-                    data-selected={selectedImage && image.public_id === selectedImage.public_id}
+                    data-selected={image === matchingImage}
                   >
                     <Image
                       size='thumbnail'
                       onClick={() => onImageClick(image)}
                       id={image.public_id}
-                      data-fade={selectedImage && image.public_id !== selectedImage.public_id}
+                      data-fade={selectedImage && image !== matchingImage}
                     />
                   </ImageContainer>
                 ))}

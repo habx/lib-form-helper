@@ -133,7 +133,7 @@ class ImageUploader extends React.PureComponent<ImageUploaderProps, ImageUploade
     }
 
     if (status === 'directory') {
-      return `Dossier : ${directory}`
+      return `Dossier : ${decodeURIComponent(directory)}`
     }
 
     if (status === 'uploader') {
