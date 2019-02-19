@@ -1,6 +1,6 @@
 import * as React from 'react'
 import { map, uniq, get, initial, has } from 'lodash'
-import { FontIcon, Spinner } from '@habx/lib-client-backoffx'
+import { FontIcon } from '@habx/lib-client-backoffx'
 
 import ImageUploaderProps, { ImageUploaderState } from './ImageUploader.interface'
 import { CloudinaryImage, ACECloudinaryImage } from '../Image/Image.interface'
@@ -9,17 +9,15 @@ import { createCloudinaryURL } from '../CloudinaryInput.utils'
 import {
   ImageUploaderContainer,
   Content,
-  ImageContainer,
-  ImageList,
   Directories,
-  Directory,
+  DirectoryLine,
   DirectoryContent
 } from './ImageUploader.style'
 
 import ActionBar from './ActionBar'
-import Image from '../Image'
 import ImageEditor from '../ImageEditor'
 import Header from '../Header'
+import Directory from '../Directory'
 
 class ImageUploader extends React.PureComponent<ImageUploaderProps, ImageUploaderState> {
   static getDerivedStateFromProps (nextProps, prevState) {
@@ -73,7 +71,7 @@ class ImageUploader extends React.PureComponent<ImageUploaderProps, ImageUploade
     this.props.onStatusChange('customizer')
   }
 
-  handleImageSelect = selectedImage => () => this.setState(prevState => ({
+  handleImageSelect = selectedImage => this.setState(prevState => ({
     selectedImage: prevState.selectedImage === selectedImage ? null : selectedImage
   }))
 
@@ -135,7 +133,7 @@ class ImageUploader extends React.PureComponent<ImageUploaderProps, ImageUploade
     }
 
     if (status === 'directory') {
-      return `Dossier : ${directory}`
+      return `Dossier : ${decodeURIComponent(directory)}`
     }
 
     if (status === 'uploader') {
@@ -179,7 +177,7 @@ class ImageUploader extends React.PureComponent<ImageUploaderProps, ImageUploade
         {map(
           this.getDirectories(),
           directory => (
-            <Directory
+            <DirectoryLine
               key={directory}
               onClick={() => this.goTo('directory', { directory })}
             >
@@ -187,7 +185,7 @@ class ImageUploader extends React.PureComponent<ImageUploaderProps, ImageUploade
               <DirectoryContent>
                 { directory }
               </DirectoryContent>
-            </Directory>
+            </DirectoryLine>
           )
         )}
       </Directories>
@@ -196,21 +194,22 @@ class ImageUploader extends React.PureComponent<ImageUploaderProps, ImageUploade
 
   renderDirectory () {
     const { renderImages } = this.props
-    const { directory } = this.state
+    const { directory, selectedImage } = this.state
 
     return renderImages({
       directory,
       render: ({ loading, data }) => {
-        const content = loading
-         ? <Spinner />
-         : map(data, this.renderImage)
-
         if (!loading) {
           this.saveImages(data)
         }
 
         return (
-          <ImageList data-loading={loading}>{ content }</ImageList>
+          <Directory
+            images={data}
+            loading={loading}
+            selectedImage={selectedImage}
+            onImageClick={this.handleImageSelect}
+          />
         )
       }
     })
@@ -230,21 +229,6 @@ class ImageUploader extends React.PureComponent<ImageUploaderProps, ImageUploade
         onChange={this.handleImageCustomizationChange}
         initialTransforms={initialTransforms}
       />
-    )
-  }
-
-  renderImage = (image: CloudinaryImage): JSX.Element => {
-    const { selectedImage } = this.state
-
-    return (
-      <ImageContainer key={image.public_id}>
-        <Image
-          size='thumbnail'
-          onClick={this.handleImageSelect(image)}
-          id={image.public_id}
-          data-fade={selectedImage && image.public_id !== selectedImage.public_id}
-        />
-      </ImageContainer>
     )
   }
 
