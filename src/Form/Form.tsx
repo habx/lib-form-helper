@@ -6,8 +6,15 @@ import { StatusContext } from '../contexts'
 
 import FormProps, { FormContentProps } from './Form.interface'
 
-const FormContent: React.FunctionComponent<FormContentProps> = ({ render, ...props }) => {
+const FormContent: React.FunctionComponent<FormContentProps> = ({ render, form, ...props }) => {
   const [sectionStatuses, setSectionStatuses] = React.useState({})
+  const actions = React.useRef({
+    change: (name: string, value?: any) => null
+  })
+
+  React.useEffect(() => {
+    actions.current.change = form.change
+  }, [form])
 
   const context = React.useMemo(
     () => ({
@@ -18,14 +25,15 @@ const FormContent: React.FunctionComponent<FormContentProps> = ({ render, ...pro
         }))
       },
       disabled: props.submitting || props.disabled,
-      sectionStatuses
+      sectionStatuses,
+      actions: actions.current
     }),
     [sectionStatuses, props.submitting, props.disabled]
   )
 
   return (
     <StatusContext.Provider value={context}>
-      {render(props)}
+      {render({ ...props, form })}
     </StatusContext.Provider>
   )
 }
