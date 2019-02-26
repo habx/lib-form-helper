@@ -20,7 +20,7 @@ const FormContent: React.FunctionComponent<FormContentProps> = ({ render, ...pro
       disabled: props.submitting || props.disabled,
       sectionStatuses
     }),
-    [setSectionStatuses, sectionStatuses, props.submitting, props.disabled]
+    [sectionStatuses, props.submitting, props.disabled]
   )
 
   return (
