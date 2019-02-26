@@ -14,7 +14,7 @@ const FormSection = ({ name, children }) => {
 
   React.useEffect(
     () => form.setSectionStatus(name, status),
-    [name, status, form.setSectionStatus]
+    [name, status]
   )
 
   const sectionStatus = React.useMemo(
