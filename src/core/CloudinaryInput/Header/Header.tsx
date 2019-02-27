@@ -1,5 +1,5 @@
 import * as React from 'react'
-import { FontIcon } from '@habx/lib-client-backoffx'
+import { FontIcon } from '@habx/thunder-ui'
 
 import { HeaderContainer, Title, Uploader } from './Header.style'
 import HeaderProps from './Header.interface'

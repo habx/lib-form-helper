@@ -1,5 +1,5 @@
 import styled from 'styled-components'
-import { colors, borderRadius } from '@habx/lib-client-backoffx'
+import { colors, borderRadius } from '@habx/thunder-ui'
 
 export const CloudinaryInputContainer = styled.div`
   display: flex;

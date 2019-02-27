@@ -1,6 +1,6 @@
 import * as React from 'react'
 import { get } from 'lodash'
-import { withLabel, Button } from '@habx/lib-client-backoffx'
+import { withLabel, Button } from '@habx/thunder-ui'
 
 import CloudinaryInputProps from './CloudinaryInput.interface'
 import { CloudinaryInputContainer, PictureContainer, EmptyImage, ActionsBar } from './CloudinaryInput.style'

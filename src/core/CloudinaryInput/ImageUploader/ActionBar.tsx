@@ -1,5 +1,5 @@
 import * as React from 'react'
-import { TextButton } from '@habx/lib-client-backoffx'
+import { TextButton } from '@habx/thunder-ui'
 
 import { ActionBarProps } from './ImageUploader.interface'
 import { ActionBarContainer } from './ImageUploader.style'

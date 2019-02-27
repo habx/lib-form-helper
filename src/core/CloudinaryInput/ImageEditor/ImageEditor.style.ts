@@ -1,6 +1,6 @@
 import styled from 'styled-components'
 import ReactCrop from 'react-image-crop'
-import { colors, Slider as BaseSlider } from '@habx/lib-client-backoffx'
+import { colors, Slider as BaseSlider } from '@habx/thunder-ui'
 
 export const SpinnerContainer = styled.div`
   flex: 1 1 100%;

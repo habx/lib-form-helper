@@ -1,5 +1,5 @@
 import styled from 'styled-components'
-import { shadows, colors, Modal } from '@habx/lib-client-backoffx'
+import { shadows, colors, Modal } from '@habx/thunder-ui'
 
 export const ImageUploaderContainer = styled(Modal)`
   padding: 0;
