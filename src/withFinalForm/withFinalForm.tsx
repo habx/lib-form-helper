@@ -2,7 +2,7 @@ import * as React from 'react'
 import styled from 'styled-components'
 import { Field } from 'react-final-form'
 import { isNil, isFunction, isString, omit, get } from 'lodash'
-import { colors, fontSizes } from '@habx/lib-client-backoffx'
+import { colors, fontSizes } from '@habx/thunder-ui'
 
 import { StatusContext, SectionContext } from '../contexts'
 

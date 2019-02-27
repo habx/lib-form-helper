@@ -1,5 +1,5 @@
 import styled from 'styled-components'
-import { shadows } from '@habx/lib-client-backoffx'
+import { shadows } from '@habx/thunder-ui'
 
 export const DirectoryContainer = styled.div`
   position: relative;

@@ -1,6 +1,6 @@
 import * as React from 'react'
 import { memoize, filter, floor, get, find, values } from 'lodash'
-import { Spinner, FontIcon } from '@habx/lib-client-backoffx'
+import { Spinner, FontIcon } from '@habx/thunder-ui'
 
 import Image from '../Image'
 import { createCloudinaryURL } from '../CloudinaryInput.utils'

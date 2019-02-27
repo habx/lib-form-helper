@@ -1,6 +1,6 @@
 import * as React from 'react'
 import { map, uniq, get, initial, has } from 'lodash'
-import { FontIcon } from '@habx/lib-client-backoffx'
+import { FontIcon } from '@habx/thunder-ui'
 
 import ImageUploaderProps, { ImageUploaderState } from './ImageUploader.interface'
 import { CloudinaryImage, ACECloudinaryImage } from '../Image/Image.interface'

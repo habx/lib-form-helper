@@ -1,7 +1,7 @@
 import * as React from 'react'
 import { map, filter, max, find } from 'lodash'
-import { Spinner, TextInput } from '@habx/lib-client-backoffx'
-import * as habxFilter from '@habx/lib-client-backoffx/Spotlight/filter'
+import { Spinner, TextInput } from '@habx/thunder-ui'
+import * as habxFilter from '@habx/thunder-ui/Spotlight/filter'
 
 import Image from '../Image'
 
