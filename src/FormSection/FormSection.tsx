@@ -9,8 +9,8 @@ const FormSection = ({ name, children }) => {
   const [errors, updateErrors] = React.useState({})
 
   const status: FormSectionStatus = React.useMemo(() => ({
-    hasError: !isEmpty(errors)
-  }), [errors])
+    hasError: !isEmpty(errors) && form.showErrors
+  }), [errors, form.showErrors])
 
   React.useEffect(
     () => form.setSectionStatus(name, status),
@@ -25,9 +25,10 @@ const FormSection = ({ name, children }) => {
             ? { ...prevErrors, [fieldName]: error }
             : omit(prevErrors, [fieldName])
         )
-      }
+      },
+      showErrors: form.showErrors
     }),
-    [updateErrors]
+    [updateErrors, form.showErrors]
   )
 
   return (

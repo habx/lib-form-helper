@@ -86,8 +86,12 @@ const withFinalForm = (inputConfig: InputConfig = {}) => (WrappedComponent: Reac
     }
 
     generateLabel (meta) {
-      const { label, required } = this.props
+      const { label, required, sectionContext } = this.props
       const { error } = meta
+
+      if (!sectionContext.showErrors) {
+        return label
+      }
 
       if (!label) {
         return null
@@ -103,27 +107,28 @@ const withFinalForm = (inputConfig: InputConfig = {}) => (WrappedComponent: Reac
     }
 
     render () {
-      const { input, meta, label, disabled } = this.props
+      const { input, meta, label, disabled, sectionContext } = this.props
       const { tempValue } = this.state
       const { errorPadding } = inputConfig
 
       const innerProps = omit(this.props, INTERNAL_PROPS)
+      const showError = sectionContext.showErrors && !!get(meta, 'error')
 
       return (
         <FieldContainer>
           <WrappedComponent
             {...innerProps}
             {...input}
-            error={!!get(meta, 'error')}
+            error={showError}
             label={this.generateLabel(meta)}
-            labelColor={get(meta, 'error') && colors.internationalOrange}
+            labelColor={showError && colors.internationalOrange}
             value={inputConfig.changeOnBlur ? tempValue : input.value}
             onChange={this.handleChange}
             disabled={isNil(disabled) ? this.context.disabled : disabled} // tslint:disable-line deprecation
           />
           {!label && (
             <FieldError padding={errorPadding}>
-              {isString(meta.error) && meta.error}
+              {isString(meta.error) && sectionContext.showErrors && meta.error}
             </FieldError>
           )}
         </FieldContainer>
