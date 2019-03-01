@@ -1,12 +1,13 @@
 import * as React from 'react'
 import { Form as FinalForm } from 'react-final-form'
 import arrayMutators from 'final-form-arrays'
+import { isFunction } from 'lodash'
 
 import { StatusContext } from '../contexts'
 
 import FormProps, { FormContentProps } from './Form.interface'
 
-const FormContent: React.FunctionComponent<FormContentProps> = ({ render, form, ...props }) => {
+const FormContent: React.FunctionComponent<FormContentProps> = ({ render, form, shouldShowErrors, ...props }) => {
   const [sectionStatuses, setSectionStatuses] = React.useState({})
   const actions = React.useRef({
     change: (name: string, value?: any) => null
@@ -15,6 +16,10 @@ const FormContent: React.FunctionComponent<FormContentProps> = ({ render, form, 
   React.useEffect(() => {
     actions.current.change = form.change
   }, [form])
+
+  const showErrors = isFunction(shouldShowErrors)
+    ? shouldShowErrors({ form, ...props })
+    : true
 
   const context = React.useMemo(
     () => ({
@@ -26,9 +31,10 @@ const FormContent: React.FunctionComponent<FormContentProps> = ({ render, form, 
       },
       disabled: props.submitting || props.disabled,
       sectionStatuses,
-      actions: actions.current
+      actions: actions.current,
+      showErrors
     }),
-    [sectionStatuses, props.submitting, props.disabled]
+    [sectionStatuses, props.submitting, props.disabled, showErrors]
   )
 
   return (

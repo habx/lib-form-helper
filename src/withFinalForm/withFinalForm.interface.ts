@@ -1,5 +1,7 @@
 import { FieldRenderProps } from 'react-final-form'
 
+import { SectionContextProps } from '../contexts'
+
 type validate = (value: any, props: object) => string | undefined
 type format = (value: any, props: object) => any
 type parse = (value: any, props: object) => any
@@ -27,7 +29,5 @@ export interface FieldContentProps extends FieldRenderProps {
   required?: boolean
   label?: string
   disabled?: boolean
-  sectionContext: {
-    setError: (sectionName: string, error: object) => void
-  }
+  sectionContext: SectionContextProps
 }
