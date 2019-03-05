@@ -4,7 +4,7 @@ Helpers for back-office forms
 ## API
 
 
-#### `Form: React.ComponentType<HabxFormProps>`
+### `Form: React.ComponentType<HabxFormProps>`
 
 The `Form` component is a wrapper around the `Form` component in `react-final-form`.
 It allows the advanced error and disabled management.
@@ -43,8 +43,33 @@ export const MyForm = ({ onSubmit }) => (
 )
 ```
 
+## `withFinalForm: (inputConfig: InputConfig) => (WrappedComponent: React.ComponentType<P>) => React.ComponentType<HabxFieldProps | P>`
 
-### FormSection
+
+#### Types :
+
+```typescript jsx
+import { FieldProps } from 'react-final-form'
+
+type InputConfig = {
+  validate?: (value: any, props: object) => string | undefined
+  format?: (value: any, props: object) => any
+  parse?: (value: any, props: object) => any
+  changeOnBlur?: boolean
+  errorPadding?: number
+}
+
+
+interface HabxFieldProps extends FieldProps {
+  disabled: boolean
+  labelColor?: string
+}
+```
+
+
+
+
+## `FormSection: React.ComponentType<FormSectionProps>`
 
 The `FormSection` component is a primitive that allow you to build custom feedback for your errors.
 Each `FormSection` is aware of the errors of the fields inside them.
