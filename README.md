@@ -24,18 +24,19 @@ interface HabxFormProps extends FormProps {
 
 ```typescript jsx
 import React, { Fragment } from 'react'
-import { Form } from '@habx/lib-form-helper'
+import { Form, withFinalForm } from '@habx/lib-form-helper'
+import { TextInput } from '@habx/thunder-ui'
 
-import { TextInput } from './my-fields-wrapped-with-final-form'
+const WrappedTextInput = withFinalForm()(TextInput)
 
-const MyForm = ({ onSubmit }) => (
+export const MyForm = ({ onSubmit }) => (
   <Form
     initialValues={{ firstName: 'Victor', familyName: 'Hugo' }}
     onSubmit={onSubmit}
     render={(
       <Fragment>
-        <TextInput name='firstName' />
-        <TextInput name='familyName' />
+        <WrappedTextInput name='firstName' />
+        <WrappedTextInput name='familyName' />
       </Fragment>
     )}
   />
@@ -66,18 +67,16 @@ export type FormSectionStatus = {
 ```
 
 #### Examples
-These component is currently used in two ways : 
 
-
-1) Change the style of your visual section if some fields inside of it have an error (e.g: put the title of the card in red)
+1) **Basic :** Change the style of your visual section if some fields inside of it have an error (e.g: put the title of the card in red)
 
  
 ```typescript jsx
 import * as React from 'react'
-import { FomSection } from '@habx/lib-form-helper'
-import { Card } from '@habx/thunder-ui'
+import { Form, FormSection, withFinalForm } from '@habx/lib-form-helper'
+import { Card, TextInput } from '@habx/thunder-ui'
 
-import { TextInput } from './my-fields-wrapped-with-final-form'
+const WrappedTextInput = withFinalForm()(TextInput)
 
 const FormCard = ({ name, title, children }) => (
   <FormSection>
@@ -89,22 +88,65 @@ const FormCard = ({ name, title, children }) => (
   </FormSection>
 )
 
-const MyForm = ({ onSubmit }) => (
+export const MyForm = ({ onSubmit }) => (
   <Form
     initialValues={{ firstName: 'Victor', familyName: 'Hugo' }}
     onSubmit={onSubmit}
     render={(
       <FormCard name='basic-informations' title='Basic Informations'>
-        <TextInput name='firstName' />
-        <TextInput name='familyName' />
+        <WrappedTextInput name='firstName' />
+        <WrappedTextInput name='familyName' />
       </FormCard>
     )}
   />
 )
 ```
 
-2) Build navigation panel for your sections
+2) **Advanced :** Build a navigation panel for your sections
 
 ```typescript jsx
+import * as React from 'react'
+import { Form, FormSection, StatusContext, withFinalForm } from '@habx/lib-form-helper'
+import { Card, TextInput, Title } from '@habx/thunder-ui'
 
+const WrappedTextInput = withFinalForm()(TextInput)
+
+const FormCard = ({ name, title, children }) => (
+  <FormSection>
+    {({ hasError }) => (
+      <Card error={hasError} title={title}>
+        { children }
+      </Card>
+    )}
+  </FormSection>
+)
+
+const NavigationPanel = () => {
+  const { sectionStatuses } = React.useContext(StatusContext)
+  
+  return (
+    <Title 
+      size={4} 
+      error={sectionStatuses['basic-informations'].hasError}
+    >
+      Basic Informations
+    </Title>
+  )
+}
+
+export const MyForm = ({ onSubmit }) => (
+  <Form
+    initialValues={{ firstName: 'Victor', familyName: 'Hugo' }}
+    onSubmit={onSubmit}
+    render={(
+      <React.Fragment>
+        <NavigationPanel />
+        <FormCard name='basic-informations' title='Basic Informations'>
+          <WrappedTextInput name='firstName' />
+          <WrappedTextInput name='familyName' />
+        </FormCard>
+      </React.Fragment>
+    )}
+  />
+)
 ```
