@@ -2,9 +2,9 @@ import * as React from 'react'
 import { omit, isEmpty, isFunction } from 'lodash'
 
 import { StatusContext, SectionContext } from '../contexts'
-import { FormSectionStatus } from './FormSection.interface'
+import FormSectionProps, { FormSectionStatus } from './FormSection.interface'
 
-const FormSection = ({ name, children }) => {
+const FormSection: React.FunctionComponent<FormSectionProps> = ({ name, children }) => {
   const form = React.useContext(StatusContext)
   const [errors, updateErrors] = React.useState({})
 
