@@ -43,8 +43,9 @@ export const MyForm = ({ onSubmit }) => (
 )
 ```
 
-## `withFinalForm: (inputConfig: InputConfig) => (WrappedComponent: React.ComponentType<P>) => React.ComponentType<HabxFieldProps | P>`
+### `withFinalForm: (inputConfig: InputConfig) => (WrappedComponent: React.ComponentType<P>) => React.ComponentType<HabxFieldProps | P>`
 
+The `withFinalForm` High Order Component wraps your input inside a `Field` from `react-final-form` and connect it to our `Form` wrapper to allow the advanced error and disabled management.
 
 #### Types :
 
@@ -67,9 +68,33 @@ interface HabxFieldProps extends FieldProps {
 ```
 
 
+#### Example
+```typescript jsx
+import { TextInput } from '@habx/thunder-ui'
+import { withFinalForm } from '@habx/lib-form-helper'
+
+const parse = value => {
+  if (!value || isNaN(value) || value.endsWith('.')) {
+    return value
+  }
+
+  return parseFloat(value)
+}
+
+const validate = value => {
+  if (value && typeof value !== 'number') {
+    return "Ce nombre d'est pas valide"
+  }
+}
+
+export const NumberInput = withFinalForm({
+  parse,
+  validate
+})(TextInput)
+```
 
 
-## `FormSection: React.ComponentType<FormSectionProps>`
+### `FormSection: React.ComponentType<FormSectionProps>`
 
 The `FormSection` component is a primitive that allow you to build custom feedback for your errors.
 Each `FormSection` is aware of the errors of the fields inside them.
