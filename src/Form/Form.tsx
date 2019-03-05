@@ -14,7 +14,7 @@ const FormContent: React.FunctionComponent<FormContentProps> = ({ render, form, 
   })
 
   React.useEffect(() => {
-    actions.current.change = form.change
+    actions.current = form
   }, [form])
 
   const showErrors = isFunction(shouldShowErrors)

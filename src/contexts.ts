@@ -1,15 +1,14 @@
 import { createContext } from 'react'
 
 import { FormSectionStatus } from './FormSection/FormSection.interface'
+import Actions from './useActions/useActions.interface'
 
 interface StatusContextProps {
   disabled?: boolean
   showErrors: boolean
   sectionStatuses: object
   setSectionStatus: (sectionName: string, sectionStatus: FormSectionStatus) => void,
-  actions: {
-    change: (name: string, value?: any) => void
-  }
+  actions: Actions
 }
 
 export interface SectionContextProps {

@@ -200,3 +200,14 @@ export const MyForm = ({ onSubmit }) => (
   />
 )
 ```
+
+
+### `useActions: () => Actions`
+
+Allow you to directly access some actions from your form in order to programmatically interact with it.
+
+```typescript jsx
+interface Actions {
+  change: (name: string, value?: any) => void
+}
+```
