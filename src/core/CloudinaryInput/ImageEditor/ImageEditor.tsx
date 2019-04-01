@@ -179,12 +179,12 @@ class ImageEditor extends React.PureComponent<ImageEditorProps, ImageEditorState
               <FontIcon
                 icon='crop'
                 onClick={this.setAction('crop')}
-                title='Croper'
+                title='Cropper'
               />
               <FontIcon
                 icon='photo_size_select_large'
                 onClick={this.setAction('dimensions')}
-                title='Choisir les dimensions'
+                title='Redimensionner'
               />
             </OptionsContainer>
           )
