@@ -15,9 +15,13 @@ export default interface ImageEditorProps {
 }
 
 export interface ImageEditorState {
-  currentAction: 'crop' | null,
-  crop?: CropConfiguration,
+  currentAction: 'crop' | null
+  crop?: CropConfiguration
   transformations: {
+    crop: object
+    dimensions: object
+  }
+  transformationsBackup: {
     crop: object
     dimensions: object
   }

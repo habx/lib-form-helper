@@ -17,7 +17,7 @@ const ActionBar: React.FunctionComponent<ActionBarProps> = ({ status, onSelect, 
     {
       status === 'customizer' && (
         <React.Fragment>
-          <TextButton onClick={onValidateCustomization}>Valider</TextButton>
+          <TextButton onClick={onValidateCustomization}>Enregistrer</TextButton>
         </React.Fragment>
       )
     }
