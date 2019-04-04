@@ -1,6 +1,6 @@
 import * as React from 'react'
 import { memoize, filter, floor, get, find, values } from 'lodash'
-import { Spinner, FontIcon } from '@habx/thunder-ui'
+import { Spinner, FontIcon, Button, TextInput } from '@habx/thunder-ui'
 
 import Image from '../Image'
 import { createCloudinaryURL } from '../CloudinaryInput.utils'
@@ -11,6 +11,7 @@ import {
   OptionsContainer,
   OptionContainer,
   OptionContent,
+  OptionActions,
   Slider,
   ImageCroper,
   SpinnerContainer
@@ -56,7 +57,8 @@ const getInitialState = ({ initialTransforms, image }) => {
         width: Math.min(getImageMaxWidth(image, cropTransform), 1000),
         crop: 'scale'
       }
-    }
+    },
+    transformationsBackup: null
   }
 }
 
@@ -67,12 +69,21 @@ class ImageEditor extends React.PureComponent<ImageEditorProps, ImageEditorState
     this.handleChange()
   }
 
-  setAction = memoize(action => () => this.setState(() => ({
-    currentAction: action
+  setAction = memoize(action => () => this.setState(prevState => ({
+    currentAction: action,
+    transformationsBackup: prevState.transformations
   })))
 
   validateAction = () => {
     this.setState(() => ({ currentAction: null }), this.handleChange)
+  }
+
+  cancelAction = () => {
+    this.setState(prevState => ({
+      currentAction: null,
+      transformations: prevState.transformationsBackup,
+      transformationsBackup: null
+    }))
   }
 
   updateTransformations (transformationType, value) {
@@ -176,16 +187,20 @@ class ImageEditor extends React.PureComponent<ImageEditorProps, ImageEditorState
         {
           !currentAction && (
             <OptionsContainer>
-              <FontIcon
-                icon='crop'
+              <Button
                 onClick={this.setAction('crop')}
-                title='Cropper'
-              />
-              <FontIcon
-                icon='photo_size_select_large'
+                iconLeft={<FontIcon icon='crop' />}
+                reverse
+              >
+                Cropper
+              </Button>
+              <Button
                 onClick={this.setAction('dimensions')}
-                title='Redimensionner'
-              />
+                iconLeft={<FontIcon icon='photo_size_select_large' />}
+                reverse
+              >
+                Redimensionner
+              </Button>
             </OptionsContainer>
           )
         }
@@ -196,10 +211,10 @@ class ImageEditor extends React.PureComponent<ImageEditorProps, ImageEditorState
                 { currentAction === 'crop' && 'Sélectionnez la zone à garder' }
                 { currentAction === 'dimensions' && this.renderDimensionSlider()}
               </OptionContent>
-              <FontIcon
-                icon='done'
-                onClick={this.validateAction}
-              />
+              <OptionActions>
+                <Button onClick={this.validateAction}>Valider</Button>
+                <Button onClick={this.cancelAction} reverse>Annuler</Button>
+              </OptionActions>
             </OptionContainer>
           )
         }

@@ -20,7 +20,7 @@ export const ImageContainer = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 32px;
+  padding: 32px 32px 0 32px;
   position: relative;
 
   & > * {
@@ -30,7 +30,7 @@ export const ImageContainer = styled.div`
 `
 
 export const OptionsContainer = styled.div`
-  flex: 0 0 96px;
+  flex: 0 0 128px;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -44,23 +44,33 @@ export const OptionsContainer = styled.div`
 `
 
 export const OptionContainer = styled.div`
-  flex: 0 0 96px;
+  flex: 0 0 128px;
   display: flex;
   align-items: center;
-  justify-content: center;
+  justify-content: space-between;
+  padding: 0 64px;
+`
 
-  & > i {
-    color: ${colors.maastrichtBlue};
-    user-select: none;
-    margin: 0 24px;
-    font-size: 32px;
+export const OptionContent = styled.div`
+  display: flex;
+  justify-content: center;
+  flex: 1 1 100%;
+`
+
+export const OptionActions = styled.div`
+  & > button:not(:first-child) {
+    margin-top: 8px;
   }
 `
 
-export const OptionContent = styled.div``
-
 export const Slider = styled(BaseSlider)`
   width: 450px;
+`
+
+export const DimensionsFormContainer = styled.div`
+  & > *:not(:first-child) {
+    margin-left: 32px;
+  }
 `
 
 export const ImageCroper = styled(ReactCrop)`
