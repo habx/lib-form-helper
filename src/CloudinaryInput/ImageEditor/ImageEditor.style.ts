@@ -1,7 +1,7 @@
 import ReactCrop from 'react-image-crop'
 import styled from 'styled-components'
 
-import { colors, Slider as BaseSlider } from '@habx/thunder-ui'
+import { Slider as BaseSlider } from '@habx/thunder-ui'
 
 export const SpinnerContainer = styled.div`
   flex: 1 1 100%;
@@ -35,13 +35,6 @@ export const OptionsContainer = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
-
-  & > i {
-    color: ${colors.maastrichtBlue};
-    user-select: none;
-    margin: 0 24px;
-    font-size: 32px;
-  }
 `
 
 export const OptionContainer = styled.div`

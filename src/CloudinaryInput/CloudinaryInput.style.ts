@@ -1,6 +1,6 @@
 import styled from 'styled-components'
 
-import { colors, borderRadius } from '@habx/thunder-ui'
+import { theme, borderRadius } from '@habx/thunder-ui'
 
 export const CloudinaryInputContainer = styled.div`
   display: flex;
@@ -23,7 +23,7 @@ export const PictureContainer = styled.div`
 export const EmptyImage = styled.div`
   height: 150px;
   margin-bottom: 16px;
-  background-color: ${colors.whiteSmoke};
+  background-color: ${theme.get('neutralLighter')};
   border-radius: ${borderRadius.wide};
 `
 

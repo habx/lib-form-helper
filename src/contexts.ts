@@ -1,4 +1,4 @@
-import { createContext } from 'react'
+import * as React from 'react'
 
 import { FormSectionStatus } from './FormSection/FormSection.interface'
 import Actions from './useActions/useActions.interface'
@@ -19,7 +19,7 @@ export interface SectionContextProps {
   showErrors: boolean
 }
 
-export const StatusContext = createContext<StatusContextProps>({
+export const StatusContext = React.createContext<StatusContextProps>({
   disabled: false,
   showErrors: true,
   sectionStatuses: {},
@@ -29,7 +29,7 @@ export const StatusContext = createContext<StatusContextProps>({
   },
 })
 
-export const SectionContext = createContext<SectionContextProps>({
+export const SectionContext = React.createContext<SectionContextProps>({
   setError: () => null,
   showErrors: true,
 })

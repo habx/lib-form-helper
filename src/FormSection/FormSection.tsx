@@ -19,11 +19,9 @@ const FormSection: React.FunctionComponent<FormSectionProps> = ({
     [errors, form.showErrors]
   )
 
-  React.useEffect(() => form.setSectionStatus(name, status), [
-    form,
-    name,
-    status,
-  ])
+  React.useLayoutEffect(() => {
+    form.setSectionStatus(name, status)
+  }, [name, status]) // eslint-disable-line react-hooks/exhaustive-deps
 
   const sectionStatus = React.useMemo(
     () => ({

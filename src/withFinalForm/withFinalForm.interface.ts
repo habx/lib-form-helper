@@ -14,7 +14,7 @@ export type InputConfig = {
   errorPadding?: number
 }
 
-export interface FieldWrapperProps {
+export interface FieldWrapperReceivedProps {
   validate?: validate
   format?: format
   parse?: parse
@@ -24,10 +24,12 @@ export interface FieldWrapperProps {
   name: string
 }
 
-export interface FieldContentProps extends FieldRenderProps {
+export interface FieldContentReceivedProps
+  extends FieldRenderProps<HTMLElement> {
   innerName: string
   required?: boolean
   label?: string
   disabled?: boolean
+  formDisabled?: boolean
   sectionContext: SectionContextProps
 }

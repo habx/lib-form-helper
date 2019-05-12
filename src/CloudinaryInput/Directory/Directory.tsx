@@ -2,9 +2,10 @@ import { map, filter, max, find } from 'lodash'
 import * as React from 'react'
 
 import { Spinner, TextInput } from '@habx/thunder-ui'
-import * as habxFilter from '@habx/thunder-ui/Spotlight/filter'
+import { filter as habxFilter } from '@habx/thunder-ui'
 
 import Image from '../Image'
+import { CloudinaryImage } from '../Image/Image.interface'
 
 import DirectoryProps from './Directory.interface'
 import {
@@ -32,7 +33,8 @@ const Directory: React.FunctionComponent<DirectoryProps> = ({
       selectedImage
         ? find(
             matchingImages,
-            image => image.public_id === selectedImage.public_id
+            (image: CloudinaryImage) =>
+              image.public_id === selectedImage.public_id
           )
         : null,
     [selectedImage, matchingImages]

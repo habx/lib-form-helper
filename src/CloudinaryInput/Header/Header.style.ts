@@ -1,6 +1,6 @@
 import styled from 'styled-components'
 
-import { colors } from '@habx/thunder-ui'
+import { theme } from '@habx/thunder-ui'
 
 export const HeaderContainer = styled.div`
   display: flex;
@@ -10,8 +10,8 @@ export const HeaderContainer = styled.div`
   height: 48px;
   padding: 0 16px;
 
-  background-color: ${colors.trueBlue};
-  color: ${colors.white};
+  background-color: ${theme.get('primary')};
+  color: ${theme.get('neutralLightest')};
 `
 
 export const Title = styled.div`
