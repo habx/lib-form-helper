@@ -1,8 +1,7 @@
 import { map, filter, max, find } from 'lodash'
 import * as React from 'react'
 
-import { Spinner, TextInput } from '@habx/thunder-ui'
-import { filter as habxFilter } from '@habx/thunder-ui'
+import { Spinner, TextInput, filter as habxFilter } from '@habx/thunder-ui'
 
 import Image from '../Image'
 import { CloudinaryImage } from '../Image/Image.interface'
@@ -70,7 +69,7 @@ const Directory: React.FunctionComponent<DirectoryProps> = ({
             />
           </QueryBar>
           <ImageList ref={ref}>
-            {map(matchingImages, image => (
+            {map(matchingImages, (image: CloudinaryImage) => (
               <ImageContainer
                 key={image.public_id}
                 data-selected={image === matchingImage}
