@@ -1,10 +1,15 @@
-import * as React from 'react'
 import { memoize, filter, floor, get, find, values } from 'lodash'
-import { Spinner, FontIcon, Button, TextInput } from '@habx/thunder-ui'
+import * as React from 'react'
 
-import Image from '../Image'
+import { Spinner, FontIcon, Button } from '@habx/thunder-ui'
+
 import { createCloudinaryURL } from '../CloudinaryInput.utils'
+import Image from '../Image'
 
+import ImageEditorProps, {
+  ImageEditorState,
+  CropConfiguration,
+} from './ImageEditor.interface'
 import {
   ImageEditorContainer,
   ImageContainer,
@@ -14,13 +19,12 @@ import {
   OptionActions,
   Slider,
   ImageCroper,
-  SpinnerContainer
+  SpinnerContainer,
 } from './ImageEditor.style'
-import ImageEditorProps, { ImageEditorState, CropConfiguration } from './ImageEditor.interface'
 
 const getImageMaxWidth = (image, transformation) => {
   const factor = get(transformation, 'width', 1)
-  return floor(image.width * (factor > 1 ? (factor / image.width) : factor))
+  return floor(image.width * (factor > 1 ? factor / image.width : factor))
 }
 
 const getCropTransform = transforms => {
@@ -32,20 +36,35 @@ const getCropTransform = transforms => {
       width: parseInt(get(matchingTransform, 'width', 1), 10),
       height: parseInt(get(matchingTransform, 'height', 1), 10),
       x: parseInt(get(matchingTransform, 'x', 0), 10),
-      y: parseInt(get(matchingTransform, 'y', 0), 10)
+      y: parseInt(get(matchingTransform, 'y', 0), 10),
     }
   }
 }
 
 const getInitialState = ({ initialTransforms, image }) => {
   const cropTransform = getCropTransform(initialTransforms)
-  const dimensionTransform = find(initialTransforms, el => get(el, 'crop') === 'scale' && el.width)
+  const dimensionTransform = find(
+    initialTransforms,
+    el => get(el, 'crop') === 'scale' && el.width
+  )
 
   const cropConfig = cropTransform && {
-    width: cropTransform.width < 1 ? (cropTransform.width * 100) : (cropTransform.width / image.width * 100),
-    height: cropTransform.height < 1 ? (cropTransform.height * 100) : (cropTransform.height / image.height * 100),
-    x: cropTransform.x < 1 ? (cropTransform.x * 100) : (cropTransform.x / image.width * 100),
-    y: cropTransform.y < 1 ? (cropTransform.y * 100) : (cropTransform.y / image.width * 100)
+    width:
+      cropTransform.width < 1
+        ? cropTransform.width * 100
+        : (cropTransform.width / image.width) * 100,
+    height:
+      cropTransform.height < 1
+        ? cropTransform.height * 100
+        : (cropTransform.height / image.height) * 100,
+    x:
+      cropTransform.x < 1
+        ? cropTransform.x * 100
+        : (cropTransform.x / image.width) * 100,
+    y:
+      cropTransform.y < 1
+        ? cropTransform.y * 100
+        : (cropTransform.y / image.width) * 100,
   }
 
   return {
@@ -55,24 +74,29 @@ const getInitialState = ({ initialTransforms, image }) => {
       crop: cropTransform,
       dimensions: dimensionTransform || {
         width: Math.min(getImageMaxWidth(image, cropTransform), 1000),
-        crop: 'scale'
-      }
+        crop: 'scale',
+      },
     },
-    transformationsBackup: null
+    transformationsBackup: null,
   }
 }
 
-class ImageEditor extends React.PureComponent<ImageEditorProps, ImageEditorState> {
+class ImageEditor extends React.PureComponent<
+  ImageEditorProps,
+  ImageEditorState
+> {
   state = getInitialState(this.props)
 
-  componentDidMount () {
+  componentDidMount() {
     this.handleChange()
   }
 
-  setAction = memoize(action => () => this.setState(prevState => ({
-    currentAction: action,
-    transformationsBackup: prevState.transformations
-  })))
+  setAction = memoize(action => () =>
+    this.setState(prevState => ({
+      currentAction: action,
+      transformationsBackup: prevState.transformations,
+    }))
+  )
 
   validateAction = () => {
     this.setState(() => ({ currentAction: null }), this.handleChange)
@@ -82,16 +106,16 @@ class ImageEditor extends React.PureComponent<ImageEditorProps, ImageEditorState
     this.setState(prevState => ({
       currentAction: null,
       transformations: prevState.transformationsBackup,
-      transformationsBackup: null
+      transformationsBackup: null,
     }))
   }
 
-  updateTransformations (transformationType, value) {
+  updateTransformations(transformationType, value) {
     this.setState(prevState => ({
       transformations: {
         ...prevState.transformations,
-        [transformationType]: value
-      }
+        [transformationType]: value,
+      },
     }))
   }
 
@@ -100,7 +124,8 @@ class ImageEditor extends React.PureComponent<ImageEditorProps, ImageEditorState
 
     const { width, height, x, y } = crop
 
-    const isValidCrop = (width !== 100 || height !== 100) && (width !== 0 || height !== 0)
+    const isValidCrop =
+      (width !== 100 || height !== 100) && (width !== 0 || height !== 0)
 
     if (!isValidCrop) {
       return this.updateTransformations('crop', null)
@@ -111,16 +136,14 @@ class ImageEditor extends React.PureComponent<ImageEditorProps, ImageEditorState
       width: width / 100,
       height: height / 100,
       x: x / 100,
-      y: y / 100
+      y: y / 100,
     }
 
     return this.updateTransformations('crop', transformation)
   }
 
-  handleDimensionsChange = width => this.updateTransformations(
-    'dimensions',
-    { crop: 'scale', width }
-    )
+  handleDimensionsChange = width =>
+    this.updateTransformations('dimensions', { crop: 'scale', width })
 
   handleChange = () => {
     const { image, onChange } = this.props
@@ -128,35 +151,51 @@ class ImageEditor extends React.PureComponent<ImageEditorProps, ImageEditorState
 
     onChange({
       id: image.public_id,
-      transforms: values(transformations)
+      transforms: values(transformations),
     })
   }
 
-  renderImage () {
+  renderImage() {
     const { image } = this.props
     const { currentAction, crop, transformations } = this.state
 
-    const transformationsToApply = filter(transformations, (value, key) => key !== currentAction)
+    const transformationsToApply = filter(
+      transformations,
+      (value, key) => key !== currentAction
+    )
 
     if (currentAction === 'crop') {
       return (
         <ImageCroper
-          src={createCloudinaryURL({ id: image.public_id, transforms: transformationsToApply })}
+          src={createCloudinaryURL({
+            id: image.public_id,
+            transforms: transformationsToApply,
+          })}
           onChange={this.handleCropChange}
           crop={crop}
         />
       )
     }
 
-    return <Image id={image.public_id} size='full' transforms={transformationsToApply} />
+    return (
+      <Image
+        id={image.public_id}
+        size="full"
+        transforms={transformationsToApply}
+      />
+    )
   }
 
-  renderDimensionSlider () {
+  renderDimensionSlider() {
     const { image } = this.props
     const { transformations } = this.state
 
     const maxWidth = getImageMaxWidth(image, transformations.crop)
-    const value = get(transformations, 'dimensions.width', Math.min(maxWidth, 1000))
+    const value = get(
+      transformations,
+      'dimensions.width',
+      Math.min(maxWidth, 1000)
+    )
 
     return (
       <Slider
@@ -167,7 +206,7 @@ class ImageEditor extends React.PureComponent<ImageEditorProps, ImageEditorState
     )
   }
 
-  render () {
+  render() {
     const { image } = this.props
     const { currentAction } = this.state
 
@@ -181,46 +220,41 @@ class ImageEditor extends React.PureComponent<ImageEditorProps, ImageEditorState
 
     return (
       <ImageEditorContainer>
-        <ImageContainer>
-          { this.renderImage() }
-        </ImageContainer>
-        {
-          !currentAction && (
-            <OptionsContainer>
-              <Button
-                onClick={this.setAction('crop')}
-                iconLeft={<FontIcon icon='crop' />}
-                reverse
-              >
-                Cropper
+        <ImageContainer>{this.renderImage()}</ImageContainer>
+        {!currentAction && (
+          <OptionsContainer>
+            <Button
+              onClick={this.setAction('crop')}
+              iconLeft={<FontIcon icon="crop" />}
+              reverse
+            >
+              Cropper
+            </Button>
+            <Button
+              onClick={this.setAction('dimensions')}
+              iconLeft={<FontIcon icon="photo_size_select_large" />}
+              reverse
+            >
+              Redimensionner
+            </Button>
+          </OptionsContainer>
+        )}
+        {currentAction && (
+          <OptionContainer>
+            <OptionContent>
+              {currentAction === 'crop' && 'Sélectionnez la zone à garder'}
+              {currentAction === 'dimensions' && this.renderDimensionSlider()}
+            </OptionContent>
+            <OptionActions>
+              <Button onClick={this.validateAction}>Valider</Button>
+              <Button onClick={this.cancelAction} reverse>
+                Annuler
               </Button>
-              <Button
-                onClick={this.setAction('dimensions')}
-                iconLeft={<FontIcon icon='photo_size_select_large' />}
-                reverse
-              >
-                Redimensionner
-              </Button>
-            </OptionsContainer>
-          )
-        }
-        {
-          currentAction && (
-            <OptionContainer>
-              <OptionContent>
-                { currentAction === 'crop' && 'Sélectionnez la zone à garder' }
-                { currentAction === 'dimensions' && this.renderDimensionSlider()}
-              </OptionContent>
-              <OptionActions>
-                <Button onClick={this.validateAction}>Valider</Button>
-                <Button onClick={this.cancelAction} reverse>Annuler</Button>
-              </OptionActions>
-            </OptionContainer>
-          )
-        }
+            </OptionActions>
+          </OptionContainer>
+        )}
       </ImageEditorContainer>
     )
-
   }
 }
 

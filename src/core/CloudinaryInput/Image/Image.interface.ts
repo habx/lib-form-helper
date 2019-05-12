@@ -3,8 +3,8 @@ import * as React from 'react'
 export type CloudinaryImage = {
   secure_url: string
   public_id: string
-  version: number,
-  height: number,
+  version: number
+  height: number
   width: number
 }
 

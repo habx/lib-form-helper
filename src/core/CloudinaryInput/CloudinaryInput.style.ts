@@ -1,4 +1,5 @@
 import styled from 'styled-components'
+
 import { colors, borderRadius } from '@habx/thunder-ui'
 
 export const CloudinaryInputContainer = styled.div`

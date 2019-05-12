@@ -11,7 +11,6 @@ export default interface ImageEditorProps {
   image: CloudinaryImage
   onChange: (image: ACECloudinaryImage) => void
   initialTransforms: object[]
-
 }
 
 export interface ImageEditorState {

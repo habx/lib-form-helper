@@ -1,12 +1,17 @@
-import * as React from 'react'
-import styled from 'styled-components'
-import { Field } from 'react-final-form'
 import { isNil, isFunction, isString, omit, get } from 'lodash'
+import * as React from 'react'
+import { Field } from 'react-final-form'
+import styled from 'styled-components'
+
 import { colors, fontSizes } from '@habx/thunder-ui'
 
 import { StatusContext, SectionContext } from '../contexts'
 
-import { InputConfig, FieldWrapperProps, FieldContentProps } from './withFinalForm.interface'
+import {
+  InputConfig,
+  FieldWrapperProps,
+  FieldContentProps,
+} from './withFinalForm.interface'
 
 const FieldContainer = styled.div`
   padding: 8px 0;
@@ -28,14 +33,16 @@ const INTERNAL_PROPS = [
   'name',
   'meta',
   'input',
-  'innerName'
+  'innerName',
 ]
 
-const withFinalForm = (inputConfig: InputConfig = {}) => (WrappedComponent: React.ComponentType<any>) => {
+const withFinalForm = (inputConfig: InputConfig = {}) => (
+  WrappedComponent: React.ComponentType<any>
+) => {
   class FieldContent extends React.Component<FieldContentProps> {
     static contextType = StatusContext
 
-    static getDerivedStateFromProps (nextProps, prevState) {
+    static getDerivedStateFromProps(nextProps, prevState) {
       if (
         inputConfig.changeOnBlur &&
         nextProps.input.value !== prevState.fieldValue &&
@@ -43,7 +50,7 @@ const withFinalForm = (inputConfig: InputConfig = {}) => (WrappedComponent: Reac
       ) {
         return {
           tempValue: nextProps.input.value,
-          fieldValue: nextProps.input.value
+          fieldValue: nextProps.input.value,
         }
       }
 
@@ -52,10 +59,10 @@ const withFinalForm = (inputConfig: InputConfig = {}) => (WrappedComponent: Reac
 
     state = {
       tempValue: null,
-      fieldValue: null
+      fieldValue: null,
     }
 
-    componentDidUpdate (prevProps, prevState) {
+    componentDidUpdate(prevProps, prevState) {
       const { meta, input, sectionContext, innerName } = this.props
       const { tempValue, fieldValue } = this.state
 
@@ -75,7 +82,7 @@ const withFinalForm = (inputConfig: InputConfig = {}) => (WrappedComponent: Reac
     handleChange = newValue => {
       const { changeOnBlur } = inputConfig
       const {
-        input: { onChange }
+        input: { onChange },
       } = this.props
 
       if (changeOnBlur) {
@@ -85,7 +92,7 @@ const withFinalForm = (inputConfig: InputConfig = {}) => (WrappedComponent: Reac
       }
     }
 
-    generateLabel (meta) {
+    generateLabel(meta) {
       const { label, required, sectionContext } = this.props
       const { error } = meta
 
@@ -106,7 +113,7 @@ const withFinalForm = (inputConfig: InputConfig = {}) => (WrappedComponent: Reac
       }
     }
 
-    render () {
+    render() {
       const { input, meta, label, disabled, sectionContext } = this.props
       const { tempValue } = this.state
       const { errorPadding } = inputConfig
@@ -167,8 +174,7 @@ const withFinalForm = (inputConfig: InputConfig = {}) => (WrappedComponent: Reac
 
       const fieldValidatedValue =
         requiredValidatedValue ||
-        (isFunction(inputConfig.validate) &&
-          inputConfig.validate(value, props))
+        (isFunction(inputConfig.validate) && inputConfig.validate(value, props))
 
       if (fieldValidatedValue) {
         return fieldValidatedValue

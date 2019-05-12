@@ -7,7 +7,10 @@ interface StatusContextProps {
   disabled?: boolean
   showErrors: boolean
   sectionStatuses: object
-  setSectionStatus: (sectionName: string, sectionStatus: FormSectionStatus) => void,
+  setSectionStatus: (
+    sectionName: string,
+    sectionStatus: FormSectionStatus
+  ) => void
   actions: Actions
 }
 
@@ -22,11 +25,11 @@ export const StatusContext = createContext<StatusContextProps>({
   sectionStatuses: {},
   setSectionStatus: () => null,
   actions: {
-    change: () => null
-  }
+    change: () => null,
+  },
 })
 
 export const SectionContext = createContext<SectionContextProps>({
   setError: () => null,
-  showErrors: true
+  showErrors: true,
 })

@@ -1,5 +1,6 @@
 import styled from 'styled-components'
-import { shadows, colors, Modal } from '@habx/thunder-ui'
+
+import { colors, Modal } from '@habx/thunder-ui'
 
 export const ImageUploaderContainer = styled(Modal)`
   padding: 0;
@@ -22,7 +23,7 @@ export const Content = styled.div`
   overflow-x: hidden;
   overflow-y: auto;
 
-  &[data-page="customizer"] {
+  &[data-page='customizer'] {
     overflow: hidden;
   }
 `

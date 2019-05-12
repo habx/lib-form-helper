@@ -1,16 +1,21 @@
-import * as React from 'react'
-import { Form as FinalForm } from 'react-final-form'
 import arrayMutators from 'final-form-arrays'
 import { isFunction } from 'lodash'
+import * as React from 'react'
+import { Form as FinalForm } from 'react-final-form'
 
 import { StatusContext } from '../contexts'
 
 import FormProps, { FormContentProps } from './Form.interface'
 
-const FormContent: React.FunctionComponent<FormContentProps> = ({ render, form, shouldShowErrors, ...props }) => {
+const FormContent: React.FunctionComponent<FormContentProps> = ({
+  render,
+  form,
+  shouldShowErrors,
+  ...props
+}) => {
   const [sectionStatuses, setSectionStatuses] = React.useState({})
   const actions = React.useRef({
-    change: (name: string, value?: any) => null
+    change: (name: string, value?: any) => null,
   })
 
   React.useEffect(() => {
@@ -26,13 +31,13 @@ const FormContent: React.FunctionComponent<FormContentProps> = ({ render, form, 
       setSectionStatus: (sectionName: string, status) => {
         setSectionStatuses(prevStatuses => ({
           ...prevStatuses,
-          [sectionName]: status
+          [sectionName]: status,
         }))
       },
       disabled: props.submitting || props.disabled,
       sectionStatuses,
       actions: actions.current,
-      showErrors
+      showErrors,
     }),
     [sectionStatuses, props.submitting, props.disabled, showErrors]
   )
@@ -44,16 +49,22 @@ const FormContent: React.FunctionComponent<FormContentProps> = ({ render, form, 
   )
 }
 
-const Form: React.FunctionComponent<FormProps> = ({ disabled, render, ...props }) => (
+const Form: React.FunctionComponent<FormProps> = ({
+  disabled,
+  render,
+  ...props
+}) => (
   <FinalForm
     {...props}
     mutators={arrayMutators as { [key: string]: any }}
-    render={props => <FormContent {...props} render={render} disabled={disabled} />}
+    render={props => (
+      <FormContent {...props} render={render} disabled={disabled} />
+    )}
   />
 )
 
 Form.defaultProps = {
-  disabled: false
+  disabled: false,
 }
 
 export default Form

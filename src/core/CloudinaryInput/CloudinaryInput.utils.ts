@@ -1,4 +1,13 @@
-import { map, isEmpty, join, isString, filter, reduce, findLastIndex, entries } from 'lodash'
+import {
+  map,
+  isEmpty,
+  join,
+  isString,
+  filter,
+  reduce,
+  findLastIndex,
+  entries,
+} from 'lodash'
 
 import { ACECloudinaryImage } from './Image/Image.interface'
 
@@ -6,47 +15,47 @@ const CLOUDINARY_IMAGE_ROOT = `//res.cloudinary.com/habx/image/upload`
 
 const PARAM_TABLE = {
   crop: {
-    key: 'c'
+    key: 'c',
   },
   width: {
-    key: 'w'
+    key: 'w',
   },
   height: {
-    key: 'h'
+    key: 'h',
   },
   quality: {
-    key: 'q'
+    key: 'q',
   },
   fetch_format: {
-    key: 'f'
+    key: 'f',
   },
   flags: {
-    key: 'fl'
+    key: 'fl',
   },
   effect: {
-    key: 'e'
+    key: 'e',
   },
   color: {
     key: 'co',
-    process: value => `rgb:${value.substr(1)}`
+    process: value => `rgb:${value.substr(1)}`,
   },
   opacity: {
-    key: 'o'
+    key: 'o',
   },
   aspect_ratio: {
-    key: 'ar'
+    key: 'ar',
   },
   x: {
-    key: 'x'
+    key: 'x',
   },
   y: {
-    key: 'y'
-  }
+    key: 'y',
+  },
 }
 
 const DEFAULT_IMAGE = {
   id: '',
-  transforms: []
+  transforms: [],
 }
 
 const transformToString = transforms => {
@@ -63,7 +72,7 @@ const transformToString = transforms => {
 
       return `${key}_${
         config.process ? config.process(paramValue) : paramValue
-        }`
+      }`
     })
 
     return join(params, ',')
@@ -76,35 +85,40 @@ export const createCloudinaryURL = (image: ACECloudinaryImage) => {
   const transformsString = transformToString(image.transforms)
   const chunks = [CLOUDINARY_IMAGE_ROOT, transformsString, image.id]
 
-  return reduce(chunks, (acc, el) => {
-    const needSlash = !acc.endsWith('/') && !el.startsWith('/')
+  return reduce(
+    chunks,
+    (acc, el) => {
+      const needSlash = !acc.endsWith('/') && !el.startsWith('/')
 
-    return `${acc}${needSlash ? '/' : ''}${el}`
-  }, '')
+      return `${acc}${needSlash ? '/' : ''}${el}`
+    },
+    ''
+  )
 }
 
-const getTransformFromChunk = (chunk: string) => reduce(
-  chunk.split(','),
-  (acc, rawTransform) => {
-    if (isEmpty(rawTransform) || !rawTransform.includes('_')) {
-      return acc
-    }
+const getTransformFromChunk = (chunk: string) =>
+  reduce(
+    chunk.split(','),
+    (acc, rawTransform) => {
+      if (isEmpty(rawTransform) || !rawTransform.includes('_')) {
+        return acc
+      }
 
-    const [key, value] = rawTransform.split('_')
+      const [key, value] = rawTransform.split('_')
 
-    const transform = entries(PARAM_TABLE).find(el => el[1].key === key)
+      const transform = entries(PARAM_TABLE).find(el => el[1].key === key)
 
-    if (!transform) {
-      return acc
-    }
+      if (!transform) {
+        return acc
+      }
 
-    return {
-      ...acc,
-      [transform[0]]: value
-    }
-  },
-  {}
-)
+      return {
+        ...acc,
+        [transform[0]]: value,
+      }
+    },
+    {}
+  )
 
 const getTransformsFromChunks = (chunks: string[]) => {
   const transforms = map(chunks, getTransformFromChunk)
@@ -121,7 +135,10 @@ const getIdFromChunks = (chunks: string[]) => {
     return isVersion || isTransform || isUpload
   })
 
-  return chunks.slice(index + 1).join('/').split('.')[0]
+  return chunks
+    .slice(index + 1)
+    .join('/')
+    .split('.')[0]
 }
 
 export const parseCloudinaryURL = (src: string = '') => {
@@ -137,6 +154,6 @@ export const parseCloudinaryURL = (src: string = '') => {
 
   return {
     id: getIdFromChunks(chunks),
-    transforms: getTransformsFromChunks(chunks)
+    transforms: getTransformsFromChunks(chunks),
   }
 }

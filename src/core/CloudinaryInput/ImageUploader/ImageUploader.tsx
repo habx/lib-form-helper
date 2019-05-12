@@ -1,35 +1,42 @@
-import * as React from 'react'
 import { map, uniq, get, initial, has } from 'lodash'
+import * as React from 'react'
+
 import { FontIcon } from '@habx/thunder-ui'
 
-import ImageUploaderProps, { ImageUploaderState } from './ImageUploader.interface'
-import { CloudinaryImage, ACECloudinaryImage } from '../Image/Image.interface'
 import { createCloudinaryURL } from '../CloudinaryInput.utils'
+import Directory from '../Directory'
+import Header from '../Header'
+import { CloudinaryImage, ACECloudinaryImage } from '../Image/Image.interface'
+import ImageEditor from '../ImageEditor'
 
+import ActionBar from './ActionBar'
+import ImageUploaderProps, {
+  ImageUploaderState,
+} from './ImageUploader.interface'
 import {
   ImageUploaderContainer,
   Content,
   Directories,
   DirectoryLine,
-  DirectoryContent
+  DirectoryContent,
 } from './ImageUploader.style'
 
-import ActionBar from './ActionBar'
-import ImageEditor from '../ImageEditor'
-import Header from '../Header'
-import Directory from '../Directory'
-
-class ImageUploader extends React.PureComponent<ImageUploaderProps, ImageUploaderState> {
-  static getDerivedStateFromProps (nextProps, prevState) {
+class ImageUploader extends React.PureComponent<
+  ImageUploaderProps,
+  ImageUploaderState
+> {
+  static getDerivedStateFromProps(nextProps, prevState) {
     const { image } = nextProps
 
     if (image && image.id && image !== prevState.fieldImage) {
-      const directory = initial(image.id.split('/').filter(el => el !== '')).join('/')
+      const directory = initial(
+        image.id.split('/').filter(el => el !== '')
+      ).join('/')
 
       return {
         fieldImage: image,
         directory: directory || prevState.directory,
-        fetchFieldImagePromise: null
+        fetchFieldImagePromise: null,
       }
     }
 
@@ -43,14 +50,14 @@ class ImageUploader extends React.PureComponent<ImageUploaderProps, ImageUploade
     customizedImage: null as ACECloudinaryImage,
     directory: this.props.defaultDirectory || 'cities',
     fetchFieldImagePromise: null,
-    images: []
+    images: [],
   }
 
-  async componentDidMount () {
+  async componentDidMount() {
     await this.fetchFieldImageConfig(this.state.fieldImage)
   }
 
-  async componentDidUpdate (prevProps, prevState) {
+  async componentDidUpdate(prevProps, prevState) {
     const { fieldImage } = this.state
 
     if (fieldImage && fieldImage !== prevState.fieldImage) {
@@ -71,9 +78,11 @@ class ImageUploader extends React.PureComponent<ImageUploaderProps, ImageUploade
     this.props.onStatusChange('customizer')
   }
 
-  handleImageSelect = selectedImage => this.setState(prevState => ({
-    selectedImage: prevState.selectedImage === selectedImage ? null : selectedImage
-  }))
+  handleImageSelect = selectedImage =>
+    this.setState(prevState => ({
+      selectedImage:
+        prevState.selectedImage === selectedImage ? null : selectedImage,
+    }))
 
   getImageInOutputFormat = (image: ACECloudinaryImage) => {
     const { format } = this.props
@@ -115,16 +124,13 @@ class ImageUploader extends React.PureComponent<ImageUploaderProps, ImageUploade
     this.goTo('customizer')
   }
 
-  handleImageCustomizationChange = customizedImage => this.setState(() => ({ customizedImage }))
+  handleImageCustomizationChange = customizedImage =>
+    this.setState(() => ({ customizedImage }))
 
-  getDirectories = () => uniq([
-    this.props.defaultDirectory,
-    'logos',
-    'cities',
-    'regions'
-  ])
+  getDirectories = () =>
+    uniq([this.props.defaultDirectory, 'logos', 'cities', 'regions'])
 
-  getCurrentTitle () {
+  getCurrentTitle() {
     const { status } = this.props
     const { directory, selectedImage } = this.state
 
@@ -141,7 +147,11 @@ class ImageUploader extends React.PureComponent<ImageUploaderProps, ImageUploade
     }
 
     if (status === 'customizer') {
-      return `Personnalisation de ${get(selectedImage, 'public_id', 'image inconnue')}`
+      return `Personnalisation de ${get(
+        selectedImage,
+        'public_id',
+        'image inconnue'
+      )}`
     }
 
     return ''
@@ -167,32 +177,27 @@ class ImageUploader extends React.PureComponent<ImageUploaderProps, ImageUploade
 
     this.setState(() => ({
       selectedImage: config,
-      fieldImageConfig: config
+      fieldImageConfig: config,
     }))
   }
 
-  renderHome () {
+  renderHome() {
     return (
       <Directories>
-        {map(
-          this.getDirectories(),
-          directory => (
-            <DirectoryLine
-              key={directory}
-              onClick={() => this.goTo('directory', { directory })}
-            >
-              <FontIcon icon='folder' />
-              <DirectoryContent>
-                { directory }
-              </DirectoryContent>
-            </DirectoryLine>
-          )
-        )}
+        {map(this.getDirectories(), directory => (
+          <DirectoryLine
+            key={directory}
+            onClick={() => this.goTo('directory', { directory })}
+          >
+            <FontIcon icon="folder" />
+            <DirectoryContent>{directory}</DirectoryContent>
+          </DirectoryLine>
+        ))}
       </Directories>
     )
   }
 
-  renderDirectory () {
+  renderDirectory() {
     const { renderImages } = this.props
     const { directory, selectedImage } = this.state
 
@@ -211,17 +216,16 @@ class ImageUploader extends React.PureComponent<ImageUploaderProps, ImageUploade
             onImageClick={this.handleImageSelect}
           />
         )
-      }
+      },
     })
   }
 
-  renderCustomizer () {
+  renderCustomizer() {
     const { image } = this.props
     const { selectedImage, fieldImageConfig } = this.state
 
-    const initialTransforms = fieldImageConfig === selectedImage
-      ? get(image, 'transforms')
-      : null
+    const initialTransforms =
+      fieldImageConfig === selectedImage ? get(image, 'transforms') : null
 
     return (
       <ImageEditor
@@ -232,7 +236,7 @@ class ImageUploader extends React.PureComponent<ImageUploaderProps, ImageUploade
     )
   }
 
-  render () {
+  render() {
     const { status, onClose, format } = this.props
     const { selectedImage } = this.state
 
@@ -252,16 +256,18 @@ class ImageUploader extends React.PureComponent<ImageUploaderProps, ImageUploade
                 status={status}
               />
               <Content data-status={status}>
-                { status === 'home' && this.renderHome() }
-                { status === 'directory' && this.renderDirectory() }
-                { status === 'customizer' && this.renderCustomizer() }
+                {status === 'home' && this.renderHome()}
+                {status === 'directory' && this.renderDirectory()}
+                {status === 'customizer' && this.renderCustomizer()}
               </Content>
-              { selectedImage && (
+              {selectedImage && (
                 <ActionBar
                   status={status}
                   onSelect={this.handleImageValidationWithoutCustomization}
                   onCustomize={this.handleImageCustomization}
-                  onValidateCustomization={this.handleImageValidationWithCustomization}
+                  onValidateCustomization={
+                    this.handleImageValidationWithCustomization
+                  }
                   canCustomize={format !== 'id'}
                 />
               )}

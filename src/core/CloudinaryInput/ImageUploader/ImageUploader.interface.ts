@@ -1,4 +1,8 @@
-import { CloudinaryImage, ACECloudinaryImage, ImageFile } from '../Image/Image.interface'
+import {
+  CloudinaryImage,
+  ACECloudinaryImage,
+  ImageFile,
+} from '../Image/Image.interface'
 
 export type RenderParams = {
   directory: string
@@ -24,7 +28,10 @@ export default interface ImageUploaderProps {
   format: string
   image: ACECloudinaryImage
   fetchImageConfig: (path: string) => Promise<CloudinaryImage>
-  uploadImage: (image: ImageFile, params: { directory: string }) => Promise<CloudinaryImage>
+  uploadImage: (
+    image: ImageFile,
+    params: { directory: string }
+  ) => Promise<CloudinaryImage>
   onClose: () => void
 }
 
