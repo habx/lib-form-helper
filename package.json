@@ -52,6 +52,7 @@
     "@types/react-dom": "^16.8.4",
     "@typescript-eslint/eslint-plugin": "^1.7.0",
     "@typescript-eslint/parser": "^1.7.0",
+    "babel-eslint": "^10.0.1",
     "bili": "^4.7.4",
     "eslint": "^5.16.0",
     "eslint-config-prettier": "^4.2.0",
