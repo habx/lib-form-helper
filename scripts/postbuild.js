@@ -10,6 +10,7 @@ const PEER_DEPENDENCIES = [
   'styled-components',
   'final-form',
   'react-final-form',
+  'final-form-arrays',
   '@habx/thunder-ui',
 ]
 
