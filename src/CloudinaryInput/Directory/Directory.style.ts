@@ -1,4 +1,5 @@
 import styled from 'styled-components'
+
 import { shadows } from '@habx/thunder-ui'
 
 export const DirectoryContainer = styled.div`
@@ -8,7 +9,7 @@ export const DirectoryContainer = styled.div`
   display: flex;
   flex-direction: column;
 
-  &[data-loading="true"] {
+  &[data-loading='true'] {
     align-items: center;
     justify-content: center;
   }
@@ -39,7 +40,7 @@ export const ImageContainer = styled.div`
       box-shadow: ${shadows.strong};
     }
 
-    &[data-fade="true"] {
+    &[data-fade='true'] {
       opacity: 0.5;
       filter: grayscale();
     }

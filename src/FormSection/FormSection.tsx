@@ -1,21 +1,27 @@
-import * as React from 'react'
 import { omit, isEmpty, isFunction } from 'lodash'
+import * as React from 'react'
 
 import { StatusContext, SectionContext } from '../contexts'
+
 import FormSectionProps, { FormSectionStatus } from './FormSection.interface'
 
-const FormSection: React.FunctionComponent<FormSectionProps> = ({ name, children }) => {
+const FormSection: React.FunctionComponent<FormSectionProps> = ({
+  name,
+  children,
+}) => {
   const form = React.useContext(StatusContext)
   const [errors, updateErrors] = React.useState({})
 
-  const status: FormSectionStatus = React.useMemo(() => ({
-    hasError: !isEmpty(errors) && form.showErrors
-  }), [errors, form.showErrors])
-
-  React.useEffect(
-    () => form.setSectionStatus(name, status),
-    [name, status]
+  const status: FormSectionStatus = React.useMemo(
+    () => ({
+      hasError: !isEmpty(errors) && form.showErrors,
+    }),
+    [errors, form.showErrors]
   )
+
+  React.useLayoutEffect(() => {
+    form.setSectionStatus(name, status)
+  }, [name, status]) // eslint-disable-line react-hooks/exhaustive-deps
 
   const sectionStatus = React.useMemo(
     () => ({
@@ -26,18 +32,14 @@ const FormSection: React.FunctionComponent<FormSectionProps> = ({ name, children
             : omit(prevErrors, [fieldName])
         )
       },
-      showErrors: form.showErrors
+      showErrors: form.showErrors,
     }),
     [updateErrors, form.showErrors]
   )
 
   return (
     <SectionContext.Provider value={sectionStatus}>
-      {
-        isFunction(children)
-          ? children(status)
-          : children
-      }
+      {isFunction(children) ? children(status) : children}
     </SectionContext.Provider>
   )
 }

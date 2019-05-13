@@ -1,5 +1,6 @@
 import styled from 'styled-components'
-import { shadows, colors, Modal } from '@habx/thunder-ui'
+
+import { Modal, theme } from '@habx/thunder-ui'
 
 export const ImageUploaderContainer = styled(Modal)`
   padding: 0;
@@ -14,7 +15,7 @@ export const ImageUploaderContainer = styled(Modal)`
 
 export const Content = styled.div`
   flex: 1 1 100%;
-  background-color: ${colors.whiteSmoke};
+  background-color: ${theme.get('neutralLighter')};
   position: relative;
   display: flex;
   flex-direction: column;
@@ -22,7 +23,7 @@ export const Content = styled.div`
   overflow-x: hidden;
   overflow-y: auto;
 
-  &[data-page="customizer"] {
+  &[data-page='customizer'] {
     overflow: hidden;
   }
 `
@@ -46,10 +47,10 @@ export const DirectoryLine = styled.li`
   padding: 0 16px;
   transition: background-color 150ms ease-in-out;
   cursor: pointer;
-  color: ${colors.paynesGrey};
+  color: ${theme.get('neutral')};
 
   &:hover {
-    background-color: ${colors.snow};
+    background-color: ${theme.get('neutralLighter')};
   }
 `
 
@@ -59,7 +60,7 @@ export const DirectoryContent = styled.div`
 
 export const ActionBarContainer = styled.div`
   flex: 0 0 48px;
-  background-color: ${colors.white};
+  background-color: ${theme.get('neutralLightest')};
   display: flex;
   justify-content: flex-end;
   align-items: center;

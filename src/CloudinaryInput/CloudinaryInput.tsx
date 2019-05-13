@@ -1,23 +1,28 @@
-import * as React from 'react'
 import { get } from 'lodash'
+import * as React from 'react'
+
 import { withLabel, Button } from '@habx/thunder-ui'
 
 import CloudinaryInputProps from './CloudinaryInput.interface'
-import { CloudinaryInputContainer, PictureContainer, EmptyImage, ActionsBar } from './CloudinaryInput.style'
+import {
+  CloudinaryInputContainer,
+  PictureContainer,
+  EmptyImage,
+  ActionsBar,
+} from './CloudinaryInput.style'
 import { parseCloudinaryURL } from './CloudinaryInput.utils'
-
-import ImageUploader from './ImageUploader'
 import Image from './Image'
+import ImageUploader from './ImageUploader'
 
 class CloudinaryInput extends React.PureComponent<CloudinaryInputProps> {
-  static getDerivedStateFromProps (nextProps, prevState) {
+  static getDerivedStateFromProps(nextProps, prevState) {
     const { value, imageFormat } = nextProps
 
     if (value !== prevState.value) {
       if (imageFormat === 'ace') {
         return {
           value,
-          image: value
+          image: value,
         }
       }
 
@@ -26,13 +31,13 @@ class CloudinaryInput extends React.PureComponent<CloudinaryInputProps> {
           value,
           image: {
             id: value,
-            transforms: []
-          }
+            transforms: [],
+          },
         }
       }
       return {
         value,
-        image: parseCloudinaryURL(value)
+        image: parseCloudinaryURL(value),
       }
     }
 
@@ -40,13 +45,13 @@ class CloudinaryInput extends React.PureComponent<CloudinaryInputProps> {
   }
 
   static defaultProps = {
-    imageFormat: 'ace'
+    imageFormat: 'ace',
   }
 
   state = {
     value: null,
     image: null,
-    status: 'closed'
+    status: 'closed',
   }
 
   handleStatusChange = status => this.setState(() => ({ status }))
@@ -58,14 +63,14 @@ class CloudinaryInput extends React.PureComponent<CloudinaryInputProps> {
     this.handleUploaderClose()
   }
 
-  render () {
+  render() {
     const {
       disabled,
       renderImages,
       defaultDirectory,
       imageFormat,
       fetchImageConfig,
-      uploadImage
+      uploadImage,
     } = this.props
 
     const { image, status } = this.state
@@ -74,29 +79,31 @@ class CloudinaryInput extends React.PureComponent<CloudinaryInputProps> {
 
     return (
       <CloudinaryInputContainer>
-        {
-          hasImage
-            ? (
-              <PictureContainer>
-                <Image
-                  size='full'
-                  id={get(image, 'id')}
-                  transforms={get(image, 'transforms')}
-                />
-              </PictureContainer>
-            ) : (
-              <EmptyImage />
-            )
-        }
+        {hasImage ? (
+          <PictureContainer>
+            <Image
+              size="full"
+              id={get(image, 'id')}
+              transforms={get(image, 'transforms')}
+            />
+          </PictureContainer>
+        ) : (
+          <EmptyImage />
+        )}
         <ActionsBar>
-          {
-            hasImage && imageFormat !== 'id' && (
-              <Button onClick={() => this.handleStatusChange('customizer')} disabled={disabled}>
-                Éditer
-              </Button>
-            )
-          }
-          <Button onClick={() => this.handleStatusChange('directory')} disabled={disabled} reverse>
+          {hasImage && imageFormat !== 'id' && (
+            <Button
+              onClick={() => this.handleStatusChange('customizer')}
+              disabled={disabled}
+            >
+              Éditer
+            </Button>
+          )}
+          <Button
+            onClick={() => this.handleStatusChange('directory')}
+            disabled={disabled}
+            reverse
+          >
             Nouvelle image
           </Button>
         </ActionsBar>

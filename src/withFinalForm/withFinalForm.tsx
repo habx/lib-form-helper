@@ -1,183 +1,164 @@
+import { isNil, isFunction, isString, get } from 'lodash'
 import * as React from 'react'
-import styled from 'styled-components'
 import { Field } from 'react-final-form'
-import { isNil, isFunction, isString, omit, get } from 'lodash'
-import { colors, fontSizes } from '@habx/thunder-ui'
+import styled from 'styled-components'
+
+import { fontSizes, theme, useTheme } from '@habx/thunder-ui'
 
 import { StatusContext, SectionContext } from '../contexts'
 
-import { InputConfig, FieldWrapperProps, FieldContentProps } from './withFinalForm.interface'
+import {
+  InputConfig,
+  FieldWrapperReceivedProps,
+  FieldContentReceivedProps,
+} from './withFinalForm.interface'
 
 const FieldContainer = styled.div`
   padding: 8px 0;
 `
 
 const FieldError = styled.div`
-  color: ${colors.internationalOrange};
+  color: ${theme.get('error')};
   height: 1rem;
   font-size: ${fontSizes.tiny};
 
   padding: ${({ padding }) => padding}px;
 `
 
-const INTERNAL_PROPS = [
-  'format',
-  'parse',
-  'validate',
-  'required',
-  'name',
-  'meta',
-  'input',
-  'innerName'
-]
+const withFinalForm = (inputConfig: InputConfig = {}) => <Props extends object>(
+  WrappedComponent: React.ComponentType<Props>
+) => {
+  const FieldContent: React.FunctionComponent<
+    Props & FieldContentReceivedProps
+  > = props => {
+    const {
+      input,
+      meta,
+      disabled,
+      formDisabled,
+      required,
+      sectionContext,
+      innerName,
+      label: rawLabel,
+      input: { value, onChange },
+      ...rest
+    } = props as FieldContentReceivedProps
 
-const withFinalForm = (inputConfig: InputConfig = {}) => (WrappedComponent: React.ComponentType<any>) => {
-  class FieldContent extends React.Component<FieldContentProps> {
-    static contextType = StatusContext
+    const [localValue, setLocalValue] = React.useState(value)
+    const thunderTheme = useTheme()
 
-    static getDerivedStateFromProps (nextProps, prevState) {
-      if (
-        inputConfig.changeOnBlur &&
-        nextProps.input.value !== prevState.fieldValue &&
-        !nextProps.meta.active
-      ) {
-        return {
-          tempValue: nextProps.input.value,
-          fieldValue: nextProps.input.value
+    const showError = sectionContext.showErrors && !!get(meta, 'error')
+
+    React.useEffect(() => {
+      if (inputConfig.changeOnBlur && !meta.active) {
+        onChange(localValue)
+      }
+    }, [onChange, meta.active]) // eslint-disable-line react-hooks/exhaustive-deps
+
+    React.useLayoutEffect(() => {
+      sectionContext.setError(innerName, meta.error)
+    }, [meta.error, innerName, sectionContext.setError]) // eslint-disable-line react-hooks/exhaustive-deps
+
+    const handleChange = React.useCallback(
+      newValue => {
+        if (inputConfig.changeOnBlur) {
+          setLocalValue(newValue)
+        } else {
+          onChange(newValue)
         }
-      }
+      },
+      [onChange]
+    )
 
-      return null
-    }
-
-    state = {
-      tempValue: null,
-      fieldValue: null
-    }
-
-    componentDidUpdate (prevProps, prevState) {
-      const { meta, input, sectionContext, innerName } = this.props
-      const { tempValue, fieldValue } = this.state
-
-      if (
-        inputConfig.changeOnBlur &&
-        !meta.active &&
-        (fieldValue !== tempValue || fieldValue !== prevState.fieldValue)
-      ) {
-        input.onChange(tempValue)
-      }
-
-      if (meta.error !== prevProps.meta.error) {
-        sectionContext.setError(innerName, meta.error)
-      }
-    }
-
-    handleChange = newValue => {
-      const { changeOnBlur } = inputConfig
-      const {
-        input: { onChange }
-      } = this.props
-
-      if (changeOnBlur) {
-        this.setState(() => ({ tempValue: newValue }))
-      } else {
-        onChange(newValue)
-      }
-    }
-
-    generateLabel (meta) {
-      const { label, required, sectionContext } = this.props
-      const { error } = meta
-
+    const label = React.useMemo(() => {
       if (!sectionContext.showErrors) {
-        return label
+        return rawLabel
       }
 
-      if (!label) {
+      if (!rawLabel) {
         return null
       }
 
-      if (!error || error === 'required') {
-        return `${label}${required ? ' (obligatoire)' : ''}`
+      if (!meta.error || meta.error === 'required') {
+        return `${rawLabel}${required ? ' (obligatoire)' : ''}`
       }
 
-      if (error) {
-        return `${label} : ${error}`
+      if (meta.error) {
+        return `${rawLabel} : ${meta.error}`
       }
-    }
+    }, [meta.error, rawLabel, required, sectionContext.showErrors])
 
-    render () {
-      const { input, meta, label, disabled, sectionContext } = this.props
-      const { tempValue } = this.state
-      const { errorPadding } = inputConfig
-
-      const innerProps = omit(this.props, INTERNAL_PROPS)
-      const showError = sectionContext.showErrors && !!get(meta, 'error')
-
-      return (
-        <FieldContainer>
-          <WrappedComponent
-            {...innerProps}
-            {...input}
-            error={showError}
-            label={this.generateLabel(meta)}
-            labelColor={showError && colors.internationalOrange}
-            value={inputConfig.changeOnBlur ? tempValue : input.value}
-            onChange={this.handleChange}
-            disabled={isNil(disabled) ? this.context.disabled : disabled} // tslint:disable-line deprecation
-          />
-          {!label && (
-            <FieldError padding={errorPadding}>
-              {isString(meta.error) && sectionContext.showErrors && meta.error}
-            </FieldError>
-          )}
-        </FieldContainer>
-      )
-    }
+    return (
+      <FieldContainer>
+        <WrappedComponent
+          {...rest as Props}
+          {...input}
+          error={showError}
+          label={label}
+          labelColor={showError ? thunderTheme.error : null}
+          value={inputConfig.changeOnBlur ? localValue : value}
+          onChange={handleChange}
+          disabled={isNil(disabled) ? formDisabled : disabled}
+        />
+        {!label && (
+          <FieldError padding={inputConfig.errorPadding}>
+            {isString(meta.error) && sectionContext.showErrors && meta.error}
+          </FieldError>
+        )}
+      </FieldContainer>
+    )
   }
 
-  const FieldWrapper: React.FunctionComponent<FieldWrapperProps> = props => {
+  const FieldWrapper: React.FunctionComponent<
+    Props & FieldWrapperReceivedProps
+  > = props => {
     const sectionContext = React.useContext(SectionContext)
+    const formStatus = React.useContext(StatusContext)
+    const propsRef = React.useRef(props)
 
-    const format = value => {
+    React.useEffect(() => {
+      propsRef.current = props
+    })
+
+    const format = React.useCallback(value => {
       const fieldFormattedValue = isFunction(inputConfig.format)
-        ? inputConfig.format(value, props)
+        ? inputConfig.format(value, propsRef.current)
         : value
 
-      return isFunction(props.format)
-        ? props.format(fieldFormattedValue, props)
+      return isFunction(propsRef.current.format)
+        ? propsRef.current.format(fieldFormattedValue, propsRef.current)
         : fieldFormattedValue
-    }
+    }, [])
 
-    const parse = value => {
+    const parse = React.useCallback(value => {
       const fieldParsedValue = isFunction(inputConfig.parse)
-        ? inputConfig.parse(value, props)
+        ? inputConfig.parse(value, propsRef.current)
         : value
 
-      return isFunction(props.parse)
-        ? props.parse(fieldParsedValue, props)
+      return isFunction(propsRef.current.parse)
+        ? propsRef.current.parse(fieldParsedValue, propsRef.current)
         : fieldParsedValue
-    }
+    }, [])
 
-    const validate = value => {
-      const { required } = props
-
+    const validate = React.useCallback(value => {
       const requiredValidatedValue =
-        required && (isNil(value) || value === '') ? 'required' : undefined
+        propsRef.current.required && (isNil(value) || value === '')
+          ? 'required'
+          : undefined
 
       const fieldValidatedValue =
         requiredValidatedValue ||
         (isFunction(inputConfig.validate) &&
-          inputConfig.validate(value, props))
+          inputConfig.validate(value, propsRef.current))
 
       if (fieldValidatedValue) {
         return fieldValidatedValue
       }
 
-      return isFunction(props.validate)
-        ? props.validate(value, props)
+      return isFunction(propsRef.current.validate)
+        ? propsRef.current.validate(value, propsRef.current)
         : undefined
-    }
+    }, [])
 
     return (
       <Field
@@ -186,6 +167,7 @@ const withFinalForm = (inputConfig: InputConfig = {}) => (WrappedComponent: Reac
         format={format}
         parse={parse}
         validate={validate}
+        formDisabled={formStatus.disabled}
         component={FieldContent}
         sectionContext={sectionContext}
       />
