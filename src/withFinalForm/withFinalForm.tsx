@@ -50,10 +50,14 @@ const withFinalForm = (inputConfig: InputConfig = {}) => <Props extends object>(
     const showError = sectionContext.showErrors && !!get(meta, 'error')
 
     React.useEffect(() => {
-      if (inputConfig.changeOnBlur && !meta.active) {
+      if (inputConfig.changeOnBlur && !meta.active && localValue !== value) {
         onChange(localValue)
       }
-    }, [onChange, meta.active]) // eslint-disable-line react-hooks/exhaustive-deps
+    }, [meta.active]) // eslint-disable-line react-hooks/exhaustive-deps
+
+    React.useEffect(() => {
+      setLocalValue(value)
+    }, [value])
 
     React.useLayoutEffect(() => {
       sectionContext.setError(innerName, meta.error)
