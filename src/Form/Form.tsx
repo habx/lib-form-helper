@@ -4,6 +4,7 @@ import * as React from 'react'
 import { Form as FinalForm } from 'react-final-form'
 
 import { StatusContext } from '../contexts'
+import useKeyboardSave from '../useKeyboardSave'
 
 import FormProps, { FormContentProps } from './Form.interface'
 
@@ -11,12 +12,15 @@ const FormContent: React.FunctionComponent<FormContentProps> = ({
   render,
   form,
   shouldShowErrors,
+  saveWithKeyboard,
   ...props
 }) => {
   const [sectionStatuses, setSectionStatuses] = React.useState({})
   const actions = React.useRef({
     change: (name: string, value?: any) => null,
   })
+
+  useKeyboardSave(saveWithKeyboard && props.handleSubmit)
 
   React.useEffect(() => {
     actions.current = form
