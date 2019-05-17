@@ -1,7 +1,8 @@
 import * as React from 'react'
 
 export default interface FormSectionProps {
-  name: string
+  id?: string
+  name?: string
   children?: React.ReactNode | ((status: FormSectionStatus) => JSX.Element)
 }
 

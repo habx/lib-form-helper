@@ -17,6 +17,7 @@ interface StatusContextProps {
 export interface SectionContextProps {
   setError: (fieldName: string, error: string) => void
   showErrors: boolean
+  name: string
 }
 
 export const StatusContext = React.createContext<StatusContextProps>({
@@ -32,4 +33,5 @@ export const StatusContext = React.createContext<StatusContextProps>({
 export const SectionContext = React.createContext<SectionContextProps>({
   setError: () => null,
   showErrors: true,
+  name: '',
 })

@@ -2,9 +2,11 @@ import { isNil, isFunction, isString, get } from 'lodash'
 import * as React from 'react'
 import { Field } from 'react-final-form'
 import styled from 'styled-components'
+import { isObject } from 'util'
 
 import { fontSizes, theme, useTheme } from '@habx/thunder-ui'
 
+import { joinNames } from '../_internal/form'
 import { StatusContext, SectionContext } from '../contexts'
 
 import {
@@ -87,7 +89,13 @@ const withFinalForm = (inputConfig: InputConfig = {}) => <Props extends object>(
         return `${rawLabel}${required ? ' (obligatoire)' : ''}`
       }
 
-      if (meta.error) {
+      if (meta.error && typeof meta.error === 'object') {
+        return rawLabel
+          ? `${rawLabel} (contient des erreurs)`
+          : 'Contient des erreurs'
+      }
+
+      if (meta.error && typeof meta.error !== 'object') {
         return `${rawLabel} : ${meta.error}`
       }
     }, [meta.error, rawLabel, required, sectionContext.showErrors])
@@ -164,10 +172,13 @@ const withFinalForm = (inputConfig: InputConfig = {}) => <Props extends object>(
         : undefined
     }, [])
 
+    const name = joinNames(sectionContext.name, props.name)
+
     return (
       <Field
         {...props}
-        innerName={props.name}
+        name={name}
+        innerName={name}
         format={format}
         parse={parse}
         validate={validate}
