@@ -3,81 +3,60 @@ import * as React from 'react'
 
 import { withLabel, Button } from '@habx/thunder-ui'
 
+import CloudinaryInputContext from './CloudinaryInput.context'
 import CloudinaryInputProps from './CloudinaryInput.interface'
 import {
   CloudinaryInputContainer,
+  CloudinaryInputModal,
   PictureContainer,
   EmptyImage,
   ActionsBar,
 } from './CloudinaryInput.style'
 import { parseCloudinaryURL } from './CloudinaryInput.utils'
 import Image from './Image'
+import { ACECloudinaryImage } from './Image/Image.interface'
 import ImageUploader from './ImageUploader'
 
-class CloudinaryInput extends React.PureComponent<CloudinaryInputProps> {
-  static getDerivedStateFromProps(nextProps, prevState) {
-    const { value, imageFormat } = nextProps
+const CloudinaryInput: React.FunctionComponent<CloudinaryInputProps> = ({
+  disabled,
+  renderImages,
+  defaultDirectory,
+  imageFormat,
+  fetchImageConfig,
+  uploadImage,
+  onChange,
+  value,
+}) => {
+  const [status, setStatus] = React.useState('closed')
 
-    if (value !== prevState.value) {
-      if (imageFormat === 'ace') {
-        return {
-          value,
-          image: value,
-        }
-      }
-
-      if (imageFormat === 'id') {
-        return {
-          value,
-          image: {
-            id: value,
-            transforms: [],
-          },
-        }
-      }
-      return {
-        value,
-        image: parseCloudinaryURL(value),
-      }
+  const image: ACECloudinaryImage = React.useMemo(() => {
+    if (imageFormat === 'ace') {
+      return value as ACECloudinaryImage
     }
 
-    return null
+    if (imageFormat === 'id') {
+      return {
+        id: value,
+        transforms: [],
+      } as ACECloudinaryImage
+    }
+    return parseCloudinaryURL(value as string)
+  }, [imageFormat, value])
+
+  const hasImage = image && image.id
+
+  const handleChange = image => {
+    onChange(image)
+    setStatus('closed')
   }
 
-  static defaultProps = {
-    imageFormat: 'ace',
-  }
+  const context = React.useMemo(() => ({ setStatus, status, imageFormat }), [
+    imageFormat,
+    status,
+  ])
 
-  state = {
-    value: null,
-    image: null,
-    status: 'closed',
-  }
-
-  handleStatusChange = status => this.setState(() => ({ status }))
-
-  handleUploaderClose = () => this.setState(() => ({ status: 'closed' }))
-
-  handleChange = image => {
-    this.props.onChange(image)
-    this.handleUploaderClose()
-  }
-
-  render() {
-    const {
-      disabled,
-      renderImages,
-      defaultDirectory,
-      imageFormat,
-      fetchImageConfig,
-      uploadImage,
-    } = this.props
-
-    const { image, status } = this.state
-
-    const hasImage = image && image.id
-
-    return (
+  return (
+    <CloudinaryInputContext.Provider value={context}>
       <CloudinaryInputContainer>
         {hasImage ? (
           <PictureContainer>
@@ -92,36 +71,39 @@ class CloudinaryInput extends React.PureComponent<CloudinaryInputProps> {
         )}
         <ActionsBar>
           {hasImage && imageFormat !== 'id' && (
-            <Button
-              onClick={() => this.handleStatusChange('customizer')}
-              disabled={disabled}
-            >
+            <Button onClick={() => setStatus('customizer')} disabled={disabled}>
               Éditer
             </Button>
           )}
           <Button
-            onClick={() => this.handleStatusChange('directory')}
+            onClick={() => setStatus('directory')}
             disabled={disabled}
             reverse
           >
             Nouvelle image
           </Button>
         </ActionsBar>
-        <ImageUploader
-          status={status}
-          onClose={this.handleUploaderClose}
-          onChange={this.handleChange}
-          onStatusChange={this.handleStatusChange}
-          defaultDirectory={defaultDirectory}
-          renderImages={renderImages}
-          format={imageFormat}
-          image={image}
-          fetchImageConfig={fetchImageConfig}
-          uploadImage={uploadImage}
-        />
+        <CloudinaryInputModal
+          open={status !== 'closed'}
+          onClose={() => setStatus('closed')}
+        >
+          {modal =>
+            modal.state !== 'closed' && (
+              <ImageUploader
+                status={status}
+                onChange={handleChange}
+                defaultDirectory={defaultDirectory}
+                renderImages={renderImages}
+                image={image}
+                fetchImageConfig={fetchImageConfig}
+                uploadImage={uploadImage}
+              />
+            )
+          }
+        </CloudinaryInputModal>
       </CloudinaryInputContainer>
-    )
-  }
+    </CloudinaryInputContext.Provider>
+  )
 }
 
 export default withLabel({ padding: 12 })(CloudinaryInput)

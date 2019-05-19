@@ -3,7 +3,7 @@ import * as React from 'react'
 import { FormSectionStatus } from './FormSection/FormSection.interface'
 import Actions from './useActions/useActions.interface'
 
-interface StatusContextProps {
+export interface StatusContextProps {
   disabled?: boolean
   showErrors: boolean
   sectionStatuses: object

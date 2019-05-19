@@ -1,14 +1,15 @@
 import { omit, isEmpty, isFunction } from 'lodash'
 import * as React from 'react'
 
-import { joinNames } from '../_internal/form'
 import { StatusContext, SectionContext } from '../contexts'
+import joinNames from '../joinNames'
 
 import FormSectionProps, { FormSectionStatus } from './FormSection.interface'
 
 const FormSection: React.FunctionComponent<FormSectionProps> = ({
   id,
   name,
+  rootName,
   children,
 }) => {
   const form = React.useContext(StatusContext)
@@ -36,9 +37,9 @@ const FormSection: React.FunctionComponent<FormSectionProps> = ({
         )
       },
       showErrors: form.showErrors,
-      name: joinNames(parentSection.name, name),
+      name: rootName ? rootName : joinNames(parentSection.name, name),
     }),
-    [form.showErrors, parentSection.name, name]
+    [form.showErrors, rootName, parentSection.name, name]
   )
 
   return (

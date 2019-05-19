@@ -1,4 +1,4 @@
-export const joinNames = (path: string, newName: string) => {
+const joinNames = (path: string, newName: string) => {
   if (!newName) {
     return path
   }
@@ -9,3 +9,5 @@ export const joinNames = (path: string, newName: string) => {
 
   return `${path}.${newName}`
 }
+
+export default joinNames

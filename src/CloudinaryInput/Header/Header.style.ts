@@ -31,6 +31,7 @@ export const Uploader = styled.div`
     display: flex;
     align-items: center;
     cursor: pointer;
+    color: ${theme.get('neutralLightest')};
   }
 
   & input {

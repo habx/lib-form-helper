@@ -2,12 +2,11 @@ import { isNil, isFunction, isString, get } from 'lodash'
 import * as React from 'react'
 import { Field } from 'react-final-form'
 import styled from 'styled-components'
-import { isObject } from 'util'
 
 import { fontSizes, theme, useTheme } from '@habx/thunder-ui'
 
-import { joinNames } from '../_internal/form'
 import { StatusContext, SectionContext } from '../contexts'
+import joinNames from '../joinNames'
 
 import {
   InputConfig,

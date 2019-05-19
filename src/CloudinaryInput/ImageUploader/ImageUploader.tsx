@@ -1,9 +1,9 @@
-import { map, uniq, get, initial, has } from 'lodash'
+import { map, uniq, get, initial } from 'lodash'
 import * as React from 'react'
 
 import { FontIcon } from '@habx/thunder-ui'
 
-import { createCloudinaryURL } from '../CloudinaryInput.utils'
+import CloudinaryInputContext from '../CloudinaryInput.context'
 import Directory from '../Directory'
 import Header from '../Header'
 import { CloudinaryImage, ACECloudinaryImage } from '../Image/Image.interface'
@@ -14,269 +14,213 @@ import ImageUploaderProps, {
   ImageUploaderState,
 } from './ImageUploader.interface'
 import {
-  ImageUploaderContainer,
   Content,
   Directories,
   DirectoryLine,
   DirectoryContent,
 } from './ImageUploader.style'
+import { getTitle, getImageInOutputFormat } from './ImageUploader.utils'
 
-class ImageUploader extends React.PureComponent<
-  ImageUploaderProps,
-  ImageUploaderState
-> {
-  static getDerivedStateFromProps(nextProps, prevState) {
-    const { image } = nextProps
+const DEFAULT_DIRECTORIES = ['logos', 'cities', 'regions']
 
-    if (image && image.id && image !== prevState.fieldImage) {
-      const directory = initial(
-        image.id.split('/').filter(el => el !== '')
-      ).join('/')
+const reducer = (state, action) => {
+  switch (action.type) {
+    case 'SELECT_IMAGE': {
+      return { ...state, selectedImage: action.value }
+    }
 
+    case 'SELECT_FIELD_IMAGE': {
       return {
-        fieldImage: image,
-        directory: directory || prevState.directory,
-        fetchFieldImagePromise: null,
+        ...state,
+        selectedImage: action.value,
+        fieldImageConfig: action.value,
       }
     }
 
-    return null
-  }
-
-  state = {
-    selectedImage: null as CloudinaryImage,
-    fieldImage: null as ACECloudinaryImage,
-    fieldImageConfig: null as CloudinaryImage,
-    customizedImage: null as ACECloudinaryImage,
-    directory: this.props.defaultDirectory || 'cities',
-    fetchFieldImagePromise: null,
-    images: [],
-  }
-
-  async componentDidMount() {
-    await this.fetchFieldImageConfig(this.state.fieldImage)
-  }
-
-  async componentDidUpdate(prevProps, prevState) {
-    const { fieldImage } = this.state
-
-    if (fieldImage && fieldImage !== prevState.fieldImage) {
-      await this.fetchFieldImageConfig(fieldImage)
-    }
-  }
-
-  handleImageUpload = async event => {
-    const { directory } = this.state
-    const { uploadImage } = this.props
-
-    const file = Array.from(event.target.files)[0] as File
-
-    const selectedImage = await uploadImage(file, { directory })
-
-    this.setState({ selectedImage })
-
-    this.props.onStatusChange('customizer')
-  }
-
-  handleImageSelect = selectedImage =>
-    this.setState(prevState => ({
-      selectedImage:
-        prevState.selectedImage === selectedImage ? null : selectedImage,
-    }))
-
-  getImageInOutputFormat = (image: ACECloudinaryImage) => {
-    const { format } = this.props
-
-    if (format === 'ace') {
-      return image
+    case 'TOGGLE_IMAGE': {
+      return {
+        ...state,
+        selectedImage:
+          action.value === state.selectedImage ? null : action.value,
+      }
     }
 
-    if (format === 'id') {
-      return image.id
+    case 'SET_IMAGE_LIST': {
+      return { ...state, images: action.value, imagesLoading: false }
     }
 
-    return createCloudinaryURL(image)
-  }
-
-  handleImageChange = (image: ACECloudinaryImage) => {
-    const { onChange } = this.props
-
-    this.setState(() => ({ selectedImage: null }))
-
-    const formattedImage = this.getImageInOutputFormat(image)
-
-    onChange(formattedImage)
-  }
-
-  handleImageValidationWithoutCustomization = () => {
-    const { selectedImage } = this.state
-
-    this.handleImageChange({ id: selectedImage.public_id, transforms: [] })
-  }
-
-  handleImageValidationWithCustomization = () => {
-    const { customizedImage } = this.state
-
-    this.handleImageChange(customizedImage)
-  }
-
-  handleImageCustomization = () => {
-    this.goTo('customizer')
-  }
-
-  handleImageCustomizationChange = customizedImage =>
-    this.setState(() => ({ customizedImage }))
-
-  getDirectories = () =>
-    uniq([this.props.defaultDirectory, 'logos', 'cities', 'regions'])
-
-  getCurrentTitle() {
-    const { status } = this.props
-    const { directory, selectedImage } = this.state
-
-    if (status === 'home') {
-      return 'Liste des dossiers'
+    case 'SET_IMAGE_LIST_LOADING': {
+      return { ...state, imagesLoading: true }
     }
 
-    if (status === 'directory') {
-      return `Dossier : ${decodeURIComponent(directory)}`
+    case 'SET_IMAGE_CUSTOMIZATION': {
+      return { ...state, customizedImage: action.value }
     }
 
-    if (status === 'uploader') {
-      return `Dossier : ${directory} (ajout d'une image)`
+    case 'GO_TO_DIRECTORY': {
+      return { ...state, directory: action.value }
     }
 
-    if (status === 'customizer') {
-      return `Personnalisation de ${get(
-        selectedImage,
-        'public_id',
-        'image inconnue'
-      )}`
-    }
-
-    return ''
+    default:
+      throw new Error('Unknown action')
   }
+}
 
-  goTo = (status: string, params = {}) => {
-    this.props.onStatusChange(status)
-    this.setState(() => params)
+const buildInitialState = ({ defaultDirectory }): ImageUploaderState => ({
+  selectedImage: null as CloudinaryImage,
+  fieldImageConfig: null as CloudinaryImage,
+  customizedImage: null as ACECloudinaryImage,
+  directory: defaultDirectory || 'cities',
+  images: [],
+})
 
-    if (status === 'directory') {
-      this.setState(() => ({ selectedImage: null }))
-    }
-  }
+const ImageUploader: React.FunctionComponent<ImageUploaderProps> = ({
+  status,
+  defaultDirectory,
+  image,
+  uploadImage,
+  fetchImageConfig,
+  onChange,
+  renderImages,
+}) => {
+  const { setStatus, imageFormat } = React.useContext(CloudinaryInputContext)
 
-  saveImages = images => setTimeout(() => this.setState(() => ({ images })))
+  const [state, dispatch] = React.useReducer(
+    reducer,
+    buildInitialState({ defaultDirectory })
+  )
 
-  fetchFieldImageConfig = async (image: ACECloudinaryImage) => {
-    if (!has(image, 'id')) {
-      return null
-    }
+  const handleImageUpload = React.useCallback(
+    async event => {
+      const file = Array.from(event.target.files)[0] as File
 
-    const config = await this.props.fetchImageConfig(image.id)
+      const selectedImage = await uploadImage(file, {
+        directory: state.directory,
+      })
 
-    this.setState(() => ({
-      selectedImage: config,
-      fieldImageConfig: config,
-    }))
-  }
+      dispatch({ type: 'SELECT_IMAGE', value: selectedImage })
 
-  renderHome() {
-    return (
-      <Directories>
-        {map(this.getDirectories(), directory => (
-          <DirectoryLine
-            key={directory}
-            onClick={() => this.goTo('directory', { directory })}
-          >
-            <FontIcon icon="folder" />
-            <DirectoryContent>{directory}</DirectoryContent>
-          </DirectoryLine>
-        ))}
-      </Directories>
-    )
-  }
+      setStatus('customizer')
+    },
+    [setStatus, state.directory, uploadImage]
+  )
 
-  renderDirectory() {
-    const { renderImages } = this.props
-    const { directory, selectedImage } = this.state
+  const handleImageToggle = React.useCallback(image => {
+    dispatch({ type: 'TOGGLE_IMAGE', value: image })
+  }, [])
 
-    return renderImages({
-      directory,
-      render: ({ loading, data }) => {
-        if (!loading) {
-          this.saveImages(data)
+  const handleImageCustomizationChange = React.useCallback(customizedImage => {
+    dispatch({ type: 'SET_IMAGE_CUSTOMIZATION', value: customizedImage })
+  }, [])
+
+  const handleImageValidation = React.useCallback(
+    ({ withCustomization }) => {
+      const image = withCustomization
+        ? state.customizedImage
+        : { id: state.selectedImage.public_id, transforms: [] }
+
+      const formattedImage = getImageInOutputFormat({ image, imageFormat })
+
+      dispatch({ type: 'SELECT_IMAGE', value: null })
+
+      onChange(formattedImage)
+    },
+    [imageFormat, onChange, state.customizedImage, state.selectedImage]
+  )
+
+  const directories = React.useMemo(
+    () =>
+      defaultDirectory
+        ? uniq([defaultDirectory, ...DEFAULT_DIRECTORIES])
+        : DEFAULT_DIRECTORIES,
+    [defaultDirectory]
+  )
+
+  const title = React.useMemo(
+    () =>
+      getTitle({
+        directory: state.directory,
+        selectedImage: state.selectedImage,
+        status,
+      }),
+    [state.directory, state.selectedImage, status]
+  )
+
+  React.useEffect(() => {
+    const updateImage = async () => {
+      if (image && image.id) {
+        const directory = initial(
+          image.id.split('/').filter(el => el !== '')
+        ).join('/')
+        if (directory) {
+          dispatch({ type: 'GO_TO_DIRECTORY', value: directory })
         }
 
-        return (
-          <Directory
-            images={data}
-            loading={loading}
-            selectedImage={selectedImage}
-            onImageClick={this.handleImageSelect}
-          />
-        )
-      },
-    })
-  }
+        const config = await fetchImageConfig(image.id)
 
-  renderCustomizer() {
-    const { image } = this.props
-    const { selectedImage, fieldImageConfig } = this.state
+        dispatch({ type: 'SELECT_FIELD_IMAGE', value: config })
+      }
+    }
 
-    const initialTransforms =
-      fieldImageConfig === selectedImage ? get(image, 'transforms') : null
+    updateImage()
+  }, [image]) // eslint-disable-line react-hooks/exhaustive-deps
 
-    return (
-      <ImageEditor
-        image={selectedImage}
-        onChange={this.handleImageCustomizationChange}
-        initialTransforms={initialTransforms}
-      />
-    )
-  }
+  return (
+    <React.Fragment>
+      <Header title={title} onUploadImages={handleImageUpload} />
+      <Content data-status={status}>
+        {status === 'home' && (
+          <Directories>
+            {map(directories, directory => (
+              <DirectoryLine
+                key={directory}
+                onClick={() => {
+                  setStatus('directory')
+                  dispatch({ type: 'GO_TO_DIRECTORY', value: directory })
+                }}
+              >
+                <FontIcon icon="folder" />
+                <DirectoryContent>{directory}</DirectoryContent>
+              </DirectoryLine>
+            ))}
+          </Directories>
+        )}
+        {status === 'directory' &&
+          renderImages({
+            directory: state.directory,
+            render: ({ loading, data }) => {
+              if (loading && !state.imagesLoading) {
+                dispatch({ type: 'SET_IMAGE_LIST_LOADING' })
+              }
+              if (!loading && state.imagesLoading) {
+                dispatch({ type: 'SET_IMAGE_LIST', value: data })
+              }
 
-  render() {
-    const { status, onClose, format } = this.props
-    const { selectedImage } = this.state
-
-    return (
-      <ImageUploaderContainer open={status !== 'closed'} onClose={onClose}>
-        {({ state }) => {
-          if (state === 'closed') {
-            return null
-          }
-
-          return (
-            <React.Fragment>
-              <Header
-                goTo={this.goTo}
-                title={this.getCurrentTitle()}
-                onUploadImages={this.handleImageUpload}
-                status={status}
-              />
-              <Content data-status={status}>
-                {status === 'home' && this.renderHome()}
-                {status === 'directory' && this.renderDirectory()}
-                {status === 'customizer' && this.renderCustomizer()}
-              </Content>
-              {selectedImage && (
-                <ActionBar
-                  status={status}
-                  onSelect={this.handleImageValidationWithoutCustomization}
-                  onCustomize={this.handleImageCustomization}
-                  onValidateCustomization={
-                    this.handleImageValidationWithCustomization
-                  }
-                  canCustomize={format !== 'id'}
+              return (
+                <Directory
+                  images={data}
+                  loading={loading}
+                  selectedImage={state.selectedImage}
+                  onImageClick={handleImageToggle}
                 />
-              )}
-            </React.Fragment>
-          )
-        }}
-      </ImageUploaderContainer>
-    )
-  }
+              )
+            },
+          })}
+        {status === 'customizer' && state.selectedImage && (
+          <ImageEditor
+            image={state.selectedImage}
+            onChange={handleImageCustomizationChange}
+            initialTransforms={
+              state.fieldImageConfig === state.selectedImage
+                ? get(image, 'transforms')
+                : null
+            }
+          />
+        )}
+      </Content>
+      {state.selectedImage && <ActionBar onSelect={handleImageValidation} />}
+    </React.Fragment>
+  )
 }
 
 export default ImageUploader
