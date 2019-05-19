@@ -12,8 +12,7 @@ export const CloudinaryInputContainer = styled.div`
 `
 
 export const PictureContainer = styled.div`
-  max-width: 300px;
-  max-height: 300px;
+  width: 300px;
   margin-bottom: 24px;
   position: relative;
   display: flex;
@@ -22,8 +21,7 @@ export const PictureContainer = styled.div`
   align-self: center;
 
   & > img {
-    max-width: 100%;
-    max-height: 100%;
+    width: 300px;
   }
 `
 
