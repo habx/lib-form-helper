@@ -1,7 +1,8 @@
-import { omit, isEmpty, isFunction } from 'lodash'
+import { isEmpty, isFunction, omitBy } from 'lodash'
 import * as React from 'react'
 
-import { StatusContext, SectionContext } from '../contexts'
+import useUniqID from '../_internal/useUniqID'
+import { StatusContext, SectionContext, ErrorContext } from '../contexts'
 import joinNames from '../joinNames'
 
 import FormSectionProps, { FormSectionStatus } from './FormSection.interface'
@@ -12,9 +13,16 @@ const FormSection: React.FunctionComponent<FormSectionProps> = ({
   rootName,
   children,
 }) => {
+  const uniqID = useUniqID()
   const form = React.useContext(StatusContext)
+  const formErrors = React.useContext(ErrorContext)
   const parentSection = React.useContext(SectionContext)
   const [errors, updateErrors] = React.useState({})
+
+  const sectionsPath = React.useMemo(() => [...parentSection.path, uniqID], [
+    parentSection.path,
+    uniqID,
+  ])
 
   const status: FormSectionStatus = React.useMemo(
     () => ({
@@ -23,24 +31,19 @@ const FormSection: React.FunctionComponent<FormSectionProps> = ({
     [errors, form.showErrors]
   )
 
-  React.useLayoutEffect(() => {
-    form.setSectionStatus(id, status)
-  }, [id, status]) // eslint-disable-line react-hooks/exhaustive-deps
-
   const sectionStatus = React.useMemo(
     () => ({
-      setError: (fieldName: string, error: string) => {
-        updateErrors(prevErrors =>
-          error
-            ? { ...prevErrors, [fieldName]: error }
-            : omit(prevErrors, [fieldName])
-        )
-      },
-      showErrors: form.showErrors,
       name: rootName ? rootName : joinNames(parentSection.name, name),
+      path: sectionsPath,
     }),
-    [form.showErrors, rootName, parentSection.name, name]
+    [rootName, parentSection.name, name, sectionsPath]
   )
+
+  React.useLayoutEffect(() => {
+    formErrors.subscribeSection(uniqID, (fieldID, error) => {
+      updateErrors(prev => omitBy({ ...prev, [fieldID]: error }, el => !el))
+    })
+  }, [formErrors, uniqID])
 
   return (
     <SectionContext.Provider value={sectionStatus}>

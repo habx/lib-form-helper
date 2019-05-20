@@ -1,12 +1,39 @@
 import arrayMutators from 'final-form-arrays'
-import { isFunction } from 'lodash'
+import { isFunction, forEach } from 'lodash'
 import * as React from 'react'
 import { Form as FinalForm } from 'react-final-form'
 
-import { StatusContext } from '../contexts'
+import { StatusContext, ErrorContext } from '../contexts'
 import useKeyboardSave from '../useKeyboardSave'
 
 import FormProps, { FormContentProps } from './Form.interface'
+
+const useErrors = () => {
+  const sections = React.useRef({})
+
+  const handleSectionSubscription = React.useCallback(
+    (sectionId, sectionCallback) => {
+      sections.current[sectionId] = sectionCallback
+    },
+    []
+  )
+
+  const handleFieldError = React.useCallback((fieldID, sectionsPath, error) => {
+    forEach(sectionsPath, sectionId => {
+      if (sections.current[sectionId]) {
+        sections.current[sectionId](fieldID, error)
+      }
+    })
+  }, [])
+
+  return React.useMemo(
+    () => ({
+      subscribeSection: handleSectionSubscription,
+      setFieldError: handleFieldError,
+    }),
+    [handleFieldError, handleSectionSubscription]
+  )
+}
 
 const FormContent: React.FunctionComponent<FormContentProps> = ({
   render,
@@ -15,7 +42,7 @@ const FormContent: React.FunctionComponent<FormContentProps> = ({
   saveWithKeyboard,
   ...props
 }) => {
-  const [sectionStatuses, setSectionStatuses] = React.useState({})
+  const errorContext = useErrors()
   const actions = React.useRef({
     change: (name: string, value?: any) => null,
   })
@@ -30,26 +57,20 @@ const FormContent: React.FunctionComponent<FormContentProps> = ({
     ? shouldShowErrors({ form, ...props })
     : true
 
-  const context = React.useMemo(
+  const statusContext = React.useMemo(
     () => ({
-      setSectionStatus: (sectionName: string, status) => {
-        setSectionStatuses(prevStatuses => ({
-          ...prevStatuses,
-          [sectionName]: status,
-        }))
-      },
       disabled: props.submitting || props.disabled,
-      sectionStatuses,
-      actions: actions.current,
       showErrors,
     }),
-    [sectionStatuses, props.submitting, props.disabled, showErrors]
+    [props.submitting, props.disabled, showErrors]
   )
 
   return (
-    <StatusContext.Provider value={context}>
-      {render({ ...props, form })}
-    </StatusContext.Provider>
+    <ErrorContext.Provider value={errorContext}>
+      <StatusContext.Provider value={statusContext}>
+        {render({ ...props, form })}
+      </StatusContext.Provider>
+    </ErrorContext.Provider>
   )
 }
 

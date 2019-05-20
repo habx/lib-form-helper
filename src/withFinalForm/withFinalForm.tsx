@@ -5,7 +5,8 @@ import styled from 'styled-components'
 
 import { fontSizes, theme, useTheme } from '@habx/thunder-ui'
 
-import { StatusContext, SectionContext } from '../contexts'
+import useUniqID from '../_internal/useUniqID'
+import { StatusContext, SectionContext, ErrorContext } from '../contexts'
 import joinNames from '../joinNames'
 
 import {
@@ -26,6 +27,19 @@ const FieldError = styled.div`
   padding: ${({ padding }) => padding}px;
 `
 
+const useFieldError = ({ error, path }) => {
+  const isFirst = React.useRef(true)
+  const uniqID = useUniqID()
+  const errorContext = React.useContext(ErrorContext)
+
+  React.useLayoutEffect(() => {
+    if (!isFirst.current || error) {
+      errorContext.setFieldError(uniqID, path, error)
+    }
+    isFirst.current = false
+  }, [error, errorContext, path, uniqID])
+}
+
 const withFinalForm = (inputConfig: InputConfig = {}) => <Props extends object>(
   WrappedComponent: React.ComponentType<Props>
 ) => {
@@ -37,6 +51,7 @@ const withFinalForm = (inputConfig: InputConfig = {}) => <Props extends object>(
       meta,
       disabled,
       formDisabled,
+      showErrors,
       required,
       sectionContext,
       innerName,
@@ -45,10 +60,12 @@ const withFinalForm = (inputConfig: InputConfig = {}) => <Props extends object>(
       ...rest
     } = props as FieldContentReceivedProps
 
+    useFieldError({ error: meta.error, path: sectionContext.path })
+
     const [localValue, setLocalValue] = React.useState(value)
     const thunderTheme = useTheme()
 
-    const showError = sectionContext.showErrors && !!get(meta, 'error')
+    const showError = showErrors && !!get(meta, 'error')
 
     React.useEffect(() => {
       if (inputConfig.changeOnBlur && !meta.active && localValue !== value) {
@@ -59,10 +76,6 @@ const withFinalForm = (inputConfig: InputConfig = {}) => <Props extends object>(
     React.useEffect(() => {
       setLocalValue(value)
     }, [value])
-
-    React.useLayoutEffect(() => {
-      sectionContext.setError(innerName, meta.error)
-    }, [meta.error, innerName, sectionContext.setError]) // eslint-disable-line react-hooks/exhaustive-deps
 
     const handleChange = React.useCallback(
       newValue => {
@@ -76,7 +89,7 @@ const withFinalForm = (inputConfig: InputConfig = {}) => <Props extends object>(
     )
 
     const label = React.useMemo(() => {
-      if (!sectionContext.showErrors) {
+      if (!showErrors) {
         return rawLabel
       }
 
@@ -97,7 +110,7 @@ const withFinalForm = (inputConfig: InputConfig = {}) => <Props extends object>(
       if (meta.error && typeof meta.error !== 'object') {
         return `${rawLabel} : ${meta.error}`
       }
-    }, [meta.error, rawLabel, required, sectionContext.showErrors])
+    }, [meta.error, rawLabel, required, showErrors])
 
     return (
       <FieldContainer>
@@ -113,7 +126,7 @@ const withFinalForm = (inputConfig: InputConfig = {}) => <Props extends object>(
         />
         {!label && (
           <FieldError padding={inputConfig.errorPadding}>
-            {isString(meta.error) && sectionContext.showErrors && meta.error}
+            {isString(meta.error) && showErrors && meta.error}
           </FieldError>
         )}
       </FieldContainer>
@@ -182,6 +195,7 @@ const withFinalForm = (inputConfig: InputConfig = {}) => <Props extends object>(
         parse={parse}
         validate={validate}
         formDisabled={formStatus.disabled}
+        showErrors={formStatus.showErrors}
         component={FieldContent}
         sectionContext={sectionContext}
       />
