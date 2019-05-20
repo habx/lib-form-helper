@@ -126,7 +126,7 @@ const getTransformsFromChunks = (chunks: string[]) => {
   return filter(transforms, el => !isEmpty(el))
 }
 
-const getIdFromChunks = (chunks: string[]) => {
+export const getIdFromChunks = (chunks: string[]) => {
   const index = findLastIndex(chunks, el => {
     const isVersion = !!el.match(/^v([0-9]+)$/)
     const isTransform = !isEmpty(getTransformFromChunk(el))

@@ -3,33 +3,30 @@ import { isFunction, forEach } from 'lodash'
 import * as React from 'react'
 import { Form as FinalForm } from 'react-final-form'
 
-import { StatusContext, ErrorContext } from '../contexts'
+import { StatusContext } from '../contexts'
 import useKeyboardSave from '../useKeyboardSave'
 
 import FormProps, { FormContentProps } from './Form.interface'
 
-const useErrors = () => {
+const useStatuses = () => {
   const sections = React.useRef({})
 
   const handleSectionSubscription = React.useCallback((sectionId, section) => {
     sections.current[sectionId] = section
   }, [])
 
-  const handleFieldError = React.useCallback((fieldID, sectionsPath, error) => {
-    forEach(sectionsPath, sectionId => {
-      if (sections.current[sectionId]) {
-        sections.current[sectionId].callback(fieldID, error)
-      }
-    })
-  }, [])
-
-  return React.useMemo(
-    () => ({
-      subscribeSection: handleSectionSubscription,
-      setFieldError: handleFieldError,
-    }),
-    [handleFieldError, handleSectionSubscription]
+  const handleFieldStatusChange = React.useCallback(
+    (fieldID, sectionsPath, type, value) => {
+      forEach(sectionsPath, sectionId => {
+        if (sections.current[sectionId]) {
+          sections.current[sectionId].callback(fieldID, type, value)
+        }
+      })
+    },
+    []
   )
+
+  return { handleFieldStatusChange, handleSectionSubscription }
 }
 
 const FormContent: React.FunctionComponent<FormContentProps> = ({
@@ -39,16 +36,9 @@ const FormContent: React.FunctionComponent<FormContentProps> = ({
   saveWithKeyboard,
   ...props
 }) => {
-  const errorContext = useErrors()
-  const actions = React.useRef({
-    change: (name: string, value?: any) => null,
-  })
+  const { handleFieldStatusChange, handleSectionSubscription } = useStatuses()
 
   useKeyboardSave(saveWithKeyboard && props.handleSubmit)
-
-  React.useEffect(() => {
-    actions.current = form
-  }, [form])
 
   const showErrors = isFunction(shouldShowErrors)
     ? shouldShowErrors({ form, ...props })
@@ -58,16 +48,22 @@ const FormContent: React.FunctionComponent<FormContentProps> = ({
     () => ({
       disabled: props.submitting || props.disabled,
       showErrors,
+      setFieldStatus: handleFieldStatusChange,
+      subscribeSection: handleSectionSubscription,
     }),
-    [props.submitting, props.disabled, showErrors]
+    [
+      props.submitting,
+      props.disabled,
+      showErrors,
+      handleFieldStatusChange,
+      handleSectionSubscription,
+    ]
   )
 
   return (
-    <ErrorContext.Provider value={errorContext}>
-      <StatusContext.Provider value={statusContext}>
-        {render({ ...props, form })}
-      </StatusContext.Provider>
-    </ErrorContext.Provider>
+    <StatusContext.Provider value={statusContext}>
+      {render({ ...props, form })}
+    </StatusContext.Provider>
   )
 }
 

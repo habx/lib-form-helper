@@ -152,6 +152,7 @@ const ImageUploader: React.FunctionComponent<ImageUploaderProps> = ({
         const directory = initial(
           image.id.split('/').filter(el => el !== '')
         ).join('/')
+
         if (directory) {
           dispatch({ type: 'GO_TO_DIRECTORY', value: directory })
         }

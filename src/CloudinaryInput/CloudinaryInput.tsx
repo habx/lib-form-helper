@@ -12,7 +12,7 @@ import {
   EmptyImage,
   ActionsBar,
 } from './CloudinaryInput.style'
-import { parseCloudinaryURL } from './CloudinaryInput.utils'
+import { parseCloudinaryURL, getIdFromChunks } from './CloudinaryInput.utils'
 import Image from './Image'
 import { ACECloudinaryImage } from './Image/Image.interface'
 import ImageUploader from './ImageUploader'
@@ -21,7 +21,7 @@ const CloudinaryInput: React.FunctionComponent<CloudinaryInputProps> = ({
   disabled,
   renderImages,
   defaultDirectory,
-  imageFormat,
+  imageFormat = 'ace',
   fetchImageConfig,
   uploadImage,
   onChange,
@@ -31,12 +31,17 @@ const CloudinaryInput: React.FunctionComponent<CloudinaryInputProps> = ({
 
   const image: ACECloudinaryImage = React.useMemo(() => {
     if (imageFormat === 'ace') {
-      return value as ACECloudinaryImage
+      const id = get(value, 'id', '') as string
+      return {
+        ...(value as ACECloudinaryImage),
+        id: getIdFromChunks(id.split('/')),
+      }
     }
 
     if (imageFormat === 'id') {
+      const id = (value as string) || ''
       return {
-        id: value,
+        id: getIdFromChunks(id.split('/')),
         transforms: [],
       } as ACECloudinaryImage
     }

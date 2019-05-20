@@ -1,10 +1,14 @@
-const joinNames = (path: string, newName: string) => {
-  if (!newName) {
+const joinNames = (path: string, newName: string | number): string => {
+  if (!newName && newName !== 0) {
     return path
   }
 
   if (!path) {
-    return newName
+    return `${newName}`
+  }
+
+  if (typeof newName === 'number') {
+    return `${path}[${newName}]`
   }
 
   return `${path}.${newName}`
