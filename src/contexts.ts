@@ -13,7 +13,10 @@ export interface SectionContextProps {
 export interface ErrorContextProps {
   subscribeSection: (
     sectionId: number,
-    onErrorChange: (fieldID: number, error?: string) => void
+    section: {
+      id?: string
+      callback: (fieldID: number, error?: string) => void
+    }
   ) => void
   setFieldError: (fieldID: number, sections: number[], error?: string) => void
 }

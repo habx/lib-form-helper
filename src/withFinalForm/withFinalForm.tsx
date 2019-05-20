@@ -38,6 +38,12 @@ const useFieldError = ({ error, path }) => {
     }
     isFirst.current = false
   }, [error, errorContext, path, uniqID])
+
+  React.useLayoutEffect(() => {
+    return () => {
+      errorContext.setFieldError(uniqID, path, undefined)
+    }
+  }, []) // eslint-disable-line react-hooks/exhaustive-deps
 }
 
 const withFinalForm = (inputConfig: InputConfig = {}) => <Props extends object>(

@@ -40,10 +40,13 @@ const FormSection: React.FunctionComponent<FormSectionProps> = ({
   )
 
   React.useLayoutEffect(() => {
-    formErrors.subscribeSection(uniqID, (fieldID, error) => {
-      updateErrors(prev => omitBy({ ...prev, [fieldID]: error }, el => !el))
+    formErrors.subscribeSection(uniqID, {
+      id,
+      callback: (fieldID, error) => {
+        updateErrors(prev => omitBy({ ...prev, [fieldID]: error }, el => !el))
+      },
     })
-  }, [formErrors, uniqID])
+  }, [formErrors, id, uniqID])
 
   return (
     <SectionContext.Provider value={sectionStatus}>

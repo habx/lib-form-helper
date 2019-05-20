@@ -11,17 +11,14 @@ import FormProps, { FormContentProps } from './Form.interface'
 const useErrors = () => {
   const sections = React.useRef({})
 
-  const handleSectionSubscription = React.useCallback(
-    (sectionId, sectionCallback) => {
-      sections.current[sectionId] = sectionCallback
-    },
-    []
-  )
+  const handleSectionSubscription = React.useCallback((sectionId, section) => {
+    sections.current[sectionId] = section
+  }, [])
 
   const handleFieldError = React.useCallback((fieldID, sectionsPath, error) => {
     forEach(sectionsPath, sectionId => {
       if (sections.current[sectionId]) {
-        sections.current[sectionId](fieldID, error)
+        sections.current[sectionId].callback(fieldID, error)
       }
     })
   }, [])
