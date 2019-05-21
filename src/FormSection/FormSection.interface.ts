@@ -1,10 +1,18 @@
 import * as React from 'react'
 
 export default interface FormSectionProps {
-  name: string
-  children?: React.ReactNode | ((status: FormSectionStatus) => JSX.Element)
+  id?: string
+  name?: string
+  rootName?: string
+  children?: React.ReactNode | ((status: FormSectionRenderProps) => JSX.Element)
 }
 
-export type FormSectionStatus = {
+export interface FormSectionStatusProps {
+  error: { [key: number]: string }
+  dirty: { [key: number]: boolean }
+}
+
+export interface FormSectionRenderProps {
   hasError: boolean
+  isDirty: boolean
 }

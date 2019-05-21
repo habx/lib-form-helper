@@ -31,5 +31,6 @@ export interface FieldContentReceivedProps
   label?: string
   disabled?: boolean
   formDisabled?: boolean
+  showErrors: boolean
   sectionContext: SectionContextProps
 }

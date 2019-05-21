@@ -1,5 +1,6 @@
-import { memoize, filter, floor, get, find, values } from 'lodash'
+import { filter, floor, get, find, values } from 'lodash'
 import * as React from 'react'
+import { useReducer } from 'react'
 
 import { Spinner, FontIcon, Button } from '@habx/thunder-ui'
 
@@ -41,7 +42,7 @@ const getCropTransform = transforms => {
   }
 }
 
-const getInitialState = ({ initialTransforms, image }) => {
+const getInitialState = ({ initialTransforms, image }): ImageEditorState => {
   const cropTransform = getCropTransform(initialTransforms)
   const dimensionTransform = find(
     initialTransforms,
@@ -81,181 +82,182 @@ const getInitialState = ({ initialTransforms, image }) => {
   }
 }
 
-class ImageEditor extends React.PureComponent<
-  ImageEditorProps,
-  ImageEditorState
-> {
-  state = getInitialState(this.props)
+const reducer = (state, action) => {
+  switch (action.type) {
+    case 'SET_CURRENT_ACTION': {
+      return {
+        ...state,
+        currentAction: action.value,
+        transformationsBackup: state.transformations,
+      }
+    }
 
-  componentDidMount() {
-    this.handleChange()
+    case 'CANCEL_CURRENT_ACTION': {
+      return {
+        ...state,
+        currentAction: null,
+        transformations: state.transformationsBackup,
+        transformationsBackup: null,
+      }
+    }
+
+    case 'UPDATE_CROP_VALUE': {
+      const { width, height, x, y } = action.value
+
+      const isValidCrop =
+        (width !== 100 || height !== 100) && (width !== 0 || height !== 0)
+
+      const transformationCrop = isValidCrop
+        ? {
+            crop: 'crop',
+            width: width / 100,
+            height: height / 100,
+            x: x / 100,
+            y: y / 100,
+          }
+        : null
+
+      return {
+        ...state,
+        crop: action.value,
+        transformations: { ...state.transformations, crop: transformationCrop },
+      }
+    }
+
+    case 'UPDATE_DIMENSIONS_VALUE': {
+      return {
+        ...state,
+        transformations: {
+          ...state.transformations,
+          dimensions: { crop: 'scale', width: action.value },
+        },
+      }
+    }
+
+    default: {
+      throw new Error('Unknown action')
+    }
   }
+}
 
-  setAction = memoize(action => () =>
-    this.setState(prevState => ({
-      currentAction: action,
-      transformationsBackup: prevState.transformations,
-    }))
+const ImageEditor: React.FunctionComponent<ImageEditorProps> = ({
+  image,
+  initialTransforms,
+  onChange,
+}) => {
+  const [state, dispatch] = useReducer(
+    reducer,
+    getInitialState({ image, initialTransforms })
   )
 
-  validateAction = () => {
-    this.setState(() => ({ currentAction: null }), this.handleChange)
+  const handleCurrentActionChange = action => {
+    dispatch({ type: 'SET_CURRENT_ACTION', value: action })
   }
 
-  cancelAction = () => {
-    this.setState(prevState => ({
-      currentAction: null,
-      transformations: prevState.transformationsBackup,
-      transformationsBackup: null,
-    }))
+  const handleCurrentActionValidation = () => {
+    dispatch({ type: 'SET_CURRENT_ACTION', value: null })
   }
 
-  updateTransformations(transformationType, value) {
-    this.setState(prevState => ({
-      transformations: {
-        ...prevState.transformations,
-        [transformationType]: value,
-      },
-    }))
+  const handleCurrentActionCancel = () => {
+    dispatch({ type: 'CANCEL_CURRENT_ACTION' })
   }
 
-  handleCropChange = (crop: CropConfiguration) => {
-    this.setState(() => ({ crop }))
+  const handleCropChange = React.useCallback((crop: CropConfiguration) => {
+    dispatch({ type: 'UPDATE_CROP_VALUE', value: crop })
+  }, [])
 
-    const { width, height, x, y } = crop
+  const handleDimensionsChange = React.useCallback(
+    width => dispatch({ type: 'UPDATE_DIMENSIONS_VALUE', value: width }),
+    []
+  )
 
-    const isValidCrop =
-      (width !== 100 || height !== 100) && (width !== 0 || height !== 0)
-
-    if (!isValidCrop) {
-      return this.updateTransformations('crop', null)
-    }
-
-    const transformation = {
-      crop: 'crop',
-      width: width / 100,
-      height: height / 100,
-      x: x / 100,
-      y: y / 100,
-    }
-
-    return this.updateTransformations('crop', transformation)
-  }
-
-  handleDimensionsChange = width =>
-    this.updateTransformations('dimensions', { crop: 'scale', width })
-
-  handleChange = () => {
-    const { image, onChange } = this.props
-    const { transformations } = this.state
-
+  React.useEffect(() => {
     onChange({
       id: image.public_id,
-      transforms: values(transformations),
+      transforms: values(state.transformations),
     })
-  }
+  }, [state.currentAction]) // eslint-disable-line react-hooks/exhaustive-deps
 
-  renderImage() {
-    const { image } = this.props
-    const { currentAction, crop, transformations } = this.state
-
-    const transformationsToApply = filter(
-      transformations,
-      (value, key) => key !== currentAction
-    )
-
-    if (currentAction === 'crop') {
-      return (
-        <ImageCroper
-          src={createCloudinaryURL({
-            id: image.public_id,
-            transforms: transformationsToApply,
-          })}
-          onChange={this.handleCropChange}
-          crop={crop}
-        />
-      )
-    }
-
+  if (!image) {
     return (
-      <Image
-        id={image.public_id}
-        size="full"
-        transforms={transformationsToApply}
-      />
+      <SpinnerContainer>
+        <Spinner />
+      </SpinnerContainer>
     )
   }
 
-  renderDimensionSlider() {
-    const { image } = this.props
-    const { transformations } = this.state
+  const transformationsToApply = filter(
+    state.transformations,
+    (value, key) => key !== state.currentAction
+  )
 
-    const maxWidth = getImageMaxWidth(image, transformations.crop)
-    const value = get(
-      transformations,
-      'dimensions.width',
-      Math.min(maxWidth, 1000)
-    )
+  const sliderMaxWidth = getImageMaxWidth(image, state.transformations.crop)
+  const sliderValue = get(
+    state,
+    'transformations.dimensions.width',
+    Math.min(sliderMaxWidth, 1000)
+  )
 
-    return (
-      <Slider
-        value={value}
-        max={maxWidth}
-        onChange={this.handleDimensionsChange}
-      />
-    )
-  }
-
-  render() {
-    const { image } = this.props
-    const { currentAction } = this.state
-
-    if (!image) {
-      return (
-        <SpinnerContainer>
-          <Spinner />
-        </SpinnerContainer>
-      )
-    }
-
-    return (
-      <ImageEditorContainer>
-        <ImageContainer>{this.renderImage()}</ImageContainer>
-        {!currentAction && (
-          <OptionsContainer>
-            <Button
-              onClick={this.setAction('crop')}
-              iconLeft={<FontIcon icon="crop" />}
-              reverse
-            >
-              Cropper
-            </Button>
-            <Button
-              onClick={this.setAction('dimensions')}
-              iconLeft={<FontIcon icon="photo_size_select_large" />}
-              reverse
-            >
-              Redimensionner
-            </Button>
-          </OptionsContainer>
+  return (
+    <ImageEditorContainer>
+      <ImageContainer>
+        {state.currentAction === 'crop' ? (
+          <ImageCroper
+            src={createCloudinaryURL({
+              id: image.public_id,
+              transforms: transformationsToApply,
+            })}
+            onChange={handleCropChange}
+            crop={state.crop}
+          />
+        ) : (
+          <Image
+            id={image.public_id}
+            size="full"
+            transforms={transformationsToApply}
+          />
         )}
-        {currentAction && (
-          <OptionContainer>
-            <OptionContent>
-              {currentAction === 'crop' && 'Sélectionnez la zone à garder'}
-              {currentAction === 'dimensions' && this.renderDimensionSlider()}
-            </OptionContent>
-            <OptionActions>
-              <Button onClick={this.validateAction}>Valider</Button>
-              <Button onClick={this.cancelAction} reverse>
-                Annuler
-              </Button>
-            </OptionActions>
-          </OptionContainer>
-        )}
-      </ImageEditorContainer>
-    )
-  }
+      </ImageContainer>
+      {!state.currentAction && (
+        <OptionsContainer>
+          <Button
+            onClick={() => handleCurrentActionChange('crop')}
+            iconLeft={<FontIcon icon="crop" />}
+            reverse
+          >
+            Cropper
+          </Button>
+          <Button
+            onClick={() => handleCurrentActionChange('dimensions')}
+            iconLeft={<FontIcon icon="photo_size_select_large" />}
+            reverse
+          >
+            Redimensionner
+          </Button>
+        </OptionsContainer>
+      )}
+      {state.currentAction && (
+        <OptionContainer>
+          <OptionContent>
+            {state.currentAction === 'crop' && 'Sélectionnez la zone à garder'}
+            {state.currentAction === 'dimensions' && (
+              <Slider
+                value={sliderValue}
+                max={sliderMaxWidth}
+                onChange={handleDimensionsChange}
+              />
+            )}
+          </OptionContent>
+          <OptionActions>
+            <Button onClick={handleCurrentActionValidation}>Valider</Button>
+            <Button onClick={handleCurrentActionCancel} reverse>
+              Annuler
+            </Button>
+          </OptionActions>
+        </OptionContainer>
+      )}
+    </ImageEditorContainer>
+  )
 }
 
 export default ImageEditor

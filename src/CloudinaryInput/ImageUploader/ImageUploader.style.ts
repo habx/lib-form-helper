@@ -1,17 +1,6 @@
 import styled from 'styled-components'
 
-import { Modal, theme } from '@habx/thunder-ui'
-
-export const ImageUploaderContainer = styled(Modal)`
-  padding: 0;
-  max-width: 1000px;
-  width: 1000px;
-  min-height: 400px;
-  display: flex;
-  flex-direction: column;
-  align-items: stretch;
-  justify-content: stretch;
-`
+import { theme } from '@habx/thunder-ui'
 
 export const Content = styled.div`
   flex: 1 1 100%;

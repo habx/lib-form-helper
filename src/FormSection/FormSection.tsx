@@ -1,45 +1,65 @@
-import { omit, isEmpty, isFunction } from 'lodash'
+import { isFunction, some } from 'lodash'
 import * as React from 'react'
 
+import useUniqID from '../_internal/useUniqID'
 import { StatusContext, SectionContext } from '../contexts'
+import joinNames from '../joinNames'
 
-import FormSectionProps, { FormSectionStatus } from './FormSection.interface'
+import FormSectionProps, {
+  FormSectionStatusProps,
+  FormSectionRenderProps,
+} from './FormSection.interface'
 
 const FormSection: React.FunctionComponent<FormSectionProps> = ({
+  id,
   name,
+  rootName,
   children,
 }) => {
+  const uniqID = useUniqID()
   const form = React.useContext(StatusContext)
-  const [errors, updateErrors] = React.useState({})
+  const parentSection = React.useContext(SectionContext)
+  const [status, updateStatus] = React.useState<FormSectionStatusProps>({
+    dirty: {},
+    error: {},
+  })
 
-  const status: FormSectionStatus = React.useMemo(
+  const sectionsPath = React.useMemo(() => [...parentSection.path, uniqID], [
+    parentSection.path,
+    uniqID,
+  ])
+
+  const sectionContext = React.useMemo(
     () => ({
-      hasError: !isEmpty(errors) && form.showErrors,
+      name: rootName ? rootName : joinNames(parentSection.name, name),
+      path: sectionsPath,
     }),
-    [errors, form.showErrors]
+    [rootName, parentSection.name, name, sectionsPath]
+  )
+
+  const renderPropsStatus: FormSectionRenderProps = React.useMemo(
+    () => ({
+      hasError: some(status.error, el => !!el),
+      isDirty: some(status.dirty, el => !!el),
+    }),
+    [status]
   )
 
   React.useLayoutEffect(() => {
-    form.setSectionStatus(name, status)
-  }, [name, status]) // eslint-disable-line react-hooks/exhaustive-deps
-
-  const sectionStatus = React.useMemo(
-    () => ({
-      setError: (fieldName: string, error: string) => {
-        updateErrors(prevErrors =>
-          error
-            ? { ...prevErrors, [fieldName]: error }
-            : omit(prevErrors, [fieldName])
-        )
+    form.subscribeSection(uniqID, {
+      id,
+      callback: (fieldID, type, value) => {
+        updateStatus(prev => ({
+          ...prev,
+          [type]: { ...prev[type], [fieldID]: value },
+        }))
       },
-      showErrors: form.showErrors,
-    }),
-    [updateErrors, form.showErrors]
-  )
+    })
+  }, [id, uniqID]) // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
-    <SectionContext.Provider value={sectionStatus}>
-      {isFunction(children) ? children(status) : children}
+    <SectionContext.Provider value={sectionContext}>
+      {isFunction(children) ? children(renderPropsStatus) : children}
     </SectionContext.Provider>
   )
 }

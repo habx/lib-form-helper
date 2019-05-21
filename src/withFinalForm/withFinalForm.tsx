@@ -1,3 +1,4 @@
+import d from 'final-form-arrays'
 import { isNil, isFunction, isString, get } from 'lodash'
 import * as React from 'react'
 import { Field } from 'react-final-form'
@@ -5,7 +6,9 @@ import styled from 'styled-components'
 
 import { fontSizes, theme, useTheme } from '@habx/thunder-ui'
 
+import useUniqID from '../_internal/useUniqID'
 import { StatusContext, SectionContext } from '../contexts'
+import joinNames from '../joinNames'
 
 import {
   InputConfig,
@@ -25,6 +28,36 @@ const FieldError = styled.div`
   padding: ${({ padding }) => padding}px;
 `
 
+const useFieldStatus = ({
+  error,
+  dirty,
+  path,
+  formStatus: { setFieldStatus },
+}) => {
+  const isFirst = React.useRef(true)
+  const uniqID = useUniqID()
+
+  React.useLayoutEffect(() => {
+    if (!isFirst.current || error) {
+      setFieldStatus(uniqID, path, 'error', error)
+    }
+  }, [error, path, setFieldStatus, uniqID])
+
+  React.useLayoutEffect(() => {
+    if (!isFirst.current || dirty) {
+      setFieldStatus(uniqID, path, 'dirty', dirty)
+    }
+  }, [dirty, path, setFieldStatus, uniqID])
+
+  React.useLayoutEffect(() => {
+    isFirst.current = false
+
+    return () => {
+      setFieldStatus(uniqID, path, 'error', undefined)
+    }
+  }, []) // eslint-disable-line react-hooks/exhaustive-deps
+}
+
 const withFinalForm = (inputConfig: InputConfig = {}) => <Props extends object>(
   WrappedComponent: React.ComponentType<Props>
 ) => {
@@ -35,7 +68,6 @@ const withFinalForm = (inputConfig: InputConfig = {}) => <Props extends object>(
       input,
       meta,
       disabled,
-      formDisabled,
       required,
       sectionContext,
       innerName,
@@ -44,10 +76,19 @@ const withFinalForm = (inputConfig: InputConfig = {}) => <Props extends object>(
       ...rest
     } = props as FieldContentReceivedProps
 
+    const formStatus = React.useContext(StatusContext)
+
+    useFieldStatus({
+      error: meta.error,
+      dirty: meta.dirty,
+      path: sectionContext.path,
+      formStatus,
+    })
+
     const [localValue, setLocalValue] = React.useState(value)
     const thunderTheme = useTheme()
 
-    const showError = sectionContext.showErrors && !!get(meta, 'error')
+    const showError = formStatus.showErrors && !!get(meta, 'error')
 
     React.useEffect(() => {
       if (inputConfig.changeOnBlur && !meta.active && localValue !== value) {
@@ -58,10 +99,6 @@ const withFinalForm = (inputConfig: InputConfig = {}) => <Props extends object>(
     React.useEffect(() => {
       setLocalValue(value)
     }, [value])
-
-    React.useLayoutEffect(() => {
-      sectionContext.setError(innerName, meta.error)
-    }, [meta.error, innerName, sectionContext.setError]) // eslint-disable-line react-hooks/exhaustive-deps
 
     const handleChange = React.useCallback(
       newValue => {
@@ -75,7 +112,7 @@ const withFinalForm = (inputConfig: InputConfig = {}) => <Props extends object>(
     )
 
     const label = React.useMemo(() => {
-      if (!sectionContext.showErrors) {
+      if (!formStatus.showErrors) {
         return rawLabel
       }
 
@@ -87,10 +124,16 @@ const withFinalForm = (inputConfig: InputConfig = {}) => <Props extends object>(
         return `${rawLabel}${required ? ' (obligatoire)' : ''}`
       }
 
-      if (meta.error) {
+      if (meta.error && typeof meta.error === 'object') {
+        return rawLabel
+          ? `${rawLabel} (contient des erreurs)`
+          : 'Contient des erreurs'
+      }
+
+      if (meta.error && typeof meta.error !== 'object') {
         return `${rawLabel} : ${meta.error}`
       }
-    }, [meta.error, rawLabel, required, sectionContext.showErrors])
+    }, [meta.error, rawLabel, required, formStatus.showErrors])
 
     return (
       <FieldContainer>
@@ -102,11 +145,11 @@ const withFinalForm = (inputConfig: InputConfig = {}) => <Props extends object>(
           labelColor={showError ? thunderTheme.error : null}
           value={inputConfig.changeOnBlur ? localValue : value}
           onChange={handleChange}
-          disabled={isNil(disabled) ? formDisabled : disabled}
+          disabled={isNil(disabled) ? formStatus.disabled : disabled}
         />
         {!label && (
           <FieldError padding={inputConfig.errorPadding}>
-            {isString(meta.error) && sectionContext.showErrors && meta.error}
+            {isString(meta.error) && formStatus.showErrors && meta.error}
           </FieldError>
         )}
       </FieldContainer>
@@ -117,7 +160,6 @@ const withFinalForm = (inputConfig: InputConfig = {}) => <Props extends object>(
     Props & FieldWrapperReceivedProps
   > = props => {
     const sectionContext = React.useContext(SectionContext)
-    const formStatus = React.useContext(StatusContext)
     const propsRef = React.useRef(props)
 
     React.useEffect(() => {
@@ -164,14 +206,16 @@ const withFinalForm = (inputConfig: InputConfig = {}) => <Props extends object>(
         : undefined
     }, [])
 
+    const name = joinNames(sectionContext.name, props.name)
+
     return (
       <Field
         {...props}
-        innerName={props.name}
+        name={name}
+        innerName={name}
         format={format}
         parse={parse}
         validate={validate}
-        formDisabled={formStatus.disabled}
         component={FieldContent}
         sectionContext={sectionContext}
       />
