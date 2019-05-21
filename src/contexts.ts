@@ -1,5 +1,11 @@
 import * as React from 'react'
 
+type sectionCallback = (
+  fieldID: number,
+  type: 'error' | 'dirty',
+  value: any
+) => void
+
 export interface StatusContextProps {
   disabled?: boolean
   showErrors: boolean
@@ -7,9 +13,14 @@ export interface StatusContextProps {
     sectionId: number,
     section: {
       id?: string
-      callback: (fieldID: number, type: 'error' | 'dirty', value: any) => void
+      callback: sectionCallback
     }
   ) => void
+  subscribeSectionWatcher: (watcher: {
+    id: string
+    uId: number
+    callback: sectionCallback
+  }) => void
   setFieldStatus: (
     fieldID: number,
     sections: number[],

@@ -45,17 +45,19 @@ const FormSection: React.FunctionComponent<FormSectionProps> = ({
     [status]
   )
 
-  React.useLayoutEffect(() => {
-    form.subscribeSection(uniqID, {
-      id,
-      callback: (fieldID, type, value) => {
-        updateStatus(prev => ({
-          ...prev,
-          [type]: { ...prev[type], [fieldID]: value },
-        }))
-      },
-    })
-  }, [id, uniqID]) // eslint-disable-line react-hooks/exhaustive-deps
+  React.useLayoutEffect(
+    () =>
+      form.subscribeSection(uniqID, {
+        id,
+        callback: (fieldID, type, value) => {
+          updateStatus(prev => ({
+            ...prev,
+            [type]: { ...prev[type], [fieldID]: value },
+          }))
+        },
+      }),
+    [id, uniqID] // eslint-disable-line react-hooks/exhaustive-deps
+  )
 
   return (
     <SectionContext.Provider value={sectionContext}>

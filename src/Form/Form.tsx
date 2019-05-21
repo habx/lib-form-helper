@@ -10,23 +10,44 @@ import FormProps, { FormContentProps } from './Form.interface'
 
 const useStatuses = () => {
   const sections = React.useRef({})
+  const sectionsWatchers = React.useRef({})
 
-  const handleSectionSubscription = React.useCallback((sectionId, section) => {
-    sections.current[sectionId] = section
+  const handleSectionSubscription = React.useCallback((sectionUId, section) => {
+    sections.current[sectionUId] = section
+
+    return () => {
+      sections.current[sectionUId] = null
+    }
+  }, [])
+
+  const handleSectionWatcherSubscription = React.useCallback(sectionWatcher => {
+    sectionsWatchers.current[sectionWatcher.id] = {
+      ...(sectionsWatchers.current[sectionWatcher.id] || {}),
+      [sectionWatcher.uId]: sectionWatcher.callback,
+    }
   }, [])
 
   const handleFieldStatusChange = React.useCallback(
     (fieldID, sectionsPath, type, value) => {
-      forEach(sectionsPath, sectionId => {
-        if (sections.current[sectionId]) {
-          sections.current[sectionId].callback(fieldID, type, value)
+      forEach(sectionsPath, sectionUId => {
+        if (sections.current[sectionUId]) {
+          const { id, callback } = sections.current[sectionUId]
+          callback(fieldID, type, value)
+
+          forEach(sectionsWatchers.current[id], watcherCallback => {
+            watcherCallback(fieldID, type, value)
+          })
         }
       })
     },
     []
   )
 
-  return { handleFieldStatusChange, handleSectionSubscription }
+  return {
+    handleFieldStatusChange,
+    handleSectionSubscription,
+    handleSectionWatcherSubscription,
+  }
 }
 
 const FormContent: React.FunctionComponent<FormContentProps> = ({
@@ -36,7 +57,11 @@ const FormContent: React.FunctionComponent<FormContentProps> = ({
   saveWithKeyboard,
   ...props
 }) => {
-  const { handleFieldStatusChange, handleSectionSubscription } = useStatuses()
+  const {
+    handleFieldStatusChange,
+    handleSectionSubscription,
+    handleSectionWatcherSubscription,
+  } = useStatuses()
 
   useKeyboardSave(saveWithKeyboard && props.handleSubmit)
 
@@ -50,6 +75,7 @@ const FormContent: React.FunctionComponent<FormContentProps> = ({
       showErrors,
       setFieldStatus: handleFieldStatusChange,
       subscribeSection: handleSectionSubscription,
+      subscribeSectionWatcher: handleSectionWatcherSubscription,
     }),
     [
       props.submitting,
@@ -57,6 +83,7 @@ const FormContent: React.FunctionComponent<FormContentProps> = ({
       showErrors,
       handleFieldStatusChange,
       handleSectionSubscription,
+      handleSectionWatcherSubscription,
     ]
   )
 
