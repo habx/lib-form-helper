@@ -17,7 +17,7 @@ const Header: React.FunctionComponent<HeaderProps> = ({
     <HeaderContainer>
       <FontIcon icon="home" onClick={() => setStatus('home')} />
       <Title>{title}</Title>
-      {status !== 'home' && (
+      {status === 'directory' && (
         <Uploader>
           <label htmlFor="cloudinary-uploader">
             Nouvelle image

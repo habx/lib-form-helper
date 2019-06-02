@@ -46,7 +46,7 @@ const reducer = (state, action) => {
     }
 
     case 'SET_IMAGE_LIST': {
-      return { ...state, images: action.value, imagesLoading: false }
+      return { ...state, images: action.value.resources, imagesLoading: false }
     }
 
     case 'SET_IMAGE_LIST_LOADING': {
@@ -199,7 +199,7 @@ const ImageUploader: React.FunctionComponent<ImageUploaderProps> = ({
 
               return (
                 <Directory
-                  images={data}
+                  images={get(data, 'resources')}
                   loading={loading}
                   selectedImage={state.selectedImage}
                   onImageClick={handleImageToggle}

@@ -23,7 +23,13 @@ const Directory: React.FunctionComponent<DirectoryProps> = ({
   const [query, setQuery] = React.useState('')
   const ref = React.useRef(null)
   const matchingImages = React.useMemo(
-    () => filter(images, image => habxFilter.some('public_id')(query, image)),
+    () =>
+      filter(
+        images,
+        (image = {} as CloudinaryImage) =>
+          habxFilter.some('public_id')(query, image) &&
+          !['pdf'].includes(image.format)
+      ),
     [query, images]
   )
 

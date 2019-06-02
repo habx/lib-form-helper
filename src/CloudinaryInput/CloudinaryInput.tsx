@@ -4,7 +4,7 @@ import * as React from 'react'
 import { withLabel, Button } from '@habx/thunder-ui'
 
 import CloudinaryInputContext from './CloudinaryInput.context'
-import CloudinaryInputProps from './CloudinaryInput.interface'
+import CloudinaryInputProps, { statuses } from './CloudinaryInput.interface'
 import {
   CloudinaryInputContainer,
   CloudinaryInputModal,
@@ -27,7 +27,7 @@ const CloudinaryInput: React.FunctionComponent<CloudinaryInputProps> = ({
   onChange,
   value,
 }) => {
-  const [status, setStatus] = React.useState('closed')
+  const [status, setStatus] = React.useState('closed' as statuses)
 
   const image: ACECloudinaryImage = React.useMemo(() => {
     if (imageFormat === 'ace') {
@@ -66,7 +66,7 @@ const CloudinaryInput: React.FunctionComponent<CloudinaryInputProps> = ({
         {hasImage ? (
           <PictureContainer>
             <Image
-              size="full"
+              size="thumbnail"
               id={get(image, 'id')}
               transforms={get(image, 'transforms')}
             />
