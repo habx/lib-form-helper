@@ -80,6 +80,11 @@ const CloudinaryInput: React.FunctionComponent<CloudinaryInputProps> = ({
               Éditer
             </Button>
           )}
+          {hasImage && (
+            <Button warning reverse onClick={() => onChange(null)}>
+              Supprimer
+            </Button>
+          )}
           <Button
             onClick={() => setStatus('directory')}
             disabled={disabled}
