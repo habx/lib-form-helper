@@ -1,7 +1,12 @@
 import { map, filter, max, find } from 'lodash'
 import * as React from 'react'
 
-import { Spinner, TextInput, filter as habxFilter } from '@habx/thunder-ui'
+import {
+  Spinner,
+  TextInput,
+  filter as habxFilter,
+  Title,
+} from '@habx/thunder-ui'
 
 import Image from '../Image'
 import { CloudinaryImage } from '../Image/Image.interface'
@@ -80,6 +85,7 @@ const Directory: React.FunctionComponent<DirectoryProps> = ({
                   id={image.public_id}
                   data-fade={selectedImage && image !== matchingImage}
                 />
+                <Title size={4}>{image.public_id}</Title>
               </ImageContainer>
             ))}
           </ImageList>
