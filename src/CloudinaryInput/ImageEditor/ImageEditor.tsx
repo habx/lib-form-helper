@@ -1,6 +1,5 @@
 import { filter, floor, get, find, values } from 'lodash'
 import * as React from 'react'
-import { useReducer } from 'react'
 
 import { Spinner, FontIcon, Button } from '@habx/thunder-ui'
 
@@ -34,10 +33,10 @@ const getCropTransform = transforms => {
   if (matchingTransform) {
     return {
       ...matchingTransform,
-      width: parseInt(get(matchingTransform, 'width', 1), 10),
-      height: parseInt(get(matchingTransform, 'height', 1), 10),
-      x: parseInt(get(matchingTransform, 'x', 0), 10),
-      y: parseInt(get(matchingTransform, 'y', 0), 10),
+      width: parseFloat(get(matchingTransform, 'width', 1)),
+      height: parseFloat(get(matchingTransform, 'height', 1)),
+      x: parseFloat(get(matchingTransform, 'x', 0)),
+      y: parseFloat(get(matchingTransform, 'y', 0)),
     }
   }
 }
@@ -49,28 +48,9 @@ const getInitialState = ({ initialTransforms, image }): ImageEditorState => {
     el => get(el, 'crop') === 'scale' && el.width
   )
 
-  const cropConfig = cropTransform && {
-    width:
-      cropTransform.width < 1
-        ? cropTransform.width * 100
-        : (cropTransform.width / image.width) * 100,
-    height:
-      cropTransform.height < 1
-        ? cropTransform.height * 100
-        : (cropTransform.height / image.height) * 100,
-    x:
-      cropTransform.x < 1
-        ? cropTransform.x * 100
-        : (cropTransform.x / image.width) * 100,
-    y:
-      cropTransform.y < 1
-        ? cropTransform.y * 100
-        : (cropTransform.y / image.width) * 100,
-  }
-
   return {
     currentAction: null,
-    crop: cropConfig,
+    crop: null,
     transformations: {
       crop: cropTransform,
       dimensions: dimensionTransform || {
@@ -102,7 +82,10 @@ const reducer = (state, action) => {
     }
 
     case 'UPDATE_CROP_VALUE': {
-      const { width, height, x, y } = action.value
+      const {
+        value: { width, height, x, y },
+        imageDimensions,
+      } = action
 
       const isValidCrop =
         (width !== 100 || height !== 100) && (width !== 0 || height !== 0)
@@ -110,10 +93,10 @@ const reducer = (state, action) => {
       const transformationCrop = isValidCrop
         ? {
             crop: 'crop',
-            width: width / 100,
-            height: height / 100,
-            x: x / 100,
-            y: y / 100,
+            width: width / imageDimensions.width,
+            height: height / imageDimensions.height,
+            x: x / imageDimensions.width,
+            y: y / imageDimensions.height,
           }
         : null
 
@@ -145,7 +128,9 @@ const ImageEditor: React.FunctionComponent<ImageEditorProps> = ({
   initialTransforms,
   onChange,
 }) => {
-  const [state, dispatch] = useReducer(
+  const imageCropRef = React.useRef(null)
+
+  const [state, dispatch] = React.useReducer(
     reducer,
     getInitialState({ image, initialTransforms })
   )
@@ -163,7 +148,15 @@ const ImageEditor: React.FunctionComponent<ImageEditorProps> = ({
   }
 
   const handleCropChange = React.useCallback((crop: CropConfiguration) => {
-    dispatch({ type: 'UPDATE_CROP_VALUE', value: crop })
+    const node = get(imageCropRef, 'current.imageRef')
+
+    if (node) {
+      const imageDimensions = {
+        width: node.naturalWidth,
+        height: node.naturalHeight,
+      }
+      dispatch({ type: 'UPDATE_CROP_VALUE', value: crop, imageDimensions })
+    }
   }, [])
 
   const handleDimensionsChange = React.useCallback(
@@ -209,6 +202,7 @@ const ImageEditor: React.FunctionComponent<ImageEditorProps> = ({
             })}
             onChange={handleCropChange}
             crop={state.crop}
+            ref={imageCropRef}
           />
         ) : (
           <Image
