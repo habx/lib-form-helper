@@ -90,7 +90,7 @@ const CloudinaryInput: React.FunctionComponent<CloudinaryInputProps> = ({
             disabled={disabled}
             reverse
           >
-            Nouvelle image
+            Nouveau
           </Button>
         </ActionsBar>
         <CloudinaryInputModal
