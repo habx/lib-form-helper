@@ -6,7 +6,10 @@ import {
 
 export type RenderParams = {
   directory: string
-  renderImage: (image: CloudinaryImage) => JSX.Element
+  render: (params: {
+    loading: boolean
+    data: { resources: CloudinaryImage[] }
+  }) => JSX.Element
 }
 
 export interface ImageUploaderState {

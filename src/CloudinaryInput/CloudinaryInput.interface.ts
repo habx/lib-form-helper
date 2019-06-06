@@ -5,6 +5,8 @@ import {
 } from './Image/Image.interface'
 import { RenderParams } from './ImageUploader/ImageUploader.interface'
 
+export type statuses = 'closed' | 'home' | 'directory' | 'customizer'
+
 export default interface CloudinaryInputProps {
   value: string | ACECloudinaryImage
   disabled?: boolean
@@ -20,7 +22,7 @@ export default interface CloudinaryInputProps {
 }
 
 export interface CloudinaryInputContextProps {
-  setStatus: (status: string) => void
-  status: string
+  setStatus: (status: statuses) => void
+  status: statuses
   imageFormat: string
 }
