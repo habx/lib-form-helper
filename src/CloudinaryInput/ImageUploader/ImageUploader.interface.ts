@@ -6,6 +6,7 @@ import {
 
 export type RenderParams = {
   directory: string
+  pageCursor?: string
   render: (params: {
     loading: boolean
     data: { resources: CloudinaryImage[] }
