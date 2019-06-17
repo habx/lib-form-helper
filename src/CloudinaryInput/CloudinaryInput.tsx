@@ -81,7 +81,12 @@ const CloudinaryInput: React.FunctionComponent<CloudinaryInputProps> = ({
             </Button>
           )}
           {hasImage && (
-            <Button warning reverse onClick={() => onChange(null)}>
+            <Button
+              warning
+              reverse
+              onClick={() => onChange(null)}
+              disabled={disabled}
+            >
               Supprimer
             </Button>
           )}
