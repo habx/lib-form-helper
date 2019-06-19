@@ -1,4 +1,3 @@
-import d from 'final-form-arrays'
 import { isNil, isFunction, isString, get } from 'lodash'
 import * as React from 'react'
 import { Field } from 'react-final-form'
@@ -58,11 +57,11 @@ const useFieldStatus = ({
   }, []) // eslint-disable-line react-hooks/exhaustive-deps
 }
 
-const withFinalForm = (inputConfig: InputConfig = {}) => <Props extends object>(
-  WrappedComponent: React.ComponentType<Props>
-) => {
+const withFinalForm = <AdditionalProps extends object>(
+  inputConfig: InputConfig = {}
+) => <Props extends object>(WrappedComponent: React.ComponentType<Props>) => {
   const FieldContent: React.FunctionComponent<
-    Props & FieldContentReceivedProps
+    Props & FieldContentReceivedProps & AdditionalProps
   > = props => {
     const {
       input,
@@ -157,7 +156,7 @@ const withFinalForm = (inputConfig: InputConfig = {}) => <Props extends object>(
   }
 
   const FieldWrapper: React.FunctionComponent<
-    Props & FieldWrapperReceivedProps
+    Props & FieldWrapperReceivedProps & AdditionalProps
   > = props => {
     const sectionContext = React.useContext(SectionContext)
     const propsRef = React.useRef(props)
