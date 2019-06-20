@@ -58,11 +58,11 @@ const useFieldStatus = ({
 }
 
 const withFinalForm = <AdditionalProps extends object>(
-  inputConfig: InputConfig = {}
+  inputConfig: InputConfig<{}> = {}
 ) => <Props extends object>(WrappedComponent: React.ComponentType<Props>) => {
-  const FieldContent: React.FunctionComponent<
-    Props & FieldContentReceivedProps & AdditionalProps
-  > = props => {
+  type FieldComponentProps = Props & FieldContentReceivedProps & AdditionalProps
+
+  const FieldContent: React.FunctionComponent<FieldComponentProps> = props => {
     const {
       input,
       meta,
@@ -156,7 +156,7 @@ const withFinalForm = <AdditionalProps extends object>(
   }
 
   const FieldWrapper: React.FunctionComponent<
-    Props & FieldWrapperReceivedProps & AdditionalProps
+    Props & FieldWrapperReceivedProps<Props> & AdditionalProps
   > = props => {
     const sectionContext = React.useContext(SectionContext)
     const propsRef = React.useRef(props)

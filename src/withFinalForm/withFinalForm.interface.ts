@@ -2,22 +2,22 @@ import { FieldRenderProps } from 'react-final-form'
 
 import { SectionContextProps } from '../contexts'
 
-type validate = (value: any, props: object) => string | undefined
-type format = (value: any, props: object) => any
-type parse = (value: any, props: object) => any
+type validate<Props> = (value: any, props: Props) => string | undefined
+type format<Props> = (value: any, props: Props) => any
+type parse<Props> = (value: any, props: Props) => any
 
-export type InputConfig = {
-  validate?: validate
-  format?: format
-  parse?: parse
+export type InputConfig<Props> = {
+  validate?: validate<Props>
+  format?: format<Props>
+  parse?: parse<Props>
   changeOnBlur?: boolean
   errorPadding?: number
 }
 
-export interface FieldWrapperReceivedProps {
-  validate?: validate
-  format?: format
-  parse?: parse
+export interface FieldWrapperReceivedProps<Props> {
+  validate?: validate<Props>
+  format?: format<Props>
+  parse?: parse<Props>
   required?: boolean
   label?: string
   disabled?: boolean
