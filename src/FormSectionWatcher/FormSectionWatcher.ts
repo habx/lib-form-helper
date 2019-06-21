@@ -8,7 +8,12 @@ import {
   FormSectionStatusProps,
 } from '../FormSection/FormSection.interface'
 
-const FormSectionWatcher = ({ id, children }) => {
+import FormSectionWatcherProps from './FormSectionWatcher.interface'
+
+const FormSectionWatcher: React.FunctionComponent<FormSectionWatcherProps> = ({
+  id,
+  children,
+}) => {
   const uId = useUniqID()
   const form = React.useContext(StatusContext)
 

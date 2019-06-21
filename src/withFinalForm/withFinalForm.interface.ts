@@ -1,36 +1,28 @@
-import { FieldRenderProps } from 'react-final-form'
+import { InputHookConfig } from '../useFinalFormField/useFinalFormField.interface'
 
-import { SectionContextProps } from '../contexts'
+type validate<FieldValue, P> = (
+  value: FieldValue,
+  props: P
+) => string | undefined
+type format<FieldValue, P> = (value: FieldValue, props: P) => any
+type parse<FieldValue, P> = (value: FieldValue, props: P) => any
 
-type validate<Props> = (value: any, props: Props) => string | undefined
-type format<Props> = (value: any, props: Props) => any
-type parse<Props> = (value: any, props: Props) => any
-
-export type InputConfig<Props> = {
-  validate?: validate<Props>
-  format?: format<Props>
-  parse?: parse<Props>
-  changeOnBlur?: boolean
+export interface InputHOCConfig<FieldValue, P> extends InputHookConfig {
+  validate?: validate<FieldValue, P>
+  format?: format<FieldValue, P>
+  parse?: parse<FieldValue, P>
   errorPadding?: number
 }
 
-export interface FieldWrapperReceivedProps<Props> {
-  validate?: validate<Props>
-  format?: format<Props>
-  parse?: parse<Props>
-  required?: boolean
-  label?: string
-  disabled?: boolean
+export interface FieldContentReceivedProps {
   name: string
+  label?: string
+  required?: boolean
+  disabled?: boolean
 }
 
-export interface FieldContentReceivedProps
-  extends FieldRenderProps<HTMLElement> {
-  innerName: string
-  required?: boolean
-  label?: string
-  disabled?: boolean
-  formDisabled?: boolean
-  showErrors: boolean
-  sectionContext: SectionContextProps
+export interface FieldTransformationProps<FieldValue, P> {
+  validate?: validate<FieldValue, P>
+  format?: format<FieldValue, P>
+  parse?: parse<FieldValue, P>
 }
