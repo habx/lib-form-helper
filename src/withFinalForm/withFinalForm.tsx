@@ -1,17 +1,16 @@
-import { isNil, isFunction, isString, get } from 'lodash'
+import { isNil, isFunction, omit } from 'lodash'
 import * as React from 'react'
-import { Field } from 'react-final-form'
+import { UseFieldConfig } from 'react-final-form'
 import styled from 'styled-components'
 
 import { fontSizes, theme, useTheme } from '@habx/thunder-ui'
 
-import useUniqID from '../_internal/useUniqID'
-import { StatusContext, SectionContext } from '../contexts'
-import joinNames from '../joinNames'
+import { Except } from '../_internal/typescript'
+import useFinalFormField from '../useFinalFormField'
 
 import {
-  InputConfig,
-  FieldWrapperReceivedProps,
+  InputHOCConfig,
+  FieldTransformationProps,
   FieldContentReceivedProps,
 } from './withFinalForm.interface'
 
@@ -27,143 +26,31 @@ const FieldError = styled.div`
   padding: ${({ padding }) => padding}px;
 `
 
-const useFieldStatus = ({
-  error,
-  dirty,
-  path,
-  formStatus: { setFieldStatus },
-}) => {
-  const isFirst = React.useRef(true)
-  const uniqID = useUniqID()
-
-  React.useLayoutEffect(() => {
-    if (!isFirst.current || error) {
-      setFieldStatus(uniqID, path, 'error', error)
-    }
-  }, [error, path, setFieldStatus, uniqID])
-
-  React.useLayoutEffect(() => {
-    if (!isFirst.current || dirty) {
-      setFieldStatus(uniqID, path, 'dirty', dirty)
-    }
-  }, [dirty, path, setFieldStatus, uniqID])
-
-  React.useLayoutEffect(() => {
-    isFirst.current = false
-
-    return () => {
-      setFieldStatus(uniqID, path, 'error', undefined)
-    }
-  }, []) // eslint-disable-line react-hooks/exhaustive-deps
-}
-
-const withFinalForm = <AdditionalProps extends object>(
-  inputConfig: InputConfig<{}> = {}
+const withFinalForm = <
+  FieldValue extends unknown,
+  AdditionalProps extends object
+>(
+  inputConfig: InputHOCConfig<FieldValue, {}> = {}
 ) => <Props extends object>(WrappedComponent: React.ComponentType<Props>) => {
-  type FieldComponentProps = Props & FieldContentReceivedProps & AdditionalProps
+  type BaseProps = AdditionalProps &
+    FieldContentReceivedProps &
+    Except<Props, 'value' | 'onChange'> &
+    Except<
+      UseFieldConfig<FieldValue>,
+      'value' | keyof FieldTransformationProps<any, any>
+    >
 
-  const FieldContent: React.FunctionComponent<FieldComponentProps> = props => {
-    const {
-      input,
-      meta,
-      disabled,
-      required,
-      sectionContext,
-      innerName,
-      label: rawLabel,
-      input: { value, onChange },
-      ...rest
-    } = props as FieldContentReceivedProps
+  type FieldComponentProps = BaseProps &
+    FieldTransformationProps<FieldValue, BaseProps>
 
-    const formStatus = React.useContext(StatusContext)
-
-    useFieldStatus({
-      error: meta.error,
-      dirty: meta.dirty,
-      path: sectionContext.path,
-      formStatus,
-    })
-
-    const [localValue, setLocalValue] = React.useState(value)
-    const thunderTheme = useTheme()
-
-    const showError = formStatus.showErrors && !!get(meta, 'error')
-
-    React.useEffect(() => {
-      if (inputConfig.changeOnBlur && !meta.active && localValue !== value) {
-        onChange(localValue)
-      }
-    }, [meta.active]) // eslint-disable-line react-hooks/exhaustive-deps
-
-    React.useEffect(() => {
-      setLocalValue(value)
-    }, [value])
-
-    const handleChange = React.useCallback(
-      newValue => {
-        if (inputConfig.changeOnBlur) {
-          setLocalValue(newValue)
-        } else {
-          onChange(newValue)
-        }
-      },
-      [onChange]
-    )
-
-    const label = React.useMemo(() => {
-      if (!formStatus.showErrors) {
-        return rawLabel
-      }
-
-      if (!rawLabel) {
-        return null
-      }
-
-      if (!meta.error || meta.error === 'required') {
-        return `${rawLabel}${required ? ' (obligatoire)' : ''}`
-      }
-
-      if (meta.error && typeof meta.error === 'object') {
-        return rawLabel
-          ? `${rawLabel} (contient des erreurs)`
-          : 'Contient des erreurs'
-      }
-
-      if (meta.error && typeof meta.error !== 'object') {
-        return `${rawLabel} : ${meta.error}`
-      }
-    }, [meta.error, rawLabel, required, formStatus.showErrors])
-
-    return (
-      <FieldContainer>
-        <WrappedComponent
-          {...rest as Props}
-          {...input}
-          error={showError}
-          label={label}
-          labelColor={showError ? thunderTheme.error : null}
-          value={inputConfig.changeOnBlur ? localValue : value}
-          onChange={handleChange}
-          disabled={isNil(disabled) ? formStatus.disabled : disabled}
-        />
-        {!label && (
-          <FieldError padding={inputConfig.errorPadding}>
-            {isString(meta.error) && formStatus.showErrors && meta.error}
-          </FieldError>
-        )}
-      </FieldContainer>
-    )
+  const hookConfig = {
+    changeOnBlur: inputConfig.changeOnBlur,
   }
 
-  const FieldWrapper: React.FunctionComponent<
-    Props & FieldWrapperReceivedProps<Props> & AdditionalProps
-  > = props => {
-    const sectionContext = React.useContext(SectionContext)
-    const propsRef = React.useRef(props)
-
-    React.useEffect(() => {
-      propsRef.current = props
-    })
+  const useFieldProps = (props: BaseProps) => {
+    const propsRef: React.MutableRefObject<FieldComponentProps> = React.useRef(
+      props
+    )
 
     const format = React.useCallback(value => {
       const fieldFormattedValue = isFunction(inputConfig.format)
@@ -205,23 +92,41 @@ const withFinalForm = <AdditionalProps extends object>(
         : undefined
     }, [])
 
-    const name = joinNames(sectionContext.name, props.name)
+    React.useEffect(() => {
+      propsRef.current = props
+    })
+
+    return { ...props, format, parse, validate }
+  }
+
+  const Field: React.FunctionComponent<FieldComponentProps> = props => {
+    const fieldProps = useFieldProps(props)
+    const thunderTheme = useTheme()
+
+    const { label, showError, meta, input, ...rest } = useFinalFormField<
+      FieldValue
+    >(props.name, fieldProps, hookConfig)
 
     return (
-      <Field
-        {...props}
-        name={name}
-        innerName={name}
-        format={format}
-        parse={parse}
-        validate={validate}
-        component={FieldContent}
-        sectionContext={sectionContext}
-      />
+      <FieldContainer>
+        <WrappedComponent
+          {...omit(props, ['format', 'parse', 'validate']) as Props}
+          {...input}
+          {...rest}
+          error={showError}
+          label={label}
+          labelColor={showError ? thunderTheme.error : null}
+        />
+        {!label && (
+          <FieldError padding={inputConfig.errorPadding}>
+            {showError && meta.error}
+          </FieldError>
+        )}
+      </FieldContainer>
     )
   }
 
-  return FieldWrapper
+  return Field
 }
 
 export default withFinalForm
