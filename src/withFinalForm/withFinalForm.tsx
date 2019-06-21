@@ -28,7 +28,7 @@ const FieldError = styled.div`
 
 const withFinalForm = <
   FieldValue extends unknown,
-  AdditionalProps extends object
+  AdditionalProps extends object = {}
 >(
   inputConfig: InputHOCConfig<FieldValue, {}> = {}
 ) => <Props extends object>(WrappedComponent: React.ComponentType<Props>) => {
