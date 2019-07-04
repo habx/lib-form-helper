@@ -1,6 +1,6 @@
 import styled from 'styled-components'
 
-import { shadows } from '@habx/thunder-ui'
+import { shadows, TextInput } from '@habx/thunder-ui'
 
 export const DirectoryContainer = styled.div`
   position: relative;
@@ -17,6 +17,16 @@ export const DirectoryContainer = styled.div`
 
 export const QueryBar = styled.div`
   padding: 0 32px 8px 32px;
+  display: flex;
+  align-items: center;
+
+  & > button {
+    margin-left: 24px;
+  }
+`
+
+export const QueryInput = styled(TextInput)`
+  flex: 1 1 auto;
 `
 
 export const ImageList = styled.div`

@@ -3,9 +3,10 @@ import * as React from 'react'
 
 import {
   Spinner,
-  TextInput,
   filter as habxFilter,
   Title,
+  IconButton,
+  FontIcon,
 } from '@habx/thunder-ui'
 
 import Image from '../Image'
@@ -17,6 +18,7 @@ import {
   ImageList,
   ImageContainer,
   QueryBar,
+  QueryInput,
 } from './Directory.style'
 
 const Directory: React.FunctionComponent<DirectoryProps> = ({
@@ -24,6 +26,7 @@ const Directory: React.FunctionComponent<DirectoryProps> = ({
   loading,
   selectedImage,
   onImageClick,
+  goToNextPage,
 }) => {
   const [query, setQuery] = React.useState('')
   const ref = React.useRef(null)
@@ -73,11 +76,16 @@ const Directory: React.FunctionComponent<DirectoryProps> = ({
       ) : (
         <React.Fragment>
           <QueryBar>
-            <TextInput
+            <QueryInput
               placeholder="Filtrer"
               value={query}
               onChange={setQuery as (query: string) => void}
             />
+            {goToNextPage && (
+              <IconButton onClick={goToNextPage}>
+                <FontIcon icon="navigate_next" color="white" />
+              </IconButton>
+            )}
           </QueryBar>
           <ImageList ref={ref}>
             {map(matchingImages, (image: CloudinaryImage) => (

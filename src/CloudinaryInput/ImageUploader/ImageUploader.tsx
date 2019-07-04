@@ -49,6 +49,10 @@ const reducer = (state, action) => {
       return { ...state, images: action.value.resources, imagesLoading: false }
     }
 
+    case 'GO_TO_IMAGE_PAGE': {
+      return { ...state, pageCursor: action.value }
+    }
+
     case 'SET_IMAGE_LIST_LOADING': {
       return { ...state, imagesLoading: true }
     }
@@ -58,7 +62,7 @@ const reducer = (state, action) => {
     }
 
     case 'GO_TO_DIRECTORY': {
-      return { ...state, directory: action.value }
+      return { ...state, directory: action.value, pageCursor: '' }
     }
 
     default:
@@ -189,6 +193,7 @@ const ImageUploader: React.FunctionComponent<ImageUploaderProps> = ({
         {status === 'directory' &&
           renderImages({
             directory: state.directory,
+            pageCursor: state.pageCursor,
             render: ({ loading, data }) => {
               if (loading && !state.imagesLoading) {
                 dispatch({ type: 'SET_IMAGE_LIST_LOADING' })
@@ -200,6 +205,15 @@ const ImageUploader: React.FunctionComponent<ImageUploaderProps> = ({
               return (
                 <Directory
                   images={get(data, 'resources')}
+                  goToNextPage={
+                    get(data, 'next_cursor')
+                      ? () =>
+                          dispatch({
+                            type: 'GO_TO_IMAGE_PAGE',
+                            value: get(data, 'next_cursor'),
+                          })
+                      : null
+                  }
                   loading={loading}
                   selectedImage={state.selectedImage}
                   onImageClick={handleImageToggle}
