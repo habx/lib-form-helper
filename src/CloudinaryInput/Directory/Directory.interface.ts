@@ -5,4 +5,5 @@ export default interface DirectoryProps {
   selectedImage: CloudinaryImage
   loading: boolean
   onImageClick: (image: CloudinaryImage) => void
+  goToNextPage?: () => void
 }
