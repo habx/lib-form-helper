@@ -12,6 +12,7 @@ export interface InputHOCConfig<FieldValue, P> extends InputHookConfig {
   format?: format<FieldValue, P>
   parse?: parse<FieldValue, P>
   errorPadding?: number
+  isArray?: boolean
 }
 
 export interface FieldContentReceivedProps {

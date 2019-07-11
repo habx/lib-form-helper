@@ -106,13 +106,13 @@ const withFinalForm = <
     const { label, showError, meta, input, ...rest } = useFinalFormField<
       FieldValue
     >(props.name, fieldProps, hookConfig)
-
     return (
       <FieldContainer>
         <WrappedComponent
           {...omit(props, ['format', 'parse', 'validate']) as Props}
           {...input}
           {...rest}
+          validate={inputConfig.isArray ? fieldProps.validate : undefined}
           error={showError}
           label={label}
           labelColor={showError ? thunderTheme.error : null}
