@@ -26,5 +26,4 @@ export interface FieldTransformationProps<FieldValue, P> {
   validate?: validate<FieldValue, P>
   format?: format<FieldValue, P>
   parse?: parse<FieldValue, P>
-  isArray?: boolean
 }
