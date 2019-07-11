@@ -12,6 +12,7 @@ export interface InputHOCConfig<FieldValue, P> extends InputHookConfig {
   format?: format<FieldValue, P>
   parse?: parse<FieldValue, P>
   errorPadding?: number
+  isArray?: boolean
 }
 
 export interface FieldContentReceivedProps {
@@ -25,4 +26,5 @@ export interface FieldTransformationProps<FieldValue, P> {
   validate?: validate<FieldValue, P>
   format?: format<FieldValue, P>
   parse?: parse<FieldValue, P>
+  isArray?: boolean
 }
