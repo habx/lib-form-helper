@@ -168,6 +168,7 @@ const ImageEditor: React.FunctionComponent<ImageEditorProps> = ({
     onChange({
       id: image.public_id,
       transforms: values(state.transformations),
+      format: image.format === 'svg' ? 'svg' : 'auto',
     })
   }, [state.currentAction]) // eslint-disable-line react-hooks/exhaustive-deps
 
