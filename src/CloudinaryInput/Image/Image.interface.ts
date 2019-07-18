@@ -12,6 +12,7 @@ export type CloudinaryImage = {
 export type ACECloudinaryImage = {
   id: string
   transforms?: object[]
+  format?: 'svg' | 'auto'
 }
 
 export type ImageFile = {

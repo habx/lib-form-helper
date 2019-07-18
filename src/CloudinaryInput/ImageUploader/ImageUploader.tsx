@@ -121,7 +121,11 @@ const ImageUploader: React.FunctionComponent<ImageUploaderProps> = ({
     ({ withCustomization }) => {
       const image = withCustomization
         ? state.customizedImage
-        : { id: state.selectedImage.public_id, transforms: [] }
+        : {
+            id: state.selectedImage.public_id,
+            transforms: [],
+            format: state.selectedImage.format === 'svg' ? 'svg' : 'auto',
+          }
 
       const formattedImage = getImageInOutputFormat({ image, imageFormat })
 
