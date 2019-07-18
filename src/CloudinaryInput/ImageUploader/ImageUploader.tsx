@@ -21,7 +21,16 @@ import {
 } from './ImageUploader.style'
 import { getTitle, getImageInOutputFormat } from './ImageUploader.utils'
 
-const DEFAULT_DIRECTORIES = ['logos', 'cities', 'regions']
+const DEFAULT_DIRECTORIES = [
+  'logos',
+  'cities',
+  'regions',
+  'icons',
+  'optimizer',
+  'illustrations/concept',
+  'illustrations/misc',
+  'illustrations/scenes',
+]
 
 const reducer = (state, action) => {
   switch (action.type) {
