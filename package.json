@@ -37,7 +37,7 @@
   },
   "dependencies": {
     "final-form": "^4.16.1",
-    "final-form-arrays": "^1.1.2",
+    "final-form-arrays": "^3.0.1",
     "lodash": "^4.17.0",
     "react": "^16.8.1",
     "react-dom": "^16.8.1",
