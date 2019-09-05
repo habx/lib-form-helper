@@ -106,10 +106,11 @@ const withFinalForm = <
     const { label, showError, meta, input, ...rest } = useFinalFormField<
       FieldValue
     >(props.name, fieldProps, hookConfig)
+
     return (
       <FieldContainer>
         <WrappedComponent
-          {...omit(props, ['format', 'parse', 'validate']) as Props}
+          {...(omit(props, ['format', 'parse', 'validate']) as Props)}
           {...input}
           {...rest}
           validate={inputConfig.isArray ? fieldProps.validate : undefined}
@@ -119,7 +120,7 @@ const withFinalForm = <
         />
         {!label && (
           <FieldError padding={inputConfig.errorPadding}>
-            {showError && meta.error}
+            {showError && typeof meta.error !== 'object' && meta.error}
           </FieldError>
         )}
       </FieldContainer>
