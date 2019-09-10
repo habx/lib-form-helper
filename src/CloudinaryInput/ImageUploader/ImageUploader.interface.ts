@@ -27,6 +27,7 @@ export default interface ImageUploaderProps {
   renderImages: (RenderParams) => JSX.Element
   onChange: (image: ACECloudinaryImage | string) => void
   image: ACECloudinaryImage
+  rawImageId?: string
   fetchImageConfig: (path: string) => Promise<CloudinaryImage>
   uploadImage: (
     image: ImageFile,

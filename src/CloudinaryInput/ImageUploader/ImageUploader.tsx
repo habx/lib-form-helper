@@ -95,6 +95,7 @@ const ImageUploader: React.FunctionComponent<ImageUploaderProps> = ({
   fetchImageConfig,
   onChange,
   renderImages,
+  rawImageId,
 }) => {
   const { setStatus, imageFormat } = React.useContext(CloudinaryInputContext)
 
@@ -158,9 +159,10 @@ const ImageUploader: React.FunctionComponent<ImageUploaderProps> = ({
       getTitle({
         directory: state.directory,
         selectedImage: state.selectedImage,
+        rawImageId,
         status,
       }),
-    [state.directory, state.selectedImage, status]
+    [rawImageId, state.directory, state.selectedImage, status]
   )
 
   React.useEffect(() => {
