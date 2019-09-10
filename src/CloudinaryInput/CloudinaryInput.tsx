@@ -110,6 +110,7 @@ const CloudinaryInput: React.FunctionComponent<CloudinaryInputProps> = ({
                 defaultDirectory={defaultDirectory}
                 renderImages={renderImages}
                 image={image}
+                rawImageId={image ? image.id : undefined}
                 fetchImageConfig={fetchImageConfig}
                 uploadImage={uploadImage}
               />

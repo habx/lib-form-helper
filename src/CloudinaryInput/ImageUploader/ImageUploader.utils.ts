@@ -2,7 +2,7 @@ import { get } from 'lodash'
 
 import { createCloudinaryURL } from '../CloudinaryInput.utils'
 
-export const getTitle = ({ status, selectedImage, directory }) => {
+export const getTitle = ({ status, selectedImage, directory, rawImageId }) => {
   if (status === 'home') {
     return 'Liste des dossiers'
   }
@@ -16,7 +16,11 @@ export const getTitle = ({ status, selectedImage, directory }) => {
   }
 
   if (status === 'customizer') {
-    const imageId = get(selectedImage, 'public_id', 'image inconnue')
+    const imageId = get(
+      selectedImage,
+      'public_id',
+      rawImageId || 'image inconnue'
+    )
     return `Personnalisation de ${imageId}`
   }
 
