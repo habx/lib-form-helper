@@ -8,7 +8,7 @@ export const FormIntlContext = React.createContext<intlContext>({
 })
 export const useTranslate = () => {
   const intl = React.useContext(FormIntlContext)
-  return (key: keyof intlContext) => intl[key]
+  return React.useCallback((key: keyof intlContext) => intl[key], [intl])
 }
 export const FormIntlProvider: React.FunctionComponent<intlContext> = ({
   children,
