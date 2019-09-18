@@ -4,6 +4,7 @@ import { useField } from 'react-final-form'
 
 import useUniqID from '../_internal/useUniqID'
 import { SectionContext, StatusContext } from '../contexts'
+import { useTranslate } from '../Intl'
 import joinNames from '../joinNames'
 
 import {
@@ -42,6 +43,7 @@ const useFieldStatus = ({
 }
 
 const useLabel = ({ error, required, label, formStatus }) => {
+  const t = useTranslate()
   return React.useMemo(() => {
     if (!formStatus.showErrors) {
       return label
@@ -52,17 +54,17 @@ const useLabel = ({ error, required, label, formStatus }) => {
     }
 
     if (!error || error === 'required') {
-      return `${label}${required ? ' (obligatoire)' : ''}`
+      return `${label}${required ? ` (${t('required')}` : ''}`
     }
 
     if (error && typeof error === 'object') {
-      return label ? `${label} (contient des erreurs)` : 'Contient des erreurs'
+      return label ? `${label} (${t('containsErrors')})` : t('containsErrors')
     }
 
     if (error && typeof error !== 'object') {
       return `${label} : ${error}`
     }
-  }, [error, label, required, formStatus.showErrors])
+  }, [formStatus.showErrors, label, error, required, t])
 }
 
 const useFinalFormField = <FieldValue extends unknown>(
@@ -127,7 +129,8 @@ const useFinalFormField = <FieldValue extends unknown>(
     onChange: handleChange,
     value: inputConfig.changeOnBlur ? localValue : input.value,
     disabled: isNil(disabled) ? formStatus.disabled : disabled,
-    showError: formStatus.showErrors && !!get(meta, 'error'),
+    showError:
+      formStatus.showErrors && !!get(meta, 'error') && !!get(meta, 'touched'),
   }
 }
 
