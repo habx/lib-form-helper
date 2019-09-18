@@ -1,3 +1,5 @@
+import { FieldMetaState } from 'react-final-form'
+
 import { InputHookConfig } from '../useFinalFormField/useFinalFormField.interface'
 
 type validate<FieldValue, P> = (
@@ -20,6 +22,7 @@ export interface FieldContentReceivedProps {
   label?: string
   required?: boolean
   disabled?: boolean
+  shouldShowError?: (meta: FieldMetaState<any>) => boolean
 }
 
 export interface FieldTransformationProps<FieldValue, P> {

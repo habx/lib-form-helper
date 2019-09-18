@@ -1,4 +1,4 @@
-import { get, isNil } from 'lodash'
+import { get, isNil, isFunction } from 'lodash'
 import * as React from 'react'
 import { useField } from 'react-final-form'
 
@@ -121,6 +121,9 @@ const useFinalFormField = <FieldValue extends unknown>(
     },
     [input, inputConfig.changeOnBlur]
   )
+  const fieldShowError = isFunction(props.shouldShowError)
+    ? props.shouldShowError(meta)
+    : true
 
   return {
     input,
@@ -129,8 +132,7 @@ const useFinalFormField = <FieldValue extends unknown>(
     onChange: handleChange,
     value: inputConfig.changeOnBlur ? localValue : input.value,
     disabled: isNil(disabled) ? formStatus.disabled : disabled,
-    showError:
-      formStatus.showErrors && !!get(meta, 'error') && !!get(meta, 'touched'),
+    showError: fieldShowError && formStatus.showErrors && !!get(meta, 'error'),
   }
 }
 

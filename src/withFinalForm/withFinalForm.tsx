@@ -115,7 +115,12 @@ const withFinalForm = <
     return (
       <FieldContainer>
         <WrappedComponent
-          {...(omit(props, ['format', 'parse', 'validate']) as Props)}
+          {...(omit(props, [
+            'format',
+            'parse',
+            'validate',
+            'shouldShowError',
+          ]) as Props)}
           {...input}
           {...rest}
           validate={inputConfig.isArray ? fieldProps.validate : undefined}
