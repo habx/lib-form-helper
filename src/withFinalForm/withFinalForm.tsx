@@ -6,6 +6,7 @@ import styled from 'styled-components'
 import { fontSizes, theme, useTheme } from '@habx/thunder-ui'
 
 import { Except } from '../_internal/typescript'
+import { useTranslate } from '../Intl'
 import useFinalFormField from '../useFinalFormField'
 
 import {
@@ -72,25 +73,29 @@ const withFinalForm = <
         : fieldParsedValue
     }, [])
 
-    const validate = React.useCallback(value => {
-      const requiredValidatedValue =
-        propsRef.current.required && (isNil(value) || value === '')
-          ? 'required'
+    const t = useTranslate()
+    const validate = React.useCallback(
+      value => {
+        const requiredValidatedValue =
+          propsRef.current.required && (isNil(value) || value === '')
+            ? `(${t('required')})`
+            : undefined
+
+        const fieldValidatedValue =
+          requiredValidatedValue ||
+          (isFunction(inputConfig.validate) &&
+            inputConfig.validate(value, propsRef.current))
+
+        if (fieldValidatedValue) {
+          return fieldValidatedValue
+        }
+
+        return isFunction(propsRef.current.validate)
+          ? propsRef.current.validate(value, propsRef.current)
           : undefined
-
-      const fieldValidatedValue =
-        requiredValidatedValue ||
-        (isFunction(inputConfig.validate) &&
-          inputConfig.validate(value, propsRef.current))
-
-      if (fieldValidatedValue) {
-        return fieldValidatedValue
-      }
-
-      return isFunction(propsRef.current.validate)
-        ? propsRef.current.validate(value, propsRef.current)
-        : undefined
-    }, [])
+      },
+      [t]
+    )
 
     React.useEffect(() => {
       propsRef.current = props
@@ -110,7 +115,12 @@ const withFinalForm = <
     return (
       <FieldContainer>
         <WrappedComponent
-          {...(omit(props, ['format', 'parse', 'validate']) as Props)}
+          {...(omit(props, [
+            'format',
+            'parse',
+            'validate',
+            'shouldShowError',
+          ]) as Props)}
           {...input}
           {...rest}
           validate={inputConfig.isArray ? fieldProps.validate : undefined}
