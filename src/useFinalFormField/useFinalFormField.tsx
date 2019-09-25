@@ -108,8 +108,18 @@ const useFinalFormField = <FieldValue extends unknown>(
   }, [meta.active]) // eslint-disable-line react-hooks/exhaustive-deps
 
   React.useEffect(() => {
-    setLocalValue(input.value)
-  }, [input.value])
+    if (Array.isArray(input.value)) {
+      const arrayLocalValue = localValue as any[]
+      if (
+        !input.value.every(e => arrayLocalValue.includes(e)) ||
+        input.value.length !== arrayLocalValue.length
+      ) {
+        setLocalValue(input.value)
+      }
+    } else {
+      setLocalValue(input.value)
+    }
+  }, [input.value]) // eslint-disable-line
 
   const handleChange = React.useCallback(
     newValue => {
