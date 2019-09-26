@@ -1,4 +1,4 @@
-import { get, isNil, isFunction } from 'lodash'
+import { get, isNil, isFunction, every, includes } from 'lodash'
 import * as React from 'react'
 import { useField } from 'react-final-form'
 
@@ -109,10 +109,10 @@ const useFinalFormField = <FieldValue extends unknown>(
 
   React.useEffect(() => {
     if (Array.isArray(input.value)) {
-      const arrayLocalValue = localValue as any[]
+      const arrayLocalValue = (localValue || []) as any[]
       if (
-        !input.value.every(e => arrayLocalValue.includes(e)) ||
-        input.value.length !== arrayLocalValue.length
+        !every(input.value, e => includes(arrayLocalValue, e)) ||
+        get(input.value, 'length') !== get(arrayLocalValue, 'length')
       ) {
         setLocalValue(input.value)
       }
