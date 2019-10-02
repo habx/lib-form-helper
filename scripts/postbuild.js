@@ -11,7 +11,6 @@ const PEER_DEPENDENCIES = [
   'final-form',
   'react-final-form',
   'final-form-arrays',
-  '@habx/thunder-ui',
 ]
 
 const transfomPackageJSON = packageJSON => ({
