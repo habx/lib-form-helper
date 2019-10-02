@@ -6,10 +6,7 @@ export const FormIntlContext = React.createContext<intlContext>({
   required: 'obligatoire',
   containsErrors: 'contient des erreurs',
 })
-export const useTranslate = () => {
-  const intl = React.useContext(FormIntlContext)
-  return React.useCallback((key: keyof intlContext) => intl[key], [intl])
-}
+
 export const FormIntlProvider: React.FunctionComponent<intlContext> = ({
   children,
   ...intlContext

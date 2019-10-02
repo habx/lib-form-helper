@@ -2,9 +2,9 @@ import { get, isNil, isFunction, every, includes } from 'lodash'
 import * as React from 'react'
 import { useField } from 'react-final-form'
 
+import useTranslate from '../_internal/useTranslate'
 import useUniqID from '../_internal/useUniqID'
 import { SectionContext, StatusContext } from '../contexts'
-import { useTranslate } from '../Intl'
 import joinNames from '../joinNames'
 
 import {

@@ -3,10 +3,9 @@ import * as React from 'react'
 import { UseFieldConfig } from 'react-final-form'
 import styled from 'styled-components'
 
-import { fontSizes, theme, useTheme } from '@habx/thunder-ui'
-
 import { Except } from '../_internal/typescript'
-import { useTranslate } from '../Intl'
+import useTranslate from '../_internal/useTranslate'
+import { FormContext } from '../FormHelperProvider'
 import useFinalFormField from '../useFinalFormField'
 
 import {
@@ -17,14 +16,6 @@ import {
 
 const FieldContainer = styled.div`
   padding: 8px 0;
-`
-
-const FieldError = styled.div`
-  color: ${theme.get('error')};
-  height: 1rem;
-  font-size: ${fontSizes.tiny};
-
-  padding: ${({ padding }) => padding}px;
 `
 
 const withFinalForm = <
@@ -106,7 +97,9 @@ const withFinalForm = <
 
   const Field: React.FunctionComponent<FieldComponentProps> = props => {
     const fieldProps = useFieldProps(props)
-    const thunderTheme = useTheme()
+    const {
+      errors: { component: ErrorComponent, color: errorColor },
+    } = React.useContext(FormContext)
 
     const { label, showError, meta, input, ...rest } = useFinalFormField<
       FieldValue
@@ -126,12 +119,12 @@ const withFinalForm = <
           validate={inputConfig.isArray ? fieldProps.validate : undefined}
           error={showError}
           label={label}
-          labelColor={showError ? thunderTheme.error : null}
+          labelColor={showError ? errorColor : null}
         />
         {!label && (
-          <FieldError padding={inputConfig.errorPadding}>
+          <ErrorComponent padding={inputConfig.errorPadding}>
             {showError && typeof meta.error !== 'object' && meta.error}
-          </FieldError>
+          </ErrorComponent>
         )}
       </FieldContainer>
     )
