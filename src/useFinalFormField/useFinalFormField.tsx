@@ -21,13 +21,13 @@ const useFieldStatus = ({
   const isFirst = React.useRef(true)
   const uniqID = useUniqID()
 
-  React.useLayoutEffect(() => {
+  React.useEffect(() => {
     if (!isFirst.current || error) {
       setFieldStatus(uniqID, path, 'error', error)
     }
   }, [error, path, setFieldStatus, uniqID])
 
-  React.useLayoutEffect(() => {
+  React.useEffect(() => {
     if (!isFirst.current || dirty) {
       setFieldStatus(uniqID, path, 'dirty', dirty)
     }
