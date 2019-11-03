@@ -6,7 +6,6 @@ const path = require('path')
 
 const PEER_DEPENDENCIES = [
   'react',
-  'react-dom',
   'styled-components',
   'final-form',
   'react-final-form',
