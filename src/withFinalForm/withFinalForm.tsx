@@ -1,4 +1,4 @@
-import { isNil, isFunction, omit } from 'lodash'
+import { isFunction, isNil, omit } from 'lodash'
 import * as React from 'react'
 import { UseFieldConfig } from 'react-final-form'
 import styled from 'styled-components'
@@ -9,9 +9,9 @@ import { FormContext } from '../FormHelperProvider'
 import useFinalFormField from '../useFinalFormField'
 
 import {
-  InputHOCConfig,
-  FieldTransformationProps,
   FieldContentReceivedProps,
+  FieldTransformationProps,
+  InputHOCConfig,
 } from './withFinalForm.interface'
 
 const FieldContainer = styled.div`
@@ -20,7 +20,8 @@ const FieldContainer = styled.div`
 
 const withFinalForm = <
   FieldValue extends unknown,
-  AdditionalProps extends object = {}
+  AdditionalProps extends object = {},
+  Element extends HTMLElement = HTMLDivElement
 >(
   inputConfig: InputHOCConfig<FieldValue, {}> = {}
 ) => <Props extends object>(WrappedComponent: React.ComponentType<Props>) => {
@@ -95,7 +96,7 @@ const withFinalForm = <
     return { ...props, format, parse, validate }
   }
 
-  const Field: React.FunctionComponent<FieldComponentProps> = props => {
+  return React.forwardRef<Element, FieldComponentProps>((props, ref) => {
     const fieldProps = useFieldProps(props)
     const {
       errors: { component: ErrorComponent, color: errorColor },
@@ -108,6 +109,7 @@ const withFinalForm = <
     return (
       <FieldContainer>
         <WrappedComponent
+          ref={ref}
           {...(omit(props, [
             'format',
             'parse',
@@ -128,9 +130,7 @@ const withFinalForm = <
         )}
       </FieldContainer>
     )
-  }
-
-  return Field
+  })
 }
 
 export default withFinalForm
