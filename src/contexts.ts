@@ -9,6 +9,7 @@ type sectionCallback = (
 export interface StatusContextProps {
   disabled?: boolean
   showErrors: boolean
+  language: 'fr' | 'en'
   subscribeSection: (
     sectionId: number,
     section: {
@@ -37,9 +38,19 @@ export interface SectionContextProps {
 export const StatusContext = React.createContext<StatusContextProps>({
   disabled: false,
   showErrors: true,
+  language: 'fr',
 } as StatusContextProps)
 
 export const SectionContext = React.createContext<SectionContextProps>({
   name: '',
   path: [],
+})
+
+export type IntlContextProps = {
+  requiredShort?: string
+  containsErrors?: string
+}
+export const IntlContext = React.createContext<IntlContextProps>({
+  requiredShort: 'obligatoire',
+  containsErrors: 'contient des erreurs',
 })

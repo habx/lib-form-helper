@@ -1,15 +1,16 @@
 import { FormProps as FinalFormProps, FormRenderProps } from 'react-final-form'
 
-export default interface FormProps extends FinalFormProps {
+interface AdditionalProps {
   disabled?: boolean
   shouldShowErrors?: (props: FormRenderProps) => boolean
   saveWithKeyboard?: boolean
+  language?: 'fr' | 'en'
+}
+
+export default interface FormProps extends FinalFormProps, AdditionalProps {
   render: (props: FormRenderProps) => JSX.Element
 }
 
-export interface FormContentProps extends FormRenderProps {
+export interface FormContentProps extends FormRenderProps, AdditionalProps {
   render: (props: FormRenderProps) => JSX.Element
-  shouldShowErrors?: (props: FormRenderProps) => boolean
-  saveWithKeyboard?: boolean
-  disabled?: boolean
 }
