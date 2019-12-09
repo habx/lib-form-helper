@@ -68,23 +68,27 @@ const withFinalForm = <
     const t = useTranslate()
     const validate = React.useCallback(
       value => {
-        const requiredValidatedValue =
-          propsRef.current.required && (isNil(value) || value === '')
-            ? `(${t('required')})`
-            : undefined
-
-        const fieldValidatedValue =
-          requiredValidatedValue ||
-          (isFunction(inputConfig.validate) &&
-            inputConfig.validate(value, propsRef.current))
-
-        if (fieldValidatedValue) {
-          return fieldValidatedValue
+        if (propsRef.current.required && (isNil(value) || value === '')) {
+          return propsRef.current.label
+            ? `(${t('errors.required.short')})`
+            : t('errors.required.full')
         }
 
-        return isFunction(propsRef.current.validate)
-          ? propsRef.current.validate(value, propsRef.current)
-          : undefined
+        const componentError =
+          isFunction(inputConfig.validate) &&
+          inputConfig.validate(value, propsRef.current)
+        if (componentError) {
+          return componentError
+        }
+
+        const instanceError =
+          isFunction(propsRef.current.validate) &&
+          propsRef.current.validate(value, propsRef.current)
+        if (instanceError) {
+          return instanceError
+        }
+
+        return undefined
       },
       [t]
     )

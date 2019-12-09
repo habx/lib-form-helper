@@ -55,6 +55,7 @@ const FormContent: React.FunctionComponent<FormContentProps> = ({
   form,
   shouldShowErrors,
   saveWithKeyboard,
+  language = 'fr',
   ...props
 }) => {
   const {
@@ -73,6 +74,7 @@ const FormContent: React.FunctionComponent<FormContentProps> = ({
     () => ({
       disabled: props.submitting || props.disabled,
       showErrors,
+      language,
       setFieldStatus: handleFieldStatusChange,
       subscribeSection: handleSectionSubscription,
       subscribeSectionWatcher: handleSectionWatcherSubscription,
@@ -81,6 +83,7 @@ const FormContent: React.FunctionComponent<FormContentProps> = ({
       props.submitting,
       props.disabled,
       showErrors,
+      language,
       handleFieldStatusChange,
       handleSectionSubscription,
       handleSectionWatcherSubscription,

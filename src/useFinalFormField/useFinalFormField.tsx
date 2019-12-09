@@ -54,11 +54,11 @@ const useLabel = ({ error, required, label, formStatus }) => {
     }
 
     if (!error || error === 'required') {
-      return `${label}${required ? ` (${t('required')}` : ''}`
+      return `${label}${required ? ` (${t('errors.required.short')}` : ''}`
     }
 
     if (error && typeof error === 'object') {
-      return label ? `${label} (${t('containsErrors')})` : t('containsErrors')
+      return label ? `${label} (${t('errors.on.child')})` : t('errors.on.child')
     }
 
     if (error && typeof error !== 'object') {
@@ -132,7 +132,7 @@ const useFinalFormField = <FieldValue extends unknown>(
     [input, inputConfig.changeOnBlur]
   )
   const fieldShowError = isFunction(props.shouldShowError)
-    ? props.shouldShowError(meta)
+    ? !!props.shouldShowError(meta)
     : true
 
   return {
