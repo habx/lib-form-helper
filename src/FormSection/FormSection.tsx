@@ -1,6 +1,7 @@
 import { isFunction, some } from 'lodash'
 import * as React from 'react'
 
+import useSSRLayoutEffect from '../_internal/useSSRLayoutEffect'
 import useUniqID from '../_internal/useUniqID'
 import { StatusContext, SectionContext } from '../contexts'
 import joinNames from '../joinNames'
@@ -45,7 +46,7 @@ const FormSection: React.FunctionComponent<FormSectionProps> = ({
     [status]
   )
 
-  React.useLayoutEffect(
+  useSSRLayoutEffect(
     () =>
       form.subscribeSection(uniqID, {
         id,

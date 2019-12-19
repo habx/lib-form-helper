@@ -1,6 +1,7 @@
 import { some } from 'lodash'
 import * as React from 'react'
 
+import useSSRLayoutEffect from '../_internal/useSSRLayoutEffect'
 import useUniqID from '../_internal/useUniqID'
 import { StatusContext } from '../contexts'
 import {
@@ -30,7 +31,7 @@ const FormSectionWatcher: React.FunctionComponent<FormSectionWatcherProps> = ({
     [status]
   )
 
-  React.useLayoutEffect(
+  useSSRLayoutEffect(
     () =>
       form.subscribeSectionWatcher({
         uId,
