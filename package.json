@@ -47,7 +47,7 @@
     "@types/lodash": "^4.14.120",
     "@types/react": "^16.8.17",
     "bili": "^4.7.4",
-    "husky": "^3.0.3",
+    "husky": "^4.0.0",
     "lint-staged": "^9.2.3",
     "rimraf": "^3.0.0",
     "rollup-plugin-typescript2": "^0.25.2",
