@@ -55,7 +55,7 @@ const useLabel = ({ error, required, label, formStatus }) => {
     }
 
     if (!error || error === 'required') {
-      return `${label}${required ? ` (${t('errors.required.short')}` : ''}`
+      return `${label}${required ? ` (${t('errors.required.short')})` : ''}`
     }
 
     if (error && typeof error === 'object') {
