@@ -45,12 +45,3 @@ export const SectionContext = React.createContext<SectionContextProps>({
   name: '',
   path: [],
 })
-
-export type IntlContextProps = {
-  requiredShort?: string
-  containsErrors?: string
-}
-export const IntlContext = React.createContext<IntlContextProps>({
-  requiredShort: 'obligatoire',
-  containsErrors: 'contient des erreurs',
-})
