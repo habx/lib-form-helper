@@ -15,7 +15,9 @@ import {
 } from './withFinalForm.interface'
 
 const FieldContainer = styled.div`
-  padding: 8px 0;
+  &:not(:last-child) {
+    padding-bottom: 12px;
+  }
 `
 
 const withFinalForm = <
@@ -106,7 +108,7 @@ const withFinalForm = <
       errors: { component: ErrorComponent, color: errorColor },
     } = React.useContext(FormContext)
 
-    const { label, showError, meta, input, ...rest } = useFinalFormField<
+    const { label, showError, error, input, ...rest } = useFinalFormField<
       FieldValue
     >(props.name, fieldProps, hookConfig)
 
@@ -129,7 +131,7 @@ const withFinalForm = <
         />
         {!label && (
           <ErrorComponent padding={inputConfig.errorPadding}>
-            {showError && typeof meta.error !== 'object' && meta.error}
+            {showError && error}
           </ErrorComponent>
         )}
       </FieldContainer>
