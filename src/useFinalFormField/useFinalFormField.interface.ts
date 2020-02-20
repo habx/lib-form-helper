@@ -12,4 +12,5 @@ export interface UseFinalFormFieldValue<FieldType> {
   onChange: (value: FieldType, ...args: any[]) => void
   value: FieldType
   showError: boolean
+  error: any
 }

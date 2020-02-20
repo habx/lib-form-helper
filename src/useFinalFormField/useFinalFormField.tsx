@@ -89,8 +89,10 @@ const useFinalFormField = <FieldValue extends unknown>(
     formStatus,
   })
 
+  const error = meta.error ?? meta.submitError
+
   const label = useLabel({
-    error: meta.error,
+    error,
     label: rawLabel,
     required,
     formStatus,
@@ -143,7 +145,8 @@ const useFinalFormField = <FieldValue extends unknown>(
     onChange: handleChange,
     value: inputConfig.changeOnBlur ? localValue : input.value,
     disabled: isNil(disabled) ? formStatus.disabled : disabled,
-    showError: fieldShowError && formStatus.showErrors && !!get(meta, 'error'),
+    showError: fieldShowError && formStatus.showErrors && !!error,
+    error,
   }
 }
 

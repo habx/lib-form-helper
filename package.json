@@ -43,6 +43,9 @@
     "styled-components": "^5.0.0"
   },
   "devDependencies": {
+    "@babel/plugin-proposal-nullish-coalescing-operator": "^7.8.3",
+    "@babel/plugin-proposal-optional-chaining": "^7.8.3",
+    "@babel/preset-react": "^7.8.3",
     "@habx/eslint-config-client": "^2.0.6",
     "@types/lodash": "^4.14.120",
     "@types/react": "^16.8.17",
