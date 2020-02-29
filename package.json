@@ -1,6 +1,6 @@
 {
   "name": "@habx/lib-form-helper",
-  "version": "3.6.0",
+  "version": "3.6.1",
   "description": "Helpers for back-office forms",
   "main": "./dist/index.js",
   "types": "./dist/typings/index.d.ts",
