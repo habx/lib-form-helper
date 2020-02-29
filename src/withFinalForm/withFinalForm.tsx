@@ -14,11 +14,7 @@ import {
   InputHOCConfig,
 } from './withFinalForm.interface'
 
-const FieldContainer = styled.div`
-  &:not(:last-child) {
-    padding-bottom: 12px;
-  }
-`
+const FieldContainer = styled.div``
 
 const withFinalForm = <
   FieldValue extends unknown,
