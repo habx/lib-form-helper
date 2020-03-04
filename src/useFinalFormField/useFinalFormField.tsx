@@ -125,25 +125,39 @@ const useFinalFormField = <FieldValue extends unknown>(
   }, [input.value]) // eslint-disable-line
 
   const handleChange = React.useCallback(
-    newValue => {
+    newRawValue => {
+      const newValue = newRawValue?.target
+        ? newRawValue.target.value
+        : newRawValue
+
       if (inputConfig.changeOnBlur) {
         setLocalValue(newValue)
       } else {
         input.onChange(newValue)
       }
     },
-    [input, inputConfig.changeOnBlur]
+    [input, inputConfig]
   )
   const fieldShowError = isFunction(props.shouldShowError)
     ? !!props.shouldShowError(meta)
     : true
+
+  const value = React.useMemo(() => {
+    if (inputConfig.changeOnBlur) {
+      return (localValue as any)?.target
+        ? (localValue as any).target.value
+        : localValue
+    }
+
+    return input.value
+  }, [input.value, inputConfig.changeOnBlur, localValue])
 
   return {
     input,
     meta,
     label,
     onChange: handleChange,
-    value: inputConfig.changeOnBlur ? localValue : input.value,
+    value,
     disabled: isNil(disabled) ? formStatus.disabled : disabled,
     showError: fieldShowError && formStatus.showErrors && !!error,
     error,
