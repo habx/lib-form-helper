@@ -1,20 +1,16 @@
 import { isFunction, isNil, omit } from 'lodash'
 import * as React from 'react'
 import { UseFieldConfig } from 'react-final-form'
-import styled from 'styled-components'
 
-import { Except } from '../_internal/typescript'
-import useTranslate from '../_internal/useTranslate'
 import { FormContext } from '../FormHelperProvider'
 import useFinalFormField from '../useFinalFormField'
+import useTranslate from '../useTranslate'
 
 import {
   FieldContentReceivedProps,
   FieldTransformationProps,
   InputHOCConfig,
 } from './withFinalForm.interface'
-
-const FieldContainer = styled.div``
 
 const withFinalForm = <
   FieldValue extends unknown,
@@ -24,9 +20,9 @@ const withFinalForm = <
   inputConfig: InputHOCConfig<FieldValue, {}> = {}
 ) => <Props extends object>(WrappedComponent: React.ComponentType<Props>) => {
   type BaseProps = AdditionalProps &
-    FieldContentReceivedProps &
-    Except<Props, 'value' | 'onChange'> &
-    Except<
+    FieldContentReceivedProps<FieldValue> &
+    Omit<Props, 'value' | 'onChange'> &
+    Omit<
       UseFieldConfig<FieldValue>,
       'value' | keyof FieldTransformationProps<any, any>
     >
@@ -68,7 +64,7 @@ const withFinalForm = <
       value => {
         if (propsRef.current.required && (isNil(value) || value === '')) {
           return propsRef.current.label
-            ? `(${t('errors.required.short')})`
+            ? `(${t('errors.required.short', {}, { upperFirst: false })})`
             : t('errors.required.full')
         }
 
@@ -109,7 +105,7 @@ const withFinalForm = <
     >(props.name, fieldProps, hookConfig)
 
     return (
-      <FieldContainer>
+      <div>
         <WrappedComponent
           ref={ref}
           {...(omit(props, [
@@ -130,7 +126,7 @@ const withFinalForm = <
             {showError && error}
           </ErrorComponent>
         )}
-      </FieldContainer>
+      </div>
     )
   })
 }

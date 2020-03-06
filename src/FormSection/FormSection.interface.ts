@@ -16,3 +16,8 @@ export interface FormSectionRenderProps {
   hasError: boolean
   isDirty: boolean
 }
+
+export interface SectionContextProps {
+  name: string
+  path: number[]
+}

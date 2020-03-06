@@ -3,14 +3,16 @@ import * as React from 'react'
 import { useField } from 'react-final-form'
 
 import useSSRLayoutEffect from '../_internal/useSSRLayoutEffect'
-import useTranslate from '../_internal/useTranslate'
 import useUniqID from '../_internal/useUniqID'
-import { SectionContext, StatusContext } from '../contexts'
+import { FormContext, FormContextProps } from '../Form'
+import { FormSectionContext } from '../FormSection'
 import joinNames from '../joinNames'
+import useTranslate from '../useTranslate'
 
 import {
   InputHookConfig,
   UseFinalFormFieldValue,
+  UseFinalFormReceivedProps,
 } from './useFinalFormField.interface'
 
 const useFieldStatus = ({
@@ -18,6 +20,11 @@ const useFieldStatus = ({
   dirty,
   path,
   formStatus: { setFieldStatus },
+}: {
+  error: any
+  dirty?: boolean
+  path: number[]
+  formStatus: FormContextProps
 }) => {
   const isFirst = React.useRef(true)
   const uniqID = useUniqID()
@@ -43,7 +50,17 @@ const useFieldStatus = ({
   }, []) // eslint-disable-line react-hooks/exhaustive-deps
 }
 
-const useLabel = ({ error, required, label, formStatus }) => {
+const useLabel = ({
+  error,
+  required,
+  label,
+  formStatus,
+}: {
+  error: any
+  required?: boolean
+  label?: string
+  formStatus: FormContextProps
+}) => {
   const t = useTranslate()
   return React.useMemo(() => {
     if (!formStatus.showErrors) {
@@ -55,11 +72,17 @@ const useLabel = ({ error, required, label, formStatus }) => {
     }
 
     if (!error || error === 'required') {
-      return `${label}${required ? ` (${t('errors.required.short')})` : ''}`
+      return `${label}${
+        required
+          ? ` (${t('errors.required.short', {}, { upperFirst: false })})`
+          : ''
+      }`
     }
 
     if (error && typeof error === 'object') {
-      return label ? `${label} (${t('errors.on.child')})` : t('errors.on.child')
+      return label
+        ? `${label} (${t('errors.on.child', {}, { upperFirst: false })})`
+        : t('errors.on.child', {}, { upperFirst: false })
     }
 
     if (error && typeof error !== 'object') {
@@ -68,19 +91,22 @@ const useLabel = ({ error, required, label, formStatus }) => {
   }, [formStatus.showErrors, label, error, required, t])
 }
 
-const useFinalFormField = <FieldValue extends unknown>(
+const useFinalFormField = <
+  FieldValue extends unknown,
+  Props extends UseFinalFormReceivedProps<FieldValue> = {}
+>(
   baseName: string,
-  props,
+  props: Props,
   inputConfig: InputHookConfig = {}
 ): UseFinalFormFieldValue<FieldValue> => {
-  const sectionContext = React.useContext(SectionContext)
+  const sectionContext = React.useContext(FormSectionContext)
   const name = joinNames(sectionContext.name, baseName)
 
   const { input, meta } = useField<FieldValue>(name, props)
 
   const { disabled, required, label: rawLabel } = props
 
-  const formStatus = React.useContext(StatusContext)
+  const formStatus = React.useContext(FormContext)
 
   useFieldStatus({
     error: meta.error,

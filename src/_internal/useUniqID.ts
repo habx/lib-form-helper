@@ -1,9 +1,9 @@
 import * as React from 'react'
 
 const useUniqID = (): number => {
-  const idRef = React.useRef(null)
+  const idRef = React.useRef<number>()
 
-  if (idRef.current === null) {
+  if (idRef.current === undefined) {
     idRef.current = Math.random()
   }
 

@@ -1,18 +1,22 @@
 {
   "name": "@habx/lib-form-helper",
-  "version": "3.6.2",
-  "description": "Helpers for back-office forms",
-  "main": "./dist/index.js",
+  "version": "4.0.1",
+  "description": "Wrappers for react-final-form",
+  "sideEffects": false,
+  "main": "./dist/index.cjs.js",
+  "module": "./dist/esm/index.js",
   "types": "./dist/typings/index.d.ts",
   "scripts": {
     "clean": "rimraf ./dist",
-    "build": "npm run clean && npm run build:types && bili",
-    "build:watch": "npm run clean && npm run build:types && bili --watch",
-    "build:types": "tsc --emitDeclarationOnly",
-    "postbuild": "node ./scripts/postbuild.js",
-    "publish": "cd dist && npm publish && cd ..",
+    "build": "npm run clean && npm run build:esm && npm run build:cjs",
+    "build:esm": "tsc",
+    "build:cjs": "bili",
+    "build:watch": "npm run clean && tsc --watch",
     "lint": "eslint \"src/**\""
   },
+  "files": [
+    "dist"
+  ],
   "repository": {
     "type": "git",
     "url": "git+https://github.com/habx/lib-form-helper.git"
@@ -30,30 +34,33 @@
   },
   "lint-staged": {
     "*.{ts,tsx}": [
-      "eslint --fix",
-      "git add"
+      "eslint --fix"
     ]
   },
-  "dependencies": {
-    "final-form": "^4.16.1",
-    "final-form-arrays": "^3.0.1",
-    "lodash": "^4.17.0",
-    "react": "^16.8.1",
-    "react-final-form": "^6.3.0",
-    "styled-components": "^5.0.0"
+  "peerDependencies": {
+    "@habx/lib-client-intl": "^1.0.0",
+    "final-form": "^4.18.7",
+    "final-form-arrays": "^3.0.2",
+    "lodash": "^4.17.15",
+    "react": "^16.13.0",
+    "react-final-form": "^6.3.5"
   },
+  "dependencies": {},
   "devDependencies": {
-    "@babel/plugin-proposal-nullish-coalescing-operator": "^7.8.3",
-    "@babel/plugin-proposal-optional-chaining": "^7.8.3",
-    "@babel/preset-react": "^7.8.3",
     "@habx/eslint-config-client": "^2.0.6",
+    "@habx/lib-client-intl": "^1.0.0",
     "@types/lodash": "^4.14.120",
     "@types/react": "^16.8.17",
     "bili": "^4.7.4",
+    "final-form": "^4.18.7",
+    "final-form-arrays": "^3.0.2",
     "husky": "^4.0.0",
     "lint-staged": "^10.0.0",
+    "lodash": "^4.17.15",
+    "react": "^16.13.0",
+    "react-final-form": "^6.3.5",
     "rimraf": "^3.0.0",
     "rollup-plugin-typescript2": "^0.26.0",
-    "typescript": "^3.3.3"
+    "typescript": "^3.8.3"
   }
 }

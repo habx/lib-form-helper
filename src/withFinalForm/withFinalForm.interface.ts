@@ -1,6 +1,7 @@
-import { FieldMetaState } from 'react-final-form'
-
-import { InputHookConfig } from '../useFinalFormField/useFinalFormField.interface'
+import {
+  InputHookConfig,
+  UseFinalFormReceivedProps,
+} from '../useFinalFormField/useFinalFormField.interface'
 
 type validate<FieldValue, P> = (
   value: FieldValue,
@@ -17,12 +18,9 @@ export interface InputHOCConfig<FieldValue, P> extends InputHookConfig {
   isArray?: boolean
 }
 
-export interface FieldContentReceivedProps {
+export interface FieldContentReceivedProps<FieldValue>
+  extends UseFinalFormReceivedProps<FieldValue> {
   name: string
-  label?: string
-  required?: boolean
-  disabled?: boolean
-  shouldShowError?: (meta: FieldMetaState<any>) => boolean
 }
 
 export interface FieldTransformationProps<FieldValue, P> {

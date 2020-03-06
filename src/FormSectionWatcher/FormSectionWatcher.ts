@@ -3,7 +3,7 @@ import * as React from 'react'
 
 import useSSRLayoutEffect from '../_internal/useSSRLayoutEffect'
 import useUniqID from '../_internal/useUniqID'
-import { StatusContext } from '../contexts'
+import { FormContext } from '../Form'
 import {
   FormSectionRenderProps,
   FormSectionStatusProps,
@@ -15,8 +15,8 @@ const FormSectionWatcher: React.FunctionComponent<FormSectionWatcherProps> = ({
   id,
   children,
 }) => {
-  const uId = useUniqID()
-  const form = React.useContext(StatusContext)
+  const watcherId = useUniqID()
+  const form = React.useContext(FormContext)
 
   const [status, updateStatus] = React.useState<FormSectionStatusProps>({
     dirty: {},
@@ -34,8 +34,8 @@ const FormSectionWatcher: React.FunctionComponent<FormSectionWatcherProps> = ({
   useSSRLayoutEffect(
     () =>
       form.subscribeSectionWatcher({
-        uId,
-        id,
+        watcherId,
+        sectionId: id,
         callback: (fieldID, type, value) => {
           updateStatus(prev => ({
             ...prev,
@@ -43,7 +43,7 @@ const FormSectionWatcher: React.FunctionComponent<FormSectionWatcherProps> = ({
           }))
         },
       }),
-    [id, uId] // eslint-disable-line react-hooks/exhaustive-deps
+    [id, watcherId] // eslint-disable-line react-hooks/exhaustive-deps
   )
 
   return children(renderPropsStatus)
