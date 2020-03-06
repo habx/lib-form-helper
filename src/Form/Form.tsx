@@ -3,14 +3,27 @@ import { isFunction, forEach } from 'lodash'
 import * as React from 'react'
 import { Form as FinalForm } from 'react-final-form'
 
-import { StatusContext } from '../contexts'
 import useKeyboardSave from '../useKeyboardSave'
+import { IntlProvider } from '../useTranslate'
 
-import FormProps, { FormContentProps } from './Form.interface'
+import FormContext from './Form.context'
+import FormProps, {
+  FormContentProps,
+  FormContextProps,
+  FormStatusActions,
+  SectionWatcher,
+  Section,
+  SectionCallback,
+} from './Form.interface'
+import * as messages from './Form.messages'
 
-const useStatuses = () => {
-  const sections = React.useRef({})
-  const sectionsWatchers = React.useRef({})
+const useStatuses = (): FormStatusActions => {
+  const sections = React.useRef<{
+    [sectionId: string]: Section | null
+  }>({})
+  const sectionsWatchers = React.useRef<{
+    [sectionId: string]: { [watcherId: number]: SectionCallback }
+  }>({})
 
   const handleSectionSubscription = React.useCallback((sectionUId, section) => {
     sections.current[sectionUId] = section
@@ -20,21 +33,24 @@ const useStatuses = () => {
     }
   }, [])
 
-  const handleSectionWatcherSubscription = React.useCallback(sectionWatcher => {
-    sectionsWatchers.current[sectionWatcher.id] = {
-      ...(sectionsWatchers.current[sectionWatcher.id] || {}),
-      [sectionWatcher.uId]: sectionWatcher.callback,
-    }
-  }, [])
+  const handleSectionWatcherSubscription = React.useCallback(
+    (sectionWatcher: SectionWatcher) => {
+      sectionsWatchers.current[sectionWatcher.sectionId] = {
+        ...(sectionsWatchers.current[sectionWatcher.sectionId] || {}),
+        [sectionWatcher.watcherId]: sectionWatcher.callback,
+      }
+    },
+    []
+  )
 
   const handleFieldStatusChange = React.useCallback(
     (fieldID, sectionsPath, type, value) => {
       forEach(sectionsPath, sectionUId => {
-        if (sections.current[sectionUId]) {
-          const { id, callback } = sections.current[sectionUId]
-          callback(fieldID, type, value)
+        const section = sections.current[sectionUId]
+        if (section) {
+          section.callback(fieldID, type, value)
 
-          forEach(sectionsWatchers.current[id], watcherCallback => {
+          forEach(sectionsWatchers.current[section.id], watcherCallback => {
             watcherCallback(fieldID, type, value)
           })
         }
@@ -43,11 +59,18 @@ const useStatuses = () => {
     []
   )
 
-  return {
-    handleFieldStatusChange,
-    handleSectionSubscription,
-    handleSectionWatcherSubscription,
-  }
+  return React.useMemo(
+    () => ({
+      setFieldStatus: handleFieldStatusChange,
+      subscribeSection: handleSectionSubscription,
+      subscribeSectionWatcher: handleSectionWatcherSubscription,
+    }),
+    [
+      handleFieldStatusChange,
+      handleSectionSubscription,
+      handleSectionWatcherSubscription,
+    ]
+  )
 }
 
 const FormContent: React.FunctionComponent<FormContentProps> = ({
@@ -58,42 +81,33 @@ const FormContent: React.FunctionComponent<FormContentProps> = ({
   language = 'fr',
   ...props
 }) => {
-  const {
-    handleFieldStatusChange,
-    handleSectionSubscription,
-    handleSectionWatcherSubscription,
-  } = useStatuses()
+  const statusActions = useStatuses()
 
-  useKeyboardSave(saveWithKeyboard && props.handleSubmit)
+  useKeyboardSave(saveWithKeyboard ? props.handleSubmit : undefined)
 
   const showErrors = isFunction(shouldShowErrors)
     ? shouldShowErrors({ form, ...props })
     : true
 
-  const statusContext = React.useMemo(
+  const statusContext = React.useMemo<FormContextProps>(
     () => ({
+      ...statusActions,
       disabled: props.submitting || props.disabled,
       showErrors,
       language,
-      setFieldStatus: handleFieldStatusChange,
-      subscribeSection: handleSectionSubscription,
-      subscribeSectionWatcher: handleSectionWatcherSubscription,
     }),
-    [
-      props.submitting,
-      props.disabled,
-      showErrors,
-      language,
-      handleFieldStatusChange,
-      handleSectionSubscription,
-      handleSectionWatcherSubscription,
-    ]
+    [statusActions, props.submitting, props.disabled, showErrors, language]
   )
 
   return (
-    <StatusContext.Provider value={statusContext}>
-      {render({ ...props, form })}
-    </StatusContext.Provider>
+    <IntlProvider
+      locale={language}
+      messages={language === 'fr' ? messages.fr : messages.en}
+    >
+      <FormContext.Provider value={statusContext}>
+        {render({ ...props, form })}
+      </FormContext.Provider>
+    </IntlProvider>
   )
 }
 

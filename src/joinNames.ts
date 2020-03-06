@@ -1,4 +1,7 @@
-const joinNames = (path: string, newName: string | number): string => {
+const joinNames = (
+  path: string,
+  newName: string | number | undefined
+): string => {
   if (!newName && newName !== 0) {
     return path
   }

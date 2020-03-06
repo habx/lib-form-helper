@@ -1,10 +1,11 @@
 import * as React from 'react'
 
-import { SectionContext, StatusContext } from './contexts'
+import { FormContext } from './Form'
+import { FormSectionContext } from './FormSection'
 
 const useStatus = () => {
-  const form = React.useContext(StatusContext)
-  const section = React.useContext(SectionContext)
+  const form = React.useContext(FormContext)
+  const section = React.useContext(FormSectionContext)
 
   return { form, section }
 }
