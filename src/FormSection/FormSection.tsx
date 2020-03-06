@@ -3,9 +3,10 @@ import * as React from 'react'
 
 import useSSRLayoutEffect from '../_internal/useSSRLayoutEffect'
 import useUniqID from '../_internal/useUniqID'
-import { StatusContext, SectionContext } from '../contexts'
+import { FormContext } from '../Form'
 import joinNames from '../joinNames'
 
+import FormSectionContext from './FormSection.context'
 import FormSectionProps, {
   FormSectionStatusProps,
   FormSectionRenderProps,
@@ -18,8 +19,8 @@ const FormSection: React.FunctionComponent<FormSectionProps> = ({
   children,
 }) => {
   const uniqID = useUniqID()
-  const form = React.useContext(StatusContext)
-  const parentSection = React.useContext(SectionContext)
+  const form = React.useContext(FormContext)
+  const parentSection = React.useContext(FormSectionContext)
   const [status, updateStatus] = React.useState<FormSectionStatusProps>({
     dirty: {},
     error: {},
@@ -47,23 +48,26 @@ const FormSection: React.FunctionComponent<FormSectionProps> = ({
   )
 
   useSSRLayoutEffect(
-    () =>
-      form.subscribeSection(uniqID, {
-        id,
-        callback: (fieldID, type, value) => {
-          updateStatus(prev => ({
-            ...prev,
-            [type]: { ...prev[type], [fieldID]: value },
-          }))
-        },
-      }),
+    () => {
+      if (id) {
+        return form.subscribeSection(uniqID, {
+          id,
+          callback: (fieldID, type, value) => {
+            updateStatus(prev => ({
+              ...prev,
+              [type]: { ...prev[type], [fieldID]: value },
+            }))
+          },
+        })
+      }
+    },
     [id, uniqID] // eslint-disable-line react-hooks/exhaustive-deps
   )
 
   return (
-    <SectionContext.Provider value={sectionContext}>
+    <FormSectionContext.Provider value={sectionContext}>
       {isFunction(children) ? children(renderPropsStatus) : children}
-    </SectionContext.Provider>
+    </FormSectionContext.Provider>
   )
 }
 

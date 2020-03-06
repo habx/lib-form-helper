@@ -1,9 +1,15 @@
-import { useEffect } from 'react'
+import * as React from 'react'
 
-const useKeyboardSave = callback => {
-  useEffect(() => {
+const useKeyboardSave = (
+  callback?: (
+    event?: Partial<
+      Pick<React.SyntheticEvent, 'preventDefault' | 'stopPropagation'>
+    >
+  ) => void
+) => {
+  React.useEffect(() => {
     if (callback) {
-      const handleKeyDown = e => {
+      const handleKeyDown = (e: KeyboardEvent) => {
         if ((e.ctrlKey || e.metaKey) && e.key === 's') {
           e.preventDefault()
           callback(e)
