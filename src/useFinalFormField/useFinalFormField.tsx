@@ -126,9 +126,14 @@ const useFinalFormField = <FieldValue extends unknown>(
 
   const handleChange = React.useCallback(
     newRawValue => {
-      const newValue = newRawValue?.target
-        ? newRawValue.target.value
-        : newRawValue
+      let newValue = newRawValue
+      if (newRawValue?.target) {
+        if (input.type === 'checkbox') {
+          newValue = newRawValue.target.checked
+        } else {
+          newValue = newRawValue.target.value
+        }
+      }
 
       if (inputConfig.changeOnBlur) {
         setLocalValue(newValue)
@@ -144,13 +149,18 @@ const useFinalFormField = <FieldValue extends unknown>(
 
   const value = React.useMemo(() => {
     if (inputConfig.changeOnBlur) {
+      if (input.type === 'checkbox') {
+        return (localValue as any)?.target
+          ? (localValue as any).target.checked
+          : localValue
+      }
       return (localValue as any)?.target
         ? (localValue as any).target.value
         : localValue
     }
 
     return input.value
-  }, [input.value, inputConfig.changeOnBlur, localValue])
+  }, [input.type, input.value, inputConfig.changeOnBlur, localValue])
 
   return {
     input,
