@@ -114,11 +114,15 @@ const FormContent: React.FunctionComponent<FormContentProps> = ({
 const Form: React.FunctionComponent<FormProps> = ({
   disabled,
   render,
+  mutators,
   ...props
 }) => (
   <FinalForm
     {...props}
-    mutators={arrayMutators as { [key: string]: any }}
+    mutators={{
+      ...(arrayMutators as { [key: string]: any }),
+      ...(mutators ?? {}),
+    }}
     render={props => (
       <FormContent {...props} render={render} disabled={disabled} />
     )}
