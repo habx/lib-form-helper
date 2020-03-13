@@ -37,19 +37,33 @@ const withFinalForm = <
     changeOnBlur: inputConfig.changeOnBlur,
   }
 
-  const useFieldProps = (props: BaseProps) => {
-    const propsRef: React.MutableRefObject<FieldComponentProps> = React.useRef(
-      props
-    )
+  const useFieldProps = ({
+    format: rawFormat,
+    parse: rawParse,
+    validate: rawValidate,
+    ...props
+  }: FieldComponentProps) => {
+    const propsRef = React.useRef<BaseProps>(props as BaseProps)
+    const callbackRef = React.useRef<
+      FieldTransformationProps<FieldValue, BaseProps>
+    >()
+
+    propsRef.current = props as BaseProps
+    callbackRef.current = {
+      format: rawFormat,
+      parse: rawParse,
+      validate: rawValidate,
+    } as FieldTransformationProps<FieldValue, BaseProps>
 
     const format = React.useCallback(value => {
       const fieldFormattedValue = isFunction(inputConfig.format)
         ? inputConfig.format(value, propsRef.current)
         : value
 
-      return isFunction(propsRef.current.format)
-        ? propsRef.current.format(fieldFormattedValue, propsRef.current)
-        : fieldFormattedValue
+      return (
+        callbackRef.current?.format?.(fieldFormattedValue, propsRef.current) ??
+        fieldFormattedValue
+      )
     }, [])
 
     const parse = React.useCallback(value => {
@@ -57,9 +71,10 @@ const withFinalForm = <
         ? inputConfig.parse(value, propsRef.current)
         : value
 
-      return isFunction(propsRef.current.parse)
-        ? propsRef.current.parse(fieldParsedValue, propsRef.current)
-        : fieldParsedValue
+      return (
+        callbackRef.current?.parse?.(fieldParsedValue, propsRef.current) ??
+        fieldParsedValue
+      )
     }, [])
 
     const t = useTranslate()
@@ -79,8 +94,8 @@ const withFinalForm = <
         }
 
         const instanceError =
-          isFunction(propsRef.current.validate) &&
-          propsRef.current.validate(value, propsRef.current)
+          isFunction(callbackRef.current?.validate) &&
+          propsRef.current?.validate?.(value, propsRef.current)
         if (instanceError) {
           return instanceError
         }
@@ -89,10 +104,6 @@ const withFinalForm = <
       },
       [t]
     )
-
-    React.useEffect(() => {
-      propsRef.current = props
-    })
 
     return { ...props, format, parse, validate }
   }
