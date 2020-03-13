@@ -27,7 +27,10 @@ const withFinalForm = <
       'value' | keyof FieldTransformationProps<any, any>
     >
 
-  type FieldComponentProps = BaseProps &
+  type FieldComponentProps = Omit<
+    BaseProps,
+    keyof FieldTransformationProps<FieldValue, BaseProps>
+  > &
     FieldTransformationProps<FieldValue, BaseProps>
 
   const hookConfig = {
