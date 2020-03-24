@@ -185,7 +185,7 @@ const useFinalFormField = <
     label: rawLabel,
     required,
     formStatus,
-    showError,
+    showError: showError && error !== 'required',
   })
 
   return {
