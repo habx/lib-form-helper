@@ -65,7 +65,7 @@ const useLabel = ({
 }) => {
   const t = useTranslate()
   return React.useMemo(() => {
-    if (!formStatus.showErrors || !showError) {
+    if (!required && (!formStatus.showErrors || !showError)) {
       return label
     }
 
@@ -185,7 +185,7 @@ const useFinalFormField = <
     label: rawLabel,
     required,
     formStatus,
-    showError: showError && error !== 'required',
+    showError,
   })
 
   return {
