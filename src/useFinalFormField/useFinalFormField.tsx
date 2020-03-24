@@ -55,7 +55,9 @@ const useLabel = ({
   required,
   label,
   formStatus,
+  showError,
 }: {
+  showError: boolean
   error: any
   required?: boolean
   label?: string
@@ -63,7 +65,7 @@ const useLabel = ({
 }) => {
   const t = useTranslate()
   return React.useMemo(() => {
-    if (!formStatus.showErrors) {
+    if (!formStatus.showErrors || !showError) {
       return label
     }
 
@@ -88,7 +90,7 @@ const useLabel = ({
     if (error && typeof error !== 'object') {
       return `${label} : ${error}`
     }
-  }, [formStatus.showErrors, label, error, required, t])
+  }, [formStatus.showErrors, showError, label, error, required, t])
 }
 
 const useFinalFormField = <
@@ -116,13 +118,6 @@ const useFinalFormField = <
   })
 
   const error = meta.error ?? meta.submitError
-
-  const label = useLabel({
-    error,
-    label: rawLabel,
-    required,
-    formStatus,
-  })
 
   const [localValue, setLocalValue] = React.useState(input.value)
 
@@ -183,6 +178,16 @@ const useFinalFormField = <
     return input.value
   }, [input.value, inputConfig.changeOnBlur, localValue])
 
+  const showError = fieldShowError && formStatus.showErrors && !!error
+
+  const label = useLabel({
+    error,
+    label: rawLabel,
+    required,
+    formStatus,
+    showError,
+  })
+
   return {
     input,
     meta,
@@ -190,7 +195,7 @@ const useFinalFormField = <
     onChange: handleChange,
     value,
     disabled: isNil(disabled) ? formStatus.disabled : disabled,
-    showError: fieldShowError && formStatus.showErrors && !!error,
+    showError,
     error,
   }
 }

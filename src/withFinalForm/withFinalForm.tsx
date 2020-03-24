@@ -95,7 +95,7 @@ const withFinalForm = <
 
         const instanceError =
           isFunction(callbackRef.current?.validate) &&
-          propsRef.current?.validate?.(value, propsRef.current)
+          callbackRef.current?.validate?.(value, propsRef.current)
         if (instanceError) {
           return instanceError
         }
