@@ -135,7 +135,7 @@ const useFinalFormField = <
     if (Array.isArray(input.value)) {
       const arrayLocalValue = (localValue || []) as any[]
       if (
-        !every(input.value, e => includes(arrayLocalValue, e)) ||
+        !every(input.value, (e) => includes(arrayLocalValue, e)) ||
         get(input.value, 'length') !== get(arrayLocalValue, 'length')
       ) {
         setLocalValue(input.value)
@@ -146,7 +146,7 @@ const useFinalFormField = <
   }, [input.value]) // eslint-disable-line
 
   const handleChange = React.useCallback(
-    newRawValue => {
+    (newRawValue) => {
       let newValue = newRawValue
       if (newRawValue?.target) {
         if (newRawValue.target?.type === 'checkbox') {

@@ -25,8 +25,8 @@ const FormSectionWatcher: React.FunctionComponent<FormSectionWatcherProps> = ({
 
   const renderPropsStatus: FormSectionRenderProps = React.useMemo(
     () => ({
-      hasError: some(status.error, el => !!el),
-      isDirty: some(status.dirty, el => !!el),
+      hasError: some(status.error, (el) => !!el),
+      isDirty: some(status.dirty, (el) => !!el),
     }),
     [status]
   )
@@ -37,7 +37,7 @@ const FormSectionWatcher: React.FunctionComponent<FormSectionWatcherProps> = ({
         watcherId,
         sectionId: id,
         callback: (fieldID, type, value) => {
-          updateStatus(prev => ({
+          updateStatus((prev) => ({
             ...prev,
             [type]: { ...prev[type], [fieldID]: value },
           }))

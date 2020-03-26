@@ -45,12 +45,12 @@ const useStatuses = (): FormStatusActions => {
 
   const handleFieldStatusChange = React.useCallback(
     (fieldID, sectionsPath, type, value) => {
-      forEach(sectionsPath, sectionUId => {
+      forEach(sectionsPath, (sectionUId) => {
         const section = sections.current[sectionUId]
         if (section) {
           section.callback(fieldID, type, value)
 
-          forEach(sectionsWatchers.current[section.id], watcherCallback => {
+          forEach(sectionsWatchers.current[section.id], (watcherCallback) => {
             watcherCallback(fieldID, type, value)
           })
         }
@@ -123,8 +123,8 @@ const Form: React.FunctionComponent<FormProps> = ({
       ...(arrayMutators as { [key: string]: any }),
       ...(mutators ?? {}),
     }}
-    render={props => (
-      <FormContent {...props} render={render} disabled={disabled} />
+    render={(renderProps) => (
+      <FormContent {...renderProps} render={render} disabled={disabled} />
     )}
   />
 )

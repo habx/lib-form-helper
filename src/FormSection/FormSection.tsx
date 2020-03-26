@@ -41,8 +41,8 @@ const FormSection: React.FunctionComponent<FormSectionProps> = ({
 
   const renderPropsStatus: FormSectionRenderProps = React.useMemo(
     () => ({
-      hasError: some(status.error, el => !!el),
-      isDirty: some(status.dirty, el => !!el),
+      hasError: some(status.error, (el) => !!el),
+      isDirty: some(status.dirty, (el) => !!el),
     }),
     [status]
   )
@@ -53,7 +53,7 @@ const FormSection: React.FunctionComponent<FormSectionProps> = ({
         return form.subscribeSection(uniqID, {
           id,
           callback: (fieldID, type, value) => {
-            updateStatus(prev => ({
+            updateStatus((prev) => ({
               ...prev,
               [type]: { ...prev[type], [fieldID]: value },
             }))
