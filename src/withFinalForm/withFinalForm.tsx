@@ -55,7 +55,7 @@ const withFinalForm = <
       validate: rawValidate,
     } as FieldTransformationProps<FieldValue, BaseProps>
 
-    const format = React.useCallback(value => {
+    const format = React.useCallback((value) => {
       const fieldFormattedValue = isFunction(inputConfig.format)
         ? inputConfig.format(value, propsRef.current)
         : value
@@ -66,7 +66,7 @@ const withFinalForm = <
       )
     }, [])
 
-    const parse = React.useCallback(value => {
+    const parse = React.useCallback((value) => {
       const fieldParsedValue = isFunction(inputConfig.parse)
         ? inputConfig.parse(value, propsRef.current)
         : value
@@ -79,7 +79,7 @@ const withFinalForm = <
 
     const t = useTranslate()
     const validate = React.useCallback(
-      value => {
+      (value) => {
         if (propsRef.current.required && (isNil(value) || value === '')) {
           return propsRef.current.label
             ? `(${t('errors.required.short', {}, { upperFirst: false })})`
