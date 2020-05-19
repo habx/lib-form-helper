@@ -80,7 +80,12 @@ const withFinalForm = <
     const t = useTranslate()
     const validate = React.useCallback(
       (value) => {
-        if (propsRef.current.required && (isNil(value) || value === '')) {
+        if (
+          propsRef.current.required &&
+          (isNil(value) ||
+            value === '' ||
+            (Array.isArray(value) && value.length === 0))
+        ) {
           return propsRef.current.label
             ? `(${t('errors.required.short', {}, { upperFirst: false })})`
             : t('errors.required.full')
