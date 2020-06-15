@@ -51,7 +51,7 @@
     "@habx/lib-client-intl": "^1.0.0",
     "@types/lodash": "^4.14.120",
     "@types/react": "^16.8.17",
-    "bili": "^4.7.4",
+    "bili": "^5.0.2",
     "final-form": "^4.18.7",
     "final-form-arrays": "^3.0.2",
     "husky": "^4.0.0",
