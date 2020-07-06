@@ -3,6 +3,9 @@ import { isFunction, forEach } from 'lodash'
 import * as React from 'react'
 import { Form as FinalForm } from 'react-final-form'
 
+import FormSectionContext, {
+  DEFAULT_SECTION_CONTEXT,
+} from '../FormSection/FormSection.context'
 import useKeyboardSave from '../useKeyboardSave'
 import { IntlProvider } from '../useTranslate'
 
@@ -105,7 +108,9 @@ const FormContent: React.FunctionComponent<FormContentProps> = ({
       messages={language === 'fr' ? messages.fr : messages.en}
     >
       <FormContext.Provider value={statusContext}>
-        {render({ ...props, form })}
+        <FormSectionContext.Provider value={DEFAULT_SECTION_CONTEXT}>
+          {render({ ...props, form })}
+        </FormSectionContext.Provider>
       </FormContext.Provider>
     </IntlProvider>
   )
