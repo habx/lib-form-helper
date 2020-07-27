@@ -1,6 +1,8 @@
 import { IntlShape } from '@habx/lib-client-intl'
 
-import { EMPTY, PRECISION } from './number'
+import { PRECISION, SIGN } from './number'
+
+export type Sign = -1 | 0 | 1
 
 export interface FormatNumberOptions {
   /** Apply a factor to the input number (e.g. for unit conversion). */
@@ -11,6 +13,6 @@ export interface FormatNumberOptions {
 }
 
 export interface FormatNumberProxy extends Number {
-  [EMPTY]: boolean
   [PRECISION]: number
+  [SIGN]: Sign
 }

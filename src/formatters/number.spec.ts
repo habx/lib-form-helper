@@ -1,6 +1,6 @@
 import { IntlShape } from '@habx/lib-client-intl'
 
-import { EMPTY, PRECISION, format, parse, proxy } from './number'
+import { PRECISION, SIGN, format, parse, proxy } from './number'
 
 describe('Number parse', () => {
   it('handles missing values', () => {
@@ -8,7 +8,7 @@ describe('Number parse', () => {
       const result = parse(value)
 
       expect(result.valueOf()).toBeNaN()
-      expect(result[EMPTY]).toEqual(true)
+      expect(result[PRECISION]).toEqual(-2)
     }
 
     ;['', null, undefined].map(test)
@@ -19,19 +19,19 @@ describe('Number parse', () => {
       const result = parse('not 1 number')
 
       expect(result.valueOf()).toBeNaN()
-      expect(result[EMPTY]).toEqual(false)
+      expect(result[PRECISION]).toEqual(-1)
     }
     {
       const result = parse(NaN)
 
       expect(result.valueOf()).toBeNaN()
-      expect(result[EMPTY]).toEqual(false)
+      expect(result[PRECISION]).toEqual(-1)
     }
     {
       const result = parse(Infinity)
 
       expect(result.valueOf()).toEqual(Infinity)
-      expect(result[EMPTY]).toEqual(false)
+      expect(result[PRECISION]).toEqual(-1)
     }
   })
 
@@ -39,17 +39,19 @@ describe('Number parse', () => {
     value,
     precision = -1,
     raw = value,
+    sign = Math.sign(value),
     ...options
   }: {
     raw?: any
     value: number
     precision?: number
+    sign?: number
   }) => {
     const result = parse(raw, options)
 
     expect(result.valueOf()).toEqual(value)
-    expect(result[EMPTY]).toEqual(false)
     expect(result[PRECISION]).toEqual(precision)
+    expect(result[SIGN]).toEqual(sign)
   }
 
   it('handles integers', () => {
@@ -74,9 +76,15 @@ describe('Number parse', () => {
   })
 
   it('handles signed numbers', () => {
-    ;[{ value: -1 }, { raw: '+42', value: 42 }, { raw: '-06', value: -6 }].map(
-      test
-    )
+    ;[
+      { value: 0, precision: -1, sign: 0 },
+      { value: -1, precision: -1, sign: -1 },
+      { raw: '+42', value: 42, precision: -1, sign: 1 },
+      { raw: '-', value: -0, precision: -2, sign: -1 },
+      { raw: '-0', value: -0, precision: -1, sign: -1 },
+      { raw: '-.', value: -0, precision: 0, sign: -1 },
+      { raw: '-06', value: -6, precision: -1, sign: -1 },
+    ].map(test)
   })
 
   it('handles mixed values', () => {
@@ -100,6 +108,7 @@ describe('Number format', () => {
     expect(format(proxy())).toEqual('')
     expect(format(null)).toEqual('')
     expect(format(undefined)).toEqual('')
+    expect(format(proxy(0, { precision: -2 }))).toEqual('')
   })
 
   it('handles invalid values', () => {
@@ -109,9 +118,10 @@ describe('Number format', () => {
 
   it('handles precision', () => {
     expect(format(1)).toEqual('1')
-    expect(format(proxy(0, 0))).toEqual('0.')
-    expect(format(proxy(-1.2, 1))).toEqual('-1.2')
-    expect(format(proxy(0.07, 3))).toEqual('0.070')
+    expect(format(proxy(0, { precision: 0 }))).toEqual('0.')
+    expect(format(proxy(-0, { precision: 0, sign: -1 }))).toEqual('-0.')
+    expect(format(proxy(1.2, { precision: 1 }))).toEqual('1.2')
+    expect(format(proxy(0.07, { precision: 3 }))).toEqual('0.070')
   })
 
   it('handles applying a factor', () => {
