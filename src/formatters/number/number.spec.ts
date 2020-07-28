@@ -1,6 +1,7 @@
 import { IntlShape } from '@habx/lib-client-intl'
 
-import { PRECISION, SIGN, format, parse, proxy } from './number'
+import { format, parse, proxy } from '.'
+import { PRECISION, SIGN } from './number.constants'
 
 describe('Number parse', () => {
   it('handles missing values', () => {

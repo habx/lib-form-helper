@@ -1,12 +1,9 @@
+import { PRECISION, SIGN } from './number.constants'
 import {
   FormatNumberOptions,
   FormatNumberProxy,
   Sign,
 } from './number.interface'
-
-export const PRECISION = Symbol()
-
-export const SIGN = Symbol()
 
 export const format = (
   value: FormatNumberProxy | number | null | undefined,
