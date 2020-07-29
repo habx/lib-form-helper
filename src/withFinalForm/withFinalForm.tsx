@@ -55,18 +55,35 @@ const withFinalForm = <
       validate: rawValidate,
     } as FieldTransformationProps<FieldValue, BaseProps>
 
-    const format = React.useCallback((value) => {
-      const fieldFormattedValue = isFunction(inputConfig.format)
-        ? inputConfig.format(value, propsRef.current)
-        : value
+    const normalize = React.useCallback((value: FieldValue): FieldValue => {
+      if (propsRef.current.normalize) {
+        return propsRef.current.normalize(value, propsRef.current)
+      }
 
-      return (
-        callbackRef.current?.format?.(fieldFormattedValue, propsRef.current) ??
-        fieldFormattedValue
-      )
+      if (inputConfig.normalize) {
+        return inputConfig.normalize(value, propsRef.current)
+      }
+
+      return value
     }, [])
 
-    const parse = React.useCallback((value) => {
+    const format = React.useCallback(
+      (value: FieldValue) => {
+        const fieldFormattedValue = isFunction(inputConfig.format)
+          ? inputConfig.format(value, propsRef.current)
+          : value
+
+        return (
+          callbackRef.current?.format?.(
+            fieldFormattedValue,
+            propsRef.current
+          ) ?? fieldFormattedValue
+        )
+      },
+      [normalize]
+    )
+
+    const parse = React.useCallback((value: FieldValue) => {
       const fieldParsedValue = isFunction(inputConfig.parse)
         ? inputConfig.parse(value, propsRef.current)
         : value
@@ -79,12 +96,14 @@ const withFinalForm = <
 
     const t = useTranslate()
     const validate = React.useCallback(
-      (value) => {
+      (value: FieldValue) => {
+        const normalizedValue = normalize(value)
+
         if (
           propsRef.current.required &&
-          (isNil(value) ||
-            value === '' ||
-            (Array.isArray(value) && value.length === 0))
+          (isNil(normalizedValue) ||
+            normalizedValue === '' ||
+            (Array.isArray(normalizedValue) && normalizedValue.length === 0))
         ) {
           return propsRef.current.label
             ? `(${t('errors.required.short', {}, { upperFirst: false })})`
