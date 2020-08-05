@@ -79,7 +79,7 @@ const withFinalForm = <
 
     const t = useTranslate()
     const validate = React.useCallback(
-      (value) => {
+      (value, allValues, meta) => {
         if (
           propsRef.current.required &&
           (isNil(value) ||
@@ -93,14 +93,21 @@ const withFinalForm = <
 
         const componentError =
           isFunction(inputConfig.validate) &&
-          inputConfig.validate(value, propsRef.current)
+          inputConfig.validate(value, propsRef.current, allValues, meta)
+
         if (componentError) {
           return componentError
         }
 
         const instanceError =
           isFunction(callbackRef.current?.validate) &&
-          callbackRef.current?.validate?.(value, propsRef.current)
+          callbackRef.current?.validate?.(
+            value,
+            propsRef.current,
+            allValues,
+            meta
+          )
+
         if (instanceError) {
           return instanceError
         }
@@ -115,6 +122,7 @@ const withFinalForm = <
 
   return React.forwardRef<Element, FieldComponentProps>((props, ref) => {
     const fieldProps = useFieldProps(props)
+
     const {
       errors: { component: ErrorComponent, color: errorColor },
     } = React.useContext(FormContext)

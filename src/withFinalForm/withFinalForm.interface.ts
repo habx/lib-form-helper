@@ -5,7 +5,9 @@ import {
 
 type validate<FieldValue, P> = (
   value: FieldValue,
-  props: P
+  props: P,
+  allValues: any,
+  meta?: any
 ) => string | undefined | Promise<string | undefined>
 type format<FieldValue, P> = (value: FieldValue, props: P) => any
 type parse<FieldValue, P> = (value: FieldValue, props: P) => any
