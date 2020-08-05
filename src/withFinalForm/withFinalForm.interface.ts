@@ -1,3 +1,5 @@
+import { FieldMetaState } from 'react-final-form'
+
 import {
   InputHookConfig,
   UseFinalFormReceivedProps,
@@ -5,9 +7,8 @@ import {
 
 type validate<FieldValue, P> = (
   value: FieldValue,
-  props: P,
   allValues: any,
-  meta?: any
+  meta?: FieldMetaState<FieldValue>
 ) => string | undefined | Promise<string | undefined>
 type format<FieldValue, P> = (value: FieldValue, props: P) => any
 type parse<FieldValue, P> = (value: FieldValue, props: P) => any
