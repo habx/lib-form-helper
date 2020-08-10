@@ -12,6 +12,7 @@ export { default as useStatus } from './useStatus'
 /*
   Utils
  */
-export { default as joinNames } from './joinNames'
+export { default as asyncDebounce } from './utils/asyncDebounce'
+export { default as joinNames } from './utils/joinNames'
 
 export * from './formatters'

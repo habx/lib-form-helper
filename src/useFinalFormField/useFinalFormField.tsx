@@ -6,8 +6,8 @@ import useSSRLayoutEffect from '../_internal/useSSRLayoutEffect'
 import useUniqID from '../_internal/useUniqID'
 import { FormContext, FormContextProps } from '../Form'
 import { FormSectionContext } from '../FormSection'
-import joinNames from '../joinNames'
 import useTranslate from '../useTranslate'
+import joinNames from '../utils/joinNames'
 
 import {
   InputHookConfig,
