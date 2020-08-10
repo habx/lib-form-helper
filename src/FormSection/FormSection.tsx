@@ -4,7 +4,7 @@ import * as React from 'react'
 import useSSRLayoutEffect from '../_internal/useSSRLayoutEffect'
 import useUniqID from '../_internal/useUniqID'
 import { FormContext } from '../Form'
-import joinNames from '../joinNames'
+import joinNames from '../utils/joinNames'
 
 import FormSectionContext from './FormSection.context'
 import FormSectionProps, {
