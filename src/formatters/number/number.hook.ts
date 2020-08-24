@@ -42,5 +42,5 @@ export default (options: Options = DEFAULT_OPTIONS) => {
     [options] /* eslint-disable-line react-hooks/exhaustive-deps */
   )
 
-  return { formatted: state.formatted, handleChange }
+  return [state.formatted, handleChange] as const
 }
