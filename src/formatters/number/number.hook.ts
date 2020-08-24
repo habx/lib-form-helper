@@ -23,7 +23,7 @@ const createState = (
 }
 
 export default (options: Options = DEFAULT_OPTIONS) => {
-  const [state, setState] = React.useState<State>(
+  const [state, setState] = React.useState(() =>
     createState(options.initialValue, options)
   )
 
