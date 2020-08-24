@@ -33,7 +33,7 @@ export const format = (
   const value = parsedValue / factor
   const integer = Math.floor(Math.abs(value))
 
-  let formattedInteger = (value === 0 && isNegative) || value < 0 ? '-' : ''
+  let formattedInteger = isNegative || value < 0 ? '-' : ''
   let separator: string
 
   if (options.intl) {
@@ -49,9 +49,7 @@ export const format = (
     (precision < 0
       ? ''
       : separator +
-        Math.abs(value - integer)
-          .toFixed(precision + 1)
-          .slice(2, -1))
+        (Math.abs(value) - integer).toFixed(precision + 1).slice(2, -1))
   )
 }
 

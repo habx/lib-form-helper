@@ -85,6 +85,7 @@ describe('Number parse', () => {
       { raw: '-0', value: -0, precision: -1, sign: -1 },
       { raw: '-.', value: -0, precision: 0, sign: -1 },
       { raw: '-06', value: -6, precision: -1, sign: -1 },
+      { raw: '-3.14', value: -3.14, precision: 2, sign: -1 },
     ].map(test)
   })
 
@@ -119,6 +120,10 @@ describe('Number format', () => {
     expect(format(create(1), {})).toEqual('1')
     expect(format(create(0, { precision: 0 }), {})).toEqual('0.')
     expect(format(create(-0, { precision: 0, sign: -1 }), {})).toEqual('-0.')
+    expect(format(create(-12, { precision: 0, sign: -1 }), {})).toEqual('-12.')
+    expect(format(create(-123, { precision: 1, sign: -1 }), {})).toEqual(
+      '-123.0'
+    )
     expect(format(create(1.2, { precision: 1 }), {})).toEqual('1.2')
     expect(format(create(0.07, { precision: 3 }), {})).toEqual('0.070')
   })
