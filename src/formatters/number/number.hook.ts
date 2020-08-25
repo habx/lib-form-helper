@@ -27,20 +27,17 @@ export default (options: Options = DEFAULT_OPTIONS) => {
     createState(options.initialValue, options)
   )
 
-  const handleChange = React.useCallback(
-    (input?: string | number | null) => {
-      const newState = createState(input, options)
+  const handleChange = (input?: string | number | null) => {
+    const newState = createState(input, options)
 
-      if (!isEqual(newState, state)) {
-        setState(newState)
+    if (!isEqual(newState, state)) {
+      setState(newState)
 
-        if (newState.parsed.value !== state.parsed.value) {
-          options.onChange?.(newState.parsed.value)
-        }
+      if (newState.parsed.value !== state.parsed.value) {
+        options.onChange?.(newState.parsed.value)
       }
-    },
-    [options] /* eslint-disable-line react-hooks/exhaustive-deps */
-  )
+    }
+  }
 
   return [state.formatted, handleChange] as const
 }
