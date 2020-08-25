@@ -1,15 +1,14 @@
 import { IntlShape } from '@habx/lib-client-intl'
 
-import { format, parse, proxy } from '.'
-import { PRECISION, SIGN } from './number.constants'
+import { create, format, parse } from './number.formatter'
 
 describe('Number parse', () => {
   it('handles missing values', () => {
     const test = (value: any) => {
-      const result = parse(value)
+      const result = parse(value, 1)
 
-      expect(result.valueOf()).toBeNaN()
-      expect(result[PRECISION]).toEqual(-2)
+      expect(result.value).toBeNull()
+      expect(result.precision).toEqual(-2)
     }
 
     ;['', null, undefined].map(test)
@@ -17,22 +16,22 @@ describe('Number parse', () => {
 
   it('handles invalid values', () => {
     {
-      const result = parse('not 1 number')
+      const result = parse('not 1 number', 1)
 
-      expect(result.valueOf()).toBeNaN()
-      expect(result[PRECISION]).toEqual(-1)
+      expect(result.value).toBeNaN()
+      expect(result.precision).toEqual(-1)
     }
     {
-      const result = parse(NaN)
+      const result = parse(NaN, 1)
 
-      expect(result.valueOf()).toBeNaN()
-      expect(result[PRECISION]).toEqual(-1)
+      expect(result.value).toBeNaN()
+      expect(result.precision).toEqual(-1)
     }
     {
-      const result = parse(Infinity)
+      const result = parse(Infinity, 1)
 
-      expect(result.valueOf()).toEqual(Infinity)
-      expect(result[PRECISION]).toEqual(-1)
+      expect(result.value).toEqual(Infinity)
+      expect(result.precision).toEqual(-1)
     }
   })
 
@@ -41,18 +40,19 @@ describe('Number parse', () => {
     precision = -1,
     raw = value,
     sign = Math.sign(value),
-    ...options
+    factor = 1,
   }: {
     raw?: any
     value: number
     precision?: number
     sign?: number
+    factor?: number
   }) => {
-    const result = parse(raw, options)
+    const result = parse(raw, factor)
 
-    expect(result.valueOf()).toEqual(value)
-    expect(result[PRECISION]).toEqual(precision)
-    expect(result[SIGN]).toEqual(sign)
+    expect(result.value).toEqual(value)
+    expect(result.precision).toEqual(precision)
+    expect(result.sign).toEqual(sign)
   }
 
   it('handles integers', () => {
@@ -85,6 +85,7 @@ describe('Number parse', () => {
       { raw: '-0', value: -0, precision: -1, sign: -1 },
       { raw: '-.', value: -0, precision: 0, sign: -1 },
       { raw: '-06', value: -6, precision: -1, sign: -1 },
+      { raw: '-3.14', value: -3.14, precision: 2, sign: -1 },
     ].map(test)
   })
 
@@ -106,27 +107,32 @@ describe('Number parse', () => {
 
 describe('Number format', () => {
   it('handles missing values', () => {
-    expect(format(proxy())).toEqual('')
-    expect(format(null)).toEqual('')
-    expect(format(undefined)).toEqual('')
-    expect(format(proxy(0, { precision: -2 }))).toEqual('')
+    expect(format(create(), {})).toEqual('')
+    expect(format(create(0, { precision: -2 }), {})).toEqual('')
   })
 
   it('handles invalid values', () => {
-    expect(format(NaN)).toEqual('')
-    expect(format(Infinity)).toEqual('')
+    expect(format(parse(NaN, 1), {})).toEqual('')
+    expect(format(parse(Infinity, 1), {})).toEqual('')
   })
 
   it('handles precision', () => {
-    expect(format(1)).toEqual('1')
-    expect(format(proxy(0, { precision: 0 }))).toEqual('0.')
-    expect(format(proxy(-0, { precision: 0, sign: -1 }))).toEqual('-0.')
-    expect(format(proxy(1.2, { precision: 1 }))).toEqual('1.2')
-    expect(format(proxy(0.07, { precision: 3 }))).toEqual('0.070')
+    expect(format(create(1), {})).toEqual('1')
+    expect(format(create(0, { precision: 0 }), {})).toEqual('0.')
+    expect(format(create(-0, { precision: 0, sign: -1 }), {})).toEqual('-0.')
+    expect(format(create(-12, { precision: 0, sign: -1 }), {})).toEqual('-12.')
+    expect(format(create(-123, { precision: 1, sign: -1 }), {})).toEqual(
+      '-123.0'
+    )
+    expect(format(create(1.2, { precision: 1 }), {})).toEqual('1.2')
+    expect(format(create(0.07, { precision: 3 }), {})).toEqual('0.070')
   })
 
   it('handles applying a factor', () => {
-    expect(format(123456789, { factor: 1e4 })).toEqual('12345.6789')
+    expect(
+      format(create(123456789, { precision: 4 }), { factor: 1e4 })
+    ).toEqual('12345.6789')
+    expect(format(create(12345.6789), { factor: 1e-4 })).toEqual('123456789')
   })
 
   it('handles using a locale', () => {
@@ -135,7 +141,7 @@ describe('Number format', () => {
     } as IntlShape
 
     // `Intl.NumberFormat` does not generate regular spaces.
-    expect(format(1e6, { intl })).toMatch(/^1\s000\s000$/)
-    expect(format(0.123, { intl })).toEqual('0,123')
+    expect(format(parse(1e6, 1), { intl })).toMatch(/^1\s000\s000$/)
+    expect(format(parse(0.123, 1), { intl })).toEqual('0,123')
   })
 })
