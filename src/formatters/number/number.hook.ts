@@ -22,22 +22,43 @@ const createState = (
   }
 }
 
-export default (options: Options = DEFAULT_OPTIONS) => {
+export default ({
+  factor,
+  intl,
+  onChange,
+  value,
+}: Options = DEFAULT_OPTIONS) => {
   const [state, setState] = React.useState(() =>
-    createState(options.initialValue, options)
+    createState(value, { factor, intl })
   )
+  const stateRef = React.useRef(state)
 
-  const handleChange = (input?: string | number | null) => {
-    const newState = createState(input, options)
+  // Synchronizes the reference with the current state.
+  React.useEffect(() => {
+    stateRef.current = state
+  }, [state])
 
-    if (!isEqual(newState, state)) {
-      setState(newState)
-
-      if (newState.parsed.value !== state.parsed.value) {
-        options.onChange?.(newState.parsed.value)
-      }
+  // Resets the state if the provided value changed programatically.
+  React.useEffect(() => {
+    if (value !== undefined && value !== stateRef.current.parsed.value) {
+      setState(createState(value, { factor, intl }))
     }
-  }
+  }, [factor, intl, value])
+
+  const handleChange = React.useCallback(
+    (input?: string | number | null) => {
+      const newState = createState(input, { factor, intl })
+
+      if (!isEqual(newState, stateRef.current)) {
+        setState(newState)
+
+        if (newState.parsed.value !== stateRef.current.parsed.value) {
+          onChange?.(newState.parsed.value)
+        }
+      }
+    },
+    [factor, intl, onChange]
+  )
 
   return [state.formatted, handleChange] as const
 }
