@@ -14,8 +14,8 @@ export interface Options extends FormatOptions {
   /** Listener for when the parsed value has been modified. */
   onChange?(value: number | null): void
 
-  /** The initial parsed value. */
-  initialValue?: number | null
+  /** The parsed value. */
+  value?: number | null
 }
 
 export interface ParsedNumber {
@@ -39,7 +39,6 @@ export interface ParsedNumber {
 }
 
 export interface State {
-  parsed: ParsedNumber
-
   formatted: string
+  parsed: ParsedNumber
 }
