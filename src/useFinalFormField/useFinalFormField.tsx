@@ -70,7 +70,7 @@ const useLabel = ({
     }
 
     if (!label) {
-      return null
+      return undefined
     }
 
     if (!error || error === 'required') {
