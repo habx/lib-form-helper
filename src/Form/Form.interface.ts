@@ -10,7 +10,6 @@ interface AdditionalProps {
 export default interface FormProps<D = Record<string, any>>
   extends FinalFormProps<D>,
     AdditionalProps {
-  initialValues: D
   render: (props: FormRenderProps<D>) => JSX.Element
 }
 
