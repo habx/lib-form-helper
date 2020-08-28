@@ -19,7 +19,7 @@ export interface UseFinalFormReceivedProps<FieldType>
 export interface UseFinalFormFieldValue<FieldType> {
   input: FieldInputProps<FieldType, HTMLElement>
   meta: FieldMetaState<FieldType>
-  label?: string | null
+  label?: string
   disabled?: boolean
   onChange: (value: FieldType, ...args: any[]) => void
   value: FieldType
