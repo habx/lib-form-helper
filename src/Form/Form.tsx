@@ -1,7 +1,7 @@
 import arrayMutators from 'final-form-arrays'
 import { isFunction, forEach } from 'lodash'
 import * as React from 'react'
-import { Form as FinalForm } from 'react-final-form'
+import { withTypes } from 'react-final-form'
 
 import FormSectionContext, {
   DEFAULT_SECTION_CONTEXT,
@@ -11,12 +11,12 @@ import { IntlProvider } from '../useTranslate'
 
 import FormContext from './Form.context'
 import FormProps, {
-  FormContentProps,
   FormContextProps,
   FormStatusActions,
   SectionWatcher,
   Section,
   SectionCallback,
+  FormContentProps,
 } from './Form.interface'
 import * as messages from './Form.messages'
 
@@ -76,14 +76,14 @@ const useStatuses = (): FormStatusActions => {
   )
 }
 
-const FormContent: React.FunctionComponent<FormContentProps> = ({
+function FormContent<Values, InitialValues>({
   render,
   form,
   shouldShowErrors,
   saveWithKeyboard,
   language = 'fr',
   ...props
-}) => {
+}: FormContentProps<Values, InitialValues>) {
   const statusActions = useStatuses()
 
   useKeyboardSave(saveWithKeyboard ? props.handleSubmit : undefined)
@@ -116,23 +116,31 @@ const FormContent: React.FunctionComponent<FormContentProps> = ({
   )
 }
 
-const Form: React.FunctionComponent<FormProps> = ({
+function Form<Values, InitialValues = Partial<Values>>({
   disabled,
   render,
   mutators,
   ...props
-}) => (
-  <FinalForm
-    {...props}
-    mutators={{
-      ...(arrayMutators as { [key: string]: any }),
-      ...(mutators ?? {}),
-    }}
-    render={(renderProps) => (
-      <FormContent {...renderProps} render={render} disabled={disabled} />
-    )}
-  />
-)
+}: FormProps<Values, InitialValues>) {
+  const { Form: FinalForm } = withTypes<Values, InitialValues>()
+
+  return (
+    <FinalForm
+      {...props}
+      mutators={{
+        ...(arrayMutators as { [key: string]: any }),
+        ...(mutators ?? {}),
+      }}
+      render={(renderProps) => (
+        <FormContent<Values, InitialValues>
+          {...renderProps}
+          render={render}
+          disabled={disabled}
+        />
+      )}
+    />
+  )
+}
 
 Form.defaultProps = {
   disabled: false,

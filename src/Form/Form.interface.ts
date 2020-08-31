@@ -1,18 +1,28 @@
 import { FormProps as FinalFormProps, FormRenderProps } from 'react-final-form'
 
-interface AdditionalProps {
+interface AdditionalProps<Values, InitialValues> {
   disabled?: boolean
-  shouldShowErrors?: (props: FormRenderProps) => boolean
+  shouldShowErrors?: (props: FormRenderProps<Values, InitialValues>) => boolean
   saveWithKeyboard?: boolean
   language?: 'fr' | 'en'
 }
 
-export default interface FormProps extends FinalFormProps, AdditionalProps {
-  render: (props: FormRenderProps) => JSX.Element
+export default interface FormProps<
+  Values = Record<string, any>,
+  InitialValues = Partial<Values>
+>
+  extends FinalFormProps<Values, InitialValues>,
+    AdditionalProps<Values, InitialValues> {
+  render: Required<FormRenderProps<Values, InitialValues>>['render']
 }
 
-export interface FormContentProps extends FormRenderProps, AdditionalProps {
-  render: (props: FormRenderProps) => JSX.Element
+export interface FormContentProps<
+  Values = Record<string, any>,
+  InitialValues = Partial<Values>
+>
+  extends FormRenderProps<Values, InitialValues>,
+    AdditionalProps<Values, InitialValues> {
+  render: Required<FormRenderProps<Values, InitialValues>>['render']
 }
 
 export type SectionCallback = (
