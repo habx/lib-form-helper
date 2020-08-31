@@ -5,18 +5,26 @@ import {
   UseFinalFormReceivedProps,
 } from '../useFinalFormField/useFinalFormField.interface'
 
-type validate<FieldValue, P> = (
-  value: FieldValue,
+type ValidationCallback<FieldValue, P> = (
+  value: FieldValue | undefined,
   allValues: any,
   meta?: FieldMetaState<FieldValue>
 ) => string | undefined | Promise<string | undefined>
-type format<FieldValue, P> = (value: FieldValue, props: P) => any
-type parse<FieldValue, P> = (value: FieldValue, props: P) => any
+
+type FormatterCallback<FieldValue, P> = (
+  value: FieldValue | undefined,
+  props: P
+) => any
+
+type ParserCallback<FieldValue, P> = (
+  value: any,
+  props: P
+) => FieldValue | undefined
 
 export interface InputHOCConfig<FieldValue, P> extends InputHookConfig {
-  validate?: validate<FieldValue, P>
-  format?: format<FieldValue, P>
-  parse?: parse<FieldValue, P>
+  validate?: ValidationCallback<FieldValue, P>
+  format?: FormatterCallback<FieldValue, P>
+  parse?: ParserCallback<FieldValue, P>
   errorPadding?: number
   isArray?: boolean
 }
@@ -27,7 +35,7 @@ export interface FieldContentReceivedProps<FieldValue>
 }
 
 export interface FieldTransformationProps<FieldValue, P> {
-  validate?: validate<FieldValue, P>
-  format?: format<FieldValue, P>
-  parse?: parse<FieldValue, P>
+  validate?: ValidationCallback<FieldValue, P>
+  format?: FormatterCallback<FieldValue, P>
+  parse?: ParserCallback<FieldValue, P>
 }
