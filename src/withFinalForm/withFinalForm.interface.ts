@@ -9,7 +9,7 @@ type ValidationCallback<FieldValue> = (
   value: FieldValue | undefined,
   allValues: any,
   meta?: FieldMetaState<FieldValue>
-) => PromiseLike<string | undefined>
+) => string | undefined | Promise<string | undefined>
 
 type FormatterCallback<FieldValue, Props> = (
   value: FieldValue | undefined,
