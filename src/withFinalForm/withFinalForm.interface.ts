@@ -11,31 +11,32 @@ type ValidationCallback<FieldValue> = (
   meta?: FieldMetaState<FieldValue>
 ) => string | undefined | Promise<string | undefined>
 
-type FormatterCallback<FieldValue, Props> = (
+type FormatterCallback<InputValue, Props, FieldValue = any> = (
   value: FieldValue | undefined,
   props: Props
-) => any
+) => InputValue | undefined
 
-type ParserCallback<FieldValue, Props> = (
-  value: any,
+type ParserCallback<InputValue, Props, FieldValue = any> = (
+  value: InputValue,
   props: Props
 ) => FieldValue | undefined
 
-export interface InputHOCConfig<FieldValue, Props> extends InputHookConfig {
+export interface InputHOCConfig<InputValue, Props, FieldValue>
+  extends InputHookConfig {
   validate?: ValidationCallback<FieldValue>
-  format?: FormatterCallback<FieldValue, Props>
-  parse?: ParserCallback<FieldValue, Props>
+  format?: FormatterCallback<InputValue, Props, FieldValue>
+  parse?: ParserCallback<InputValue, Props, FieldValue>
   errorPadding?: number
   isArray?: boolean
 }
 
-export interface FieldContentReceivedProps<FieldValue>
-  extends UseFinalFormReceivedProps<FieldValue> {
+export interface FieldContentReceivedProps<InputValue>
+  extends UseFinalFormReceivedProps<InputValue> {
   name: string
 }
 
-export interface FieldTransformationProps<FieldValue, Props> {
-  validate?: ValidationCallback<FieldValue>
-  format?: FormatterCallback<FieldValue, Props>
-  parse?: ParserCallback<FieldValue, Props>
+export interface FieldTransformationProps<InputValue, Props> {
+  validate?: ValidationCallback<InputValue>
+  format?: FormatterCallback<InputValue, Props>
+  parse?: ParserCallback<InputValue, Props>
 }
