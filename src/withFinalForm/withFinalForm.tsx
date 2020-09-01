@@ -13,25 +13,26 @@ import {
 } from './withFinalForm.interface'
 
 const withFinalForm = <
-  FieldValue extends unknown,
+  InputValue extends unknown,
   AdditionalProps extends object = {},
-  Element extends HTMLElement = HTMLDivElement
+  Element extends HTMLElement = HTMLDivElement,
+  FieldValue = any
 >(
-  inputConfig: InputHOCConfig<FieldValue, {}> = {}
+  inputConfig: InputHOCConfig<FieldValue, {}, InputValue> = {}
 ) => <Props extends object>(WrappedComponent: React.ComponentType<Props>) => {
   type BaseProps = AdditionalProps &
-    FieldContentReceivedProps<FieldValue> &
+    FieldContentReceivedProps<InputValue> &
     Omit<Props, 'value' | 'onChange'> &
     Omit<
-      UseFieldConfig<FieldValue>,
+      UseFieldConfig<InputValue>,
       'value' | keyof FieldTransformationProps<any, any>
     >
 
   type FieldComponentProps = Omit<
     BaseProps,
-    keyof FieldTransformationProps<FieldValue, BaseProps>
+    keyof FieldTransformationProps<InputValue, BaseProps>
   > &
-    FieldTransformationProps<FieldValue, BaseProps>
+    FieldTransformationProps<InputValue, BaseProps>
 
   const hookConfig = {
     changeOnBlur: inputConfig.changeOnBlur,
@@ -45,7 +46,7 @@ const withFinalForm = <
   }: FieldComponentProps) => {
     const propsRef = React.useRef<BaseProps>(props as BaseProps)
     const callbackRef = React.useRef<
-      FieldTransformationProps<FieldValue, BaseProps>
+      FieldTransformationProps<InputValue, BaseProps>
     >()
 
     propsRef.current = props as BaseProps
@@ -53,7 +54,7 @@ const withFinalForm = <
       format: rawFormat,
       parse: rawParse,
       validate: rawValidate,
-    } as FieldTransformationProps<FieldValue, BaseProps>
+    } as FieldTransformationProps<InputValue, BaseProps>
 
     const format = React.useCallback((value) => {
       const fieldFormattedValue = isFunction(inputConfig.format)
@@ -123,7 +124,7 @@ const withFinalForm = <
     } = React.useContext(FormContext)
 
     const { label, showError, error, input, ...rest } = useFinalFormField<
-      FieldValue
+      InputValue
     >(props.name, fieldProps, hookConfig)
 
     return (
