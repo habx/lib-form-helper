@@ -12,6 +12,13 @@ import {
   InputHOCConfig,
 } from './withFinalForm.interface'
 
+/**
+ * Duplicate final-form default parse & format
+ * https://github.com/final-form/react-final-form/blob/464f1c7855e93899630df0ad897c322995601849/src/useField.js#L24
+ */
+const defaultFormat = (value?: any) => (value === undefined ? '' : value)
+const defaultParse = (value?: any) => (value === '' ? undefined : value)
+
 const withFinalForm = <
   InputValue extends unknown,
   AdditionalProps extends object = {},
@@ -59,23 +66,21 @@ const withFinalForm = <
     const format = React.useCallback((value) => {
       const fieldFormattedValue = isFunction(inputConfig.format)
         ? inputConfig.format(value, propsRef.current)
-        : value
+        : defaultFormat(value)
 
-      return (
-        callbackRef.current?.format?.(fieldFormattedValue, propsRef.current) ??
-        fieldFormattedValue
-      )
+      return isFunction(callbackRef.current?.format)
+        ? callbackRef.current!.format(fieldFormattedValue, propsRef.current)
+        : fieldFormattedValue
     }, [])
 
     const parse = React.useCallback((value) => {
       const fieldParsedValue = isFunction(inputConfig.parse)
         ? inputConfig.parse(value, propsRef.current)
-        : value
+        : defaultParse(value)
 
-      return (
-        callbackRef.current?.parse?.(fieldParsedValue, propsRef.current) ??
-        fieldParsedValue
-      )
+      return isFunction(callbackRef.current?.parse)
+        ? callbackRef.current!.parse(fieldParsedValue, propsRef.current)
+        : fieldParsedValue
     }, [])
 
     const t = useTranslate()
