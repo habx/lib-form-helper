@@ -5,18 +5,18 @@ import {
   UseFinalFormReceivedProps,
 } from '../useFinalFormField/useFinalFormField.interface'
 
-type ValidationCallback<FieldValue> = (
+type ValidationCallback<FieldValue = any> = (
   value: FieldValue | undefined,
   allValues: any,
   meta?: FieldMetaState<FieldValue>
 ) => string | undefined | Promise<string | undefined>
 
-type FormatterCallback<InputValue, Props, FieldValue = any> = (
+type FormatterCallback<InputValue = any, Props = any, FieldValue = any> = (
   value: FieldValue | undefined,
   props: Props
 ) => InputValue | undefined
 
-type ParserCallback<InputValue, Props, FieldValue = any> = (
+type ParserCallback<InputValue = any, Props = any, FieldValue = any> = (
   value: InputValue,
   props: Props
 ) => FieldValue | undefined
