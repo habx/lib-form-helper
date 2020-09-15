@@ -21,7 +21,7 @@ type ParserCallback<InputValue = any, Props = any, FieldValue = any> = (
   props: Props
 ) => FieldValue | undefined
 
-export interface InputHOCConfig<InputValue, Props, FieldValue>
+export interface InputHOCConfig<InputValue = any, Props = any, FieldValue = any>
   extends InputHookConfig {
   validate?: ValidationCallback<FieldValue>
   format?: FormatterCallback<InputValue, Props, FieldValue>
@@ -30,12 +30,12 @@ export interface InputHOCConfig<InputValue, Props, FieldValue>
   isArray?: boolean
 }
 
-export interface FieldContentReceivedProps<InputValue>
+export interface FieldContentReceivedProps<InputValue = any>
   extends UseFinalFormReceivedProps<InputValue> {
   name: string
 }
 
-export interface FieldTransformationProps<InputValue, Props> {
+export interface FieldTransformationProps<InputValue = any, Props = any> {
   validate?: ValidationCallback<InputValue>
   format?: FormatterCallback<InputValue, Props>
   parse?: ParserCallback<InputValue, Props>
