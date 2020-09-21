@@ -18,8 +18,8 @@ describe('Number parse', () => {
     {
       const result = parse('not 1 number', 1)
 
-      expect(result.value).toBeNaN()
-      expect(result.precision).toEqual(-1)
+      expect(result.value).toBeNull()
+      expect(result.precision).toEqual(-2)
     }
     {
       const result = parse(NaN, 1)
@@ -114,6 +114,7 @@ describe('Number format', () => {
   it('handles invalid values', () => {
     expect(format(parse(NaN, 1), {})).toEqual('')
     expect(format(parse(Infinity, 1), {})).toEqual('')
+    expect(format(parse('a', 1), {})).toEqual('')
   })
 
   it('handles precision', () => {
