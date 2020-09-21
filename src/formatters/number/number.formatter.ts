@@ -88,7 +88,13 @@ export const parse = (
       value = `0${value}`
     }
 
-    parsedValue = (sign ?? 1) * parseFloat(value)
+    const parsedFloat = parseFloat(value)
+
+    if (Number.isNaN(parsedFloat)) {
+      return create()
+    }
+
+    parsedValue = (sign ?? 1) * parsedFloat
   } else {
     parsedValue = input
     value = input.toString()
