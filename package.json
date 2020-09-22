@@ -1,6 +1,6 @@
 {
   "name": "@habx/lib-form-helper",
-  "version": "6.0.1",
+  "version": "6.0.2",
   "description": "Wrappers for react-final-form",
   "sideEffects": false,
   "main": "./dist/index.cjs.js",
