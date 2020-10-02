@@ -117,7 +117,7 @@ function FormContent<Values, InitialValues>({
 }
 
 function Form<Values, InitialValues = Partial<Values>>({
-  disabled,
+  disabled = false,
   render,
   mutators,
   ...props
@@ -140,10 +140,6 @@ function Form<Values, InitialValues = Partial<Values>>({
       )}
     />
   )
-}
-
-Form.defaultProps = {
-  disabled: false,
 }
 
 export default Form
