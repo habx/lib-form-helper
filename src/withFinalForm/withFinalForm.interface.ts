@@ -5,10 +5,11 @@ import {
   UseFinalFormReceivedProps,
 } from '../useFinalFormField/useFinalFormField.interface'
 
-type ValidationCallback<FieldValue> = (
+type ValidationCallback<FieldValue, Props> = (
   value: FieldValue | undefined,
   allValues: any,
-  meta?: FieldMetaState<FieldValue>
+  meta: FieldMetaState<FieldValue>,
+  props: Props
 ) => string | undefined | Promise<string | undefined>
 
 type FormatterCallback<InputValue, Props, FieldValue = any> = (
@@ -23,7 +24,7 @@ type ParserCallback<InputValue, Props, FieldValue = any> = (
 
 export interface InputHOCConfig<InputValue, Props, FieldValue>
   extends InputHookConfig {
-  validate?: ValidationCallback<FieldValue>
+  validate?: ValidationCallback<FieldValue, Props>
   format?: FormatterCallback<InputValue, Props, FieldValue>
   parse?: ParserCallback<InputValue, Props, FieldValue>
   errorPadding?: number
@@ -36,7 +37,7 @@ export interface FieldContentReceivedProps<InputValue>
 }
 
 export interface FieldTransformationProps<InputValue, Props> {
-  validate?: ValidationCallback<InputValue>
+  validate?: ValidationCallback<InputValue, Props>
   format?: FormatterCallback<InputValue, Props>
   parse?: ParserCallback<InputValue, Props>
 }
