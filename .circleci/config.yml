@@ -41,11 +41,7 @@ alias:
       command: |
         echo "@${GITHUB_PKG_NPM_ORG}:registry=https://npm.pkg.github.com/" > ~/.npmrc
         echo "//npm.pkg.github.com/:_authToken=${GITHUB_TOKEN}" >> ~/.npmrc
-  - &preconfig-deprecated
-    run:
-      name: Preconfigure environment ~/.npmrc (deprecated)
-      command: |
-        echo "//registry.npmjs.org/:_authToken=${NPM_TOKEN}" > ~/.npmrc
+
 # - Node modules - #
   - &install_node_modules_with_cache
     node/with-cache:
@@ -74,7 +70,7 @@ jobs:
     <<: *docker_node14_configuration
     steps:
       - checkout
-      - *preconfig-deprecated
+      - *preconfig
       - *install_node_modules_with_cache_production
       - *install_node_modules_with_cache
       - run: export NODE_ENV=production; npm run build
@@ -87,11 +83,11 @@ jobs:
     <<: *docker_node14_configuration
     steps:
       - checkout
-      - *preconfig-deprecated
+      - *preconfig
       - *install_node_modules_with_cache
       - attach_workspace:
           at: ~/project
-      - *preconfig-deprecated
+      - *preconfig
       - *install_node_modules_with_cache
       - run: npm run storybook:build
 
@@ -99,7 +95,7 @@ jobs:
     <<: *docker_node14_configuration
     steps:
       - checkout
-      - *preconfig-deprecated
+      - *preconfig
       - *install_node_modules_with_cache
       - run: npm run lint
 
@@ -107,7 +103,7 @@ jobs:
     <<: *docker_node14_configuration
     steps:
       - checkout
-      - *preconfig-deprecated
+      - *preconfig
       - *install_node_modules_with_cache
       - run: npm run test
 
@@ -119,7 +115,7 @@ jobs:
       - checkout
       - attach_workspace:
           at: ~/project
-      - *preconfig-deprecated
+      - *preconfig
       - *install_node_modules_with_cache
       - run:
           name: Puppeteer test
@@ -150,7 +146,7 @@ jobs:
       - checkout
       - attach_workspace:
           at: ~/project
-      - *preconfig-deprecated
+      - *preconfig
       - *install_node_modules_with_cache
       - run: jq -M 'del(.publishConfig)' package.json > _package.json; mv _package.json package.json
       - run: NPM_TOKEN=${NPM_TOKEN_RW} npm publish
@@ -161,7 +157,7 @@ jobs:
       - checkout
       - attach_workspace:
           at: ~/project
-      - *preconfig-deprecated
+      - *preconfig
       - *install_node_modules_with_cache
       - run: npm run storybook:deploy
 
@@ -198,12 +194,4 @@ workflows:
           filters:
             <<: *filters_allow_tags
             <<: *filters_ignore_branches
-      - npm-deprecated-publish:
-          context: default_env_vars
-          requires:
-            - build
-            - lint
-            - tests
-          filters:
-            <<: *filters_allow_tags
-            <<: *filters_ignore_branches
+
