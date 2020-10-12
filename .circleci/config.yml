@@ -10,7 +10,7 @@ alias:
 # https://circleci.com/docs/2.0/circleci-images/#nodejs
   - &docker_node14_configuration
     docker:
-      - image: circleci/node:14.0.0
+      - image: circleci/node:14.13.1
         user: root
   - &docker_buildpack_deps_configuration
     docker:
@@ -90,6 +90,10 @@ jobs:
       - *preconfig
       - *install_node_modules_with_cache
       - run: npm run storybook:build
+      - persist_to_workspace:
+          root: ~/project
+          paths:
+            - .storybook-static
 
   lint:
     <<: *docker_node14_configuration
@@ -108,8 +112,7 @@ jobs:
       - run: npm run test
 
   tests-puppeteer:
-    docker:
-      - image: jean9696/drone-puppeteer
+    <<: *docker_node14_configuration
     parallelism: 1
     steps:
       - checkout
@@ -117,19 +120,11 @@ jobs:
           at: ~/project
       - *preconfig
       - *install_node_modules_with_cache
+      - puppeteer/install
       - run:
           name: Puppeteer test
           command: |
-            apt-get -yq update
-            apt-get -y install nginx
-            sed -i 's/root.*/root \/root\/project\/build-test\/;/' /etc/nginx/sites-enabled/default
-            nginx -c /etc/nginx/nginx.conf
-            chmod -R a+rx /root/
             npm run test
-    environment:
-      HABX_ROLE: admin
-      LOCAL_URL: http://localhost
-
   npm-publish:
     <<: *docker_node14_configuration
     steps:
@@ -163,6 +158,7 @@ jobs:
 
 orbs:
   node: circleci/node@1.0.1
+  puppeteer: threetreeslight/puppeteer@0.1.2
 # --- END --- #
 # --------------------------------------------------- #
 # -------------- DEFINE YOUR WORKFLOW --------------- #
