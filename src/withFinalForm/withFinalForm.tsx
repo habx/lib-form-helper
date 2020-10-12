@@ -99,7 +99,7 @@ const withFinalForm = <
 
         const componentError =
           isFunction(inputConfig.validate) &&
-          inputConfig.validate(value, allValues, meta)
+          inputConfig.validate(value, allValues, meta, propsRef.current)
 
         if (componentError) {
           return componentError
@@ -107,7 +107,12 @@ const withFinalForm = <
 
         const instanceError =
           isFunction(callbackRef.current?.validate) &&
-          callbackRef.current?.validate?.(value, allValues, meta)
+          callbackRef.current?.validate?.(
+            value,
+            allValues,
+            meta,
+            propsRef.current
+          )
 
         if (instanceError) {
           return instanceError
