@@ -135,17 +135,6 @@ jobs:
       - *install_node_modules_with_cache
       - run: npm publish
 
-  npm-deprecated-publish:
-    <<: *docker_node14_configuration
-    steps:
-      - checkout
-      - attach_workspace:
-          at: ~/project
-      - *preconfig
-      - *install_node_modules_with_cache
-      - run: jq -M 'del(.publishConfig)' package.json > _package.json; mv _package.json package.json
-      - run: NPM_TOKEN=${NPM_TOKEN_RW} npm publish
-
   storybook-publish:
     <<: *docker_node14_configuration
     steps:
