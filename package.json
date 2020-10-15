@@ -40,19 +40,26 @@
   },
   "peerDependencies": {
     "@habx/lib-client-intl": "^1.2.0",
+    "@habx/ui-core": "^3.34.2",
     "final-form": "^4.18.7",
     "final-form-arrays": "^3.0.2",
     "lodash": "^4.17.15",
     "react": "^16.13.0",
-    "react-final-form": "^6.3.5"
+    "react-final-form": "^6.3.5",
+    "styled-components": "^5.2.0"
   },
-  "dependencies": {},
+  "dependencies": {
+    "brace": "^0.11.1",
+    "react-ace": "^9.1.4"
+  },
   "devDependencies": {
     "@habx/eslint-config-client": "^5.1.1",
     "@habx/lib-client-intl": "^1.2.0",
+    "@habx/ui-core": "^3.34.2",
     "@types/jest": "^26.0.7",
     "@types/lodash": "^4.14.120",
     "@types/react": "^16.8.17",
+    "@types/styled-components": "^5.1.4",
     "bili": "^5.0.2",
     "final-form": "^4.18.7",
     "final-form-arrays": "^3.0.2",

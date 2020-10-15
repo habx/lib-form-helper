@@ -15,4 +15,9 @@ export { default as useStatus } from './useStatus'
 export { default as asyncDebounce } from './utils/asyncDebounce'
 export { default as joinNames } from './utils/joinNames'
 
+/*
+  Fields
+ */
+export { CodeEditorJSON, CodeEditorJSONProps } from './fields/CodeEditorJSON'
+
 export * from './formatters'
