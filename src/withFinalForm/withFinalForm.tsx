@@ -25,7 +25,7 @@ const withFinalForm = <
   Element extends HTMLElement = HTMLDivElement,
   FieldValue = any
 >(
-  inputConfig: InputHOCConfig<FieldValue, {}, InputValue> = {}
+  inputConfig: InputHOCConfig<FieldValue, any, InputValue> = {}
 ) => <Props extends object>(WrappedComponent: React.ComponentType<Props>) => {
   type BaseProps = AdditionalProps &
     FieldContentReceivedProps<InputValue> &
