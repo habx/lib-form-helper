@@ -1,5 +1,9 @@
 import withFinalForm from './withFinalForm'
 
-export { ValidationCallback } from './withFinalForm.interface'
+export {
+  ValidationCallback,
+  ParserCallback,
+  FormatterCallback,
+} from './withFinalForm.interface'
 
 export default withFinalForm
