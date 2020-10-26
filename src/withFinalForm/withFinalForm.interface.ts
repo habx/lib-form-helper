@@ -25,11 +25,36 @@ export type ParserCallback<InputValue, Props, FieldValue = any> = (
 
 export interface InputHOCConfig<InputValue, Props, FieldValue>
   extends InputHookConfig {
+  /**
+   * https://final-form.org/docs/react-final-form/types/FieldProps#validat
+   * Pass props as last param
+   */
   validate?: ValidationCallback<FieldValue, Props>
+  /**
+   * https://final-form.org/docs/react-final-form/types/FieldProps#format
+   * Pass props as last param
+   */
   format?: FormatterCallback<InputValue, Props, FieldValue>
+  /**
+   * https://final-form.org/docs/react-final-form/types/FieldProps#parse
+   * Pass props as last param
+   */
   parse?: ParserCallback<InputValue, Props, FieldValue>
+  /**
+   * Padding added to error label bellow the input
+   */
   errorPadding?: number
+  /**
+   * Adapt behavior for array values
+   * https://github.com/final-form/react-final-form-arrays
+   */
   isArray?: boolean
+  /**
+   * Map field values returned by useFinalFormField to input props
+   * Should return all passed fields if not overwritten
+   * otherwise they won't be passed down to the input
+   * @param fieldValue
+   */
   mapFieldValueToProps?: (
     fieldValue: UseFinalFormFieldValue<FieldValue>
   ) => Props
