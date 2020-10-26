@@ -133,9 +133,16 @@ const withFinalForm = <
       errors: { component: ErrorComponent, color: errorColor },
     } = React.useContext(FormContext)
 
-    const { label, showError, error, input, ...rest } = useFinalFormField<
-      InputValue
-    >(props.name, fieldProps, hookConfig)
+    const fieldValue = useFinalFormField<InputValue>(
+      props.name,
+      fieldProps,
+      hookConfig
+    )
+
+    const { label, showError, error, input, ...rest } = React.useMemo(
+      () => inputConfig.mapFieldValueToProps?.(fieldValue) ?? fieldValue,
+      [fieldValue]
+    )
 
     return (
       <div>

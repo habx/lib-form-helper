@@ -2,6 +2,7 @@ import { FieldMetaState } from 'react-final-form'
 
 import {
   InputHookConfig,
+  UseFinalFormFieldValue,
   UseFinalFormReceivedProps,
 } from '../useFinalFormField/useFinalFormField.interface'
 
@@ -29,6 +30,9 @@ export interface InputHOCConfig<InputValue, Props, FieldValue>
   parse?: ParserCallback<InputValue, Props, FieldValue>
   errorPadding?: number
   isArray?: boolean
+  mapFieldValueToProps?: (
+    fieldValue: UseFinalFormFieldValue<FieldValue>
+  ) => Props
 }
 
 export interface FieldContentReceivedProps<InputValue>
