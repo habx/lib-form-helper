@@ -1,4 +1,4 @@
-import { get, isNil, isFunction, every, includes } from 'lodash'
+import { get, isNil, isFunction, every, includes, isString } from 'lodash'
 import * as React from 'react'
 import { useField } from 'react-final-form'
 
@@ -117,7 +117,15 @@ const useFinalFormField = <
     formStatus,
   })
 
-  const error = meta.error ?? meta.submitError
+  const error = React.useMemo(() => {
+    const rawError = meta.error ?? meta.submitError
+
+    if (isString(rawError)) {
+      return rawError
+    }
+
+    return null
+  }, [meta.error, meta.submitError])
 
   const [localValue, setLocalValue] = React.useState(input.value)
 
