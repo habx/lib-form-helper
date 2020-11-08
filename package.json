@@ -53,7 +53,7 @@
     "react-ace": "^9.1.4"
   },
   "devDependencies": {
-    "@habx/eslint-config-client": "^5.1.1",
+    "@habx/eslint-config-client": "^5.3.1",
     "@habx/lib-client-intl": "^1.2.0",
     "@habx/ui-core": "^4.1.0",
     "@types/jest": "^26.0.7",
