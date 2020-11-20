@@ -21,7 +21,7 @@ const asyncDebounce = <D, Params extends any[]>(
       const resolveDebounce = () => {
         // flush old promises if out of date
         if (!isEqual(memoizedParams, params)) {
-          resolve()
+          resolve(undefined)
         }
         memoizedResult = func(...(memoizedParams ?? ([] as any)))
         return resolve(memoizedResult as D)
