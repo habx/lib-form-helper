@@ -2,7 +2,6 @@ import { isFunction, isNil, omit } from 'lodash'
 import * as React from 'react'
 import { UseFieldConfig } from 'react-final-form'
 
-import { isFunctionAsync } from '../_internal/isFunctionAsync'
 import { FormContext } from '../FormHelperProvider'
 import useFinalFormField from '../useFinalFormField'
 import useTranslate from '../useTranslate'
@@ -85,10 +84,6 @@ const withFinalForm = <
         : fieldParsedValue
     }, [])
 
-    const asyncInstanceValidationRef = React.useRef<
-      ((response: boolean) => void) | null
-    >(null)
-
     const validate = React.useCallback(
       async (value, allValues, meta) => {
         let error: string | undefined = undefined
@@ -118,33 +113,15 @@ const withFinalForm = <
         }
 
         if (!error && callbackRef.current?.validate) {
-          if (asyncInstanceValidationRef.current) {
-            asyncInstanceValidationRef.current(false)
-          }
+          const instanceError = await callbackRef.current.validate(
+            value,
+            allValues,
+            meta,
+            propsRef.current
+          )
 
-          let shouldUseInstanceValidation: boolean
-          if (isFunctionAsync(callbackRef.current.validate)) {
-            const promise = new Promise<boolean>((resolve) => {
-              asyncInstanceValidationRef.current = resolve
-              setTimeout(() => resolve(true), 500)
-            })
-
-            shouldUseInstanceValidation = await promise
-          } else {
-            shouldUseInstanceValidation = true
-          }
-
-          if (shouldUseInstanceValidation) {
-            const instanceError = await callbackRef.current.validate(
-              value,
-              allValues,
-              meta,
-              propsRef.current
-            )
-
-            if (instanceError) {
-              error = instanceError
-            }
+          if (instanceError) {
+            error = instanceError
           }
         }
 
