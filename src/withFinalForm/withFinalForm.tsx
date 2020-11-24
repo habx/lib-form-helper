@@ -2,6 +2,7 @@ import { isFunction, isNil, omit } from 'lodash'
 import * as React from 'react'
 import { UseFieldConfig } from 'react-final-form'
 
+import { isFunctionAsync } from '../_internal/isFunctionAsync'
 import { FormContext } from '../FormHelperProvider'
 import useFinalFormField from '../useFinalFormField'
 import useTranslate from '../useTranslate'
@@ -51,6 +52,7 @@ const withFinalForm = <
     validate: rawValidate,
     ...props
   }: FieldComponentProps) => {
+    const t = useTranslate()
     const propsRef = React.useRef<BaseProps>(props as BaseProps)
     const callbackRef = React.useRef<
       FieldTransformationProps<InputValue, BaseProps>
@@ -83,42 +85,70 @@ const withFinalForm = <
         : fieldParsedValue
     }, [])
 
-    const t = useTranslate()
+    const asyncInstanceValidationRef = React.useRef<
+      ((response: boolean) => void) | null
+    >(null)
+
     const validate = React.useCallback(
-      (value, allValues, meta) => {
+      async (value, allValues, meta) => {
+        let error: string | undefined = undefined
+
         if (
           propsRef.current.required &&
           (isNil(value) ||
             value === '' ||
             (Array.isArray(value) && value.length === 0))
         ) {
-          return propsRef.current.label
+          error = propsRef.current.label
             ? `(${t('errors.required.short', {}, { upperFirst: false })})`
             : t('errors.required.full')
         }
 
-        const componentError =
-          isFunction(inputConfig.validate) &&
-          inputConfig.validate(value, allValues, meta, propsRef.current)
-
-        if (componentError) {
-          return componentError
-        }
-
-        const instanceError =
-          isFunction(callbackRef.current?.validate) &&
-          callbackRef.current?.validate?.(
+        if (!error && inputConfig.validate) {
+          const componentError = await inputConfig.validate(
             value,
             allValues,
             meta,
             propsRef.current
           )
 
-        if (instanceError) {
-          return instanceError
+          if (componentError) {
+            error = componentError
+          }
         }
 
-        return undefined
+        if (!error && callbackRef.current?.validate) {
+          if (asyncInstanceValidationRef.current) {
+            asyncInstanceValidationRef.current(false)
+          }
+
+          let shouldUseInstanceValidation: boolean
+          if (isFunctionAsync(callbackRef.current.validate)) {
+            const promise = new Promise<boolean>((resolve) => {
+              asyncInstanceValidationRef.current = resolve
+              setTimeout(() => resolve(true), 500)
+            })
+
+            shouldUseInstanceValidation = await promise
+          } else {
+            shouldUseInstanceValidation = true
+          }
+
+          if (shouldUseInstanceValidation) {
+            const instanceError = await callbackRef.current.validate(
+              value,
+              allValues,
+              meta,
+              propsRef.current
+            )
+
+            if (instanceError) {
+              error = instanceError
+            }
+          }
+        }
+
+        return error
       },
       [t]
     )
