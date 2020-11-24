@@ -51,6 +51,7 @@ const withFinalForm = <
     validate: rawValidate,
     ...props
   }: FieldComponentProps) => {
+    const t = useTranslate()
     const propsRef = React.useRef<BaseProps>(props as BaseProps)
     const callbackRef = React.useRef<
       FieldTransformationProps<InputValue, BaseProps>
@@ -83,42 +84,48 @@ const withFinalForm = <
         : fieldParsedValue
     }, [])
 
-    const t = useTranslate()
     const validate = React.useCallback(
-      (value, allValues, meta) => {
+      async (value, allValues, meta) => {
+        let error: string | undefined = undefined
+
         if (
           propsRef.current.required &&
           (isNil(value) ||
             value === '' ||
             (Array.isArray(value) && value.length === 0))
         ) {
-          return propsRef.current.label
+          error = propsRef.current.label
             ? `(${t('errors.required.short', {}, { upperFirst: false })})`
             : t('errors.required.full')
         }
 
-        const componentError =
-          isFunction(inputConfig.validate) &&
-          inputConfig.validate(value, allValues, meta, propsRef.current)
-
-        if (componentError) {
-          return componentError
-        }
-
-        const instanceError =
-          isFunction(callbackRef.current?.validate) &&
-          callbackRef.current?.validate?.(
+        if (!error && inputConfig.validate) {
+          const componentError = await inputConfig.validate(
             value,
             allValues,
             meta,
             propsRef.current
           )
 
-        if (instanceError) {
-          return instanceError
+          if (componentError) {
+            error = componentError
+          }
         }
 
-        return undefined
+        if (!error && callbackRef.current?.validate) {
+          const instanceError = await callbackRef.current.validate(
+            value,
+            allValues,
+            meta,
+            propsRef.current
+          )
+
+          if (instanceError) {
+            error = instanceError
+          }
+        }
+
+        return error
       },
       [t]
     )
