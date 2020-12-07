@@ -4,7 +4,7 @@ import AceEditor from 'react-ace'
 import { withLabel } from '@habx/ui-core'
 
 import useUniqID from '../../_internal/useUniqID'
-import { FormContext } from '../../FormHelperProvider'
+import { FieldError } from '../../FieldError'
 import useFinalFormField from '../../useFinalFormField'
 import { ValidationCallback } from '../../withFinalForm'
 
@@ -58,10 +58,6 @@ const CodeEditorJSON: React.FunctionComponent<CodeEditorJSONProps> = ({
   label: rawLabel,
   ...props
 }) => {
-  const {
-    errors: { component: ErrorComponent },
-  } = React.useContext(FormContext)
-
   const [localValue, setLocalValue] = React.useState<{
     value: string | null
     isValid: boolean
@@ -132,9 +128,7 @@ const CodeEditorJSON: React.FunctionComponent<CodeEditorJSONProps> = ({
         error={showError}
         {...props}
       />
-      {!label && (
-        <ErrorComponent padding={12}>{showError && error}</ErrorComponent>
-      )}
+      {!label && <FieldError padding={12}>{showError && error}</FieldError>}
     </div>
   )
 }

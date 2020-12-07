@@ -2,7 +2,9 @@ import { isFunction, isNil, omit } from 'lodash'
 import * as React from 'react'
 import { UseFieldConfig } from 'react-final-form'
 
-import { FormContext } from '../FormHelperProvider'
+import { useThemeVariant } from '@habx/ui-core'
+
+import { FieldError } from '../FieldError'
 import useFinalFormField from '../useFinalFormField'
 import useTranslate from '../useTranslate'
 
@@ -135,10 +137,7 @@ const withFinalForm = <
 
   return React.forwardRef<Element, FieldComponentProps>((props, ref) => {
     const fieldProps = useFieldProps(props)
-
-    const {
-      errors: { component: ErrorComponent, color: errorColor },
-    } = React.useContext(FormContext)
+    const theme = useThemeVariant()
 
     const fieldValue = useFinalFormField<InputValue>(
       props.name,
@@ -166,12 +165,12 @@ const withFinalForm = <
           validate={inputConfig.isArray ? fieldProps.validate : undefined}
           error={showError}
           label={label}
-          labelColor={showError ? errorColor : null}
+          labelColor={showError ? theme.colors.error.base : null}
         />
         {!label && (
-          <ErrorComponent padding={inputConfig.errorPadding}>
+          <FieldError padding={inputConfig.errorPadding}>
             {showError && error}
-          </ErrorComponent>
+          </FieldError>
         )}
       </div>
     )
