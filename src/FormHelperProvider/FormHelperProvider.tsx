@@ -3,9 +3,12 @@ import * as React from 'react'
 import FormHelperContext from './FormHelperProvider.context'
 import FormHelperProviderProps from './FormHelperProvider.interface'
 
-const FormHelperProvider: React.FunctionComponent<Partial<
-  FormHelperProviderProps
->> = ({ children, ...props }) => {
+/**
+ * @deprecated @habx/lib-form-helper is now bundling @habx/ui-core, which make this override irrelevant and not compatible with local them patches
+ */
+const FormHelperProvider: React.FunctionComponent<
+  Partial<FormHelperProviderProps>
+> = ({ children, ...props }) => {
   const parentValue = React.useContext(FormHelperContext)
 
   const value = React.useMemo(

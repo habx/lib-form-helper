@@ -64,8 +64,12 @@ const useLabel = ({
   formStatus: FormContextProps
 }) => {
   const t = useTranslate()
+
   return React.useMemo(() => {
-    if (!required && (!formStatus.showErrors || !showError)) {
+    if (
+      !required &&
+      (formStatus.disabled || !formStatus.showErrors || !showError)
+    ) {
       return label
     }
 
@@ -90,7 +94,15 @@ const useLabel = ({
     if (error && typeof error !== 'object') {
       return `${label} : ${error}`
     }
-  }, [formStatus.showErrors, showError, label, error, required, t])
+  }, [
+    required,
+    formStatus.disabled,
+    formStatus.showErrors,
+    showError,
+    label,
+    error,
+    t,
+  ])
 }
 
 const useFinalFormField = <
@@ -186,7 +198,8 @@ const useFinalFormField = <
     return input.value
   }, [input.value, inputConfig.changeOnBlur, localValue])
 
-  const showError = fieldShowError && formStatus.showErrors && !!error
+  const showError =
+    fieldShowError && !formStatus.disabled && formStatus.showErrors && !!error
 
   const label = useLabel({
     error,
