@@ -1,0 +1,1 @@
+export { useFormAutoSubmitDecorator } from './useFormAutoSubmitDecorator'
