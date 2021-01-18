@@ -13,6 +13,7 @@ export {
 } from './withFinalForm'
 export { default as useFinalFormField } from './useFinalFormField'
 export { default as useStatus } from './useStatus'
+export { useFormAutoSubmitDecorator } from './useFormAutoSubmitDecorator'
 
 /*
   Utils
