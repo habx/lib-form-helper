@@ -1,3 +1,4 @@
+import * as React from 'react'
 import {
   FieldInputProps,
   FieldMetaState,
@@ -19,10 +20,21 @@ export interface UseFinalFormReceivedProps<FieldType>
 export interface UseFinalFormFieldValue<FieldType> {
   input: FieldInputProps<FieldType, HTMLElement>
   meta: FieldMetaState<FieldType>
-  label?: string
+  label?: React.ReactNode
   disabled?: boolean
   onChange: (value: FieldType, ...args: any[]) => void
   value: FieldType
-  showError: boolean
+
+  /**
+   * Should the error be displayed in the `FieldError` component
+   */
+  shouldDisplayInlineError: boolean
+
+  /**
+   * Should the input be in error mode
+   */
+  shouldBeInErrorMode: boolean
+
+  errorColor: string
   error: any
 }

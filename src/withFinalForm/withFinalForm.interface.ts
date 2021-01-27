@@ -30,25 +30,25 @@ export interface InputHOCConfig<InputValue, Props, FieldValue>
    * Pass props as last param
    */
   validate?: ValidationCallback<FieldValue, Props>
+
   /**
    * https://final-form.org/docs/react-final-form/types/FieldProps#format
    * Pass props as last param
    */
   format?: FormatterCallback<InputValue, Props, FieldValue>
+
   /**
    * https://final-form.org/docs/react-final-form/types/FieldProps#parse
    * Pass props as last param
    */
   parse?: ParserCallback<InputValue, Props, FieldValue>
-  /**
-   * Padding added to error label bellow the input
-   */
-  errorPadding?: number
+
   /**
    * Adapt behavior for array values
    * https://github.com/final-form/react-final-form-arrays
    */
   isArray?: boolean
+
   /**
    * Map field values returned by useFinalFormField to input props
    * Should return all passed fields if not overwritten
