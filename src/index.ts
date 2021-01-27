@@ -4,6 +4,7 @@
 export { default as FormHelperProvider } from './FormHelperProvider'
 export { default as Form, FormContext } from './Form'
 export { default as FormSection } from './FormSection'
+export { FieldError } from './FieldError'
 export { default as FormSectionWatcher } from './FormSectionWatcher'
 export {
   default as withFinalForm,
