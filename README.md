@@ -57,7 +57,6 @@ type InputConfig = {
   format?: (value: any, props: object) => any
   parse?: (value: any, props: object) => any
   changeOnBlur?: boolean
-  errorPadding?: number
 }
 
 

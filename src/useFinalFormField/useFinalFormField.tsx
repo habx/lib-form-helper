@@ -2,8 +2,11 @@ import { get, isNil, isFunction, every, includes, isString } from 'lodash'
 import * as React from 'react'
 import { useField } from 'react-final-form'
 
+import { stringifyColor, useThemeVariant } from '@habx/ui-core'
+
 import useSSRLayoutEffect from '../_internal/useSSRLayoutEffect'
 import useUniqID from '../_internal/useUniqID'
+import { REQUIRED_FIELD_ERROR } from '../FieldError/FieldError'
 import { FormContext, FormContextProps } from '../Form'
 import { FormSectionContext } from '../FormSection'
 import useTranslate from '../useTranslate'
@@ -54,35 +57,36 @@ const useLabel = ({
   error,
   required,
   label,
-  formStatus,
-  showError,
+  shouldBeInErrorMode,
+  errorColor,
 }: {
-  showError: boolean
-  error: any
+  error: string | null
+  shouldBeInErrorMode: boolean
   required?: boolean
   label?: string
-  formStatus: FormContextProps
+  errorColor: string
 }) => {
   const t = useTranslate()
 
   return React.useMemo(() => {
-    if (
-      !required &&
-      (formStatus.disabled || !formStatus.showErrors || !showError)
-    ) {
-      return label
-    }
-
     if (!label) {
       return undefined
     }
 
-    if (!error || error === 'required') {
-      return `${label}${
-        required
-          ? ` (${t('errors.required.short', {}, { upperFirst: false })})`
-          : ''
-      }`
+    if (!shouldBeInErrorMode || !error) {
+      if (required) {
+        return `${label} *`
+      }
+
+      return label
+    }
+
+    if (error === REQUIRED_FIELD_ERROR) {
+      return (
+        <React.Fragment>
+          {label} <span style={{ color: errorColor }}>*</span>
+        </React.Fragment>
+      )
     }
 
     if (error && typeof error === 'object') {
@@ -94,15 +98,7 @@ const useLabel = ({
     if (error && typeof error !== 'object') {
       return `${label} : ${error}`
     }
-  }, [
-    required,
-    formStatus.disabled,
-    formStatus.showErrors,
-    showError,
-    label,
-    error,
-    t,
-  ])
+  }, [label, shouldBeInErrorMode, error, required, errorColor, t])
 }
 
 const useFinalFormField = <
@@ -117,6 +113,7 @@ const useFinalFormField = <
   const name = joinNames(sectionContext.name, baseName)
 
   const { input, meta } = useField<FieldValue>(name, props)
+  const theme = useThemeVariant()
 
   const { disabled, required, label: rawLabel } = props
 
@@ -198,15 +195,20 @@ const useFinalFormField = <
     return input.value
   }, [input.value, inputConfig.changeOnBlur, localValue])
 
-  const showError =
+  const shouldBeInErrorMode =
     fieldShowError && !formStatus.disabled && formStatus.showErrors && !!error
+
+  const shouldDisplayInlineError =
+    shouldBeInErrorMode && error !== REQUIRED_FIELD_ERROR
+
+  const errorColor = stringifyColor(theme.colors.error.base)
 
   const label = useLabel({
     error,
+    shouldBeInErrorMode,
     label: rawLabel,
     required,
-    formStatus,
-    showError,
+    errorColor,
   })
 
   return {
@@ -216,8 +218,10 @@ const useFinalFormField = <
     onChange: handleChange,
     value,
     disabled: isNil(disabled) ? formStatus.disabled : disabled,
-    showError,
+    shouldDisplayInlineError,
+    shouldBeInErrorMode,
     error,
+    errorColor,
   }
 }
 

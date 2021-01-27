@@ -75,31 +75,34 @@ const CodeEditorJSON: React.FunctionComponent<CodeEditorJSONProps> = ({
     [validate]
   )
 
-  const { input, error, label, showError } = useFinalFormField<string | null>(
-    name,
-    {
-      label: rawLabel,
-      validate: localValidate,
-      parse: (value: string) => {
-        if (!value) {
-          return undefined
-        }
+  const {
+    input,
+    error,
+    label,
+    shouldDisplayInlineError,
+    shouldBeInErrorMode,
+  } = useFinalFormField<string | null>(name, {
+    label: rawLabel,
+    validate: localValidate,
+    parse: (value: string) => {
+      if (!value) {
+        return undefined
+      }
 
-        try {
-          return JSON.parse(value)
-        } catch (e) {
-          return {}
-        }
-      },
-      format: (value: object) => {
-        if (!value) {
-          return ''
-        }
+      try {
+        return JSON.parse(value)
+      } catch (e) {
+        return {}
+      }
+    },
+    format: (value: object) => {
+      if (!value) {
+        return ''
+      }
 
-        return JSON.stringify(value, undefined, 2)
-      },
-    }
-  )
+      return JSON.stringify(value, undefined, 2)
+    },
+  })
 
   const handleChange = (newValue: string) =>
     setLocalValue({ value: newValue, isValid: isJSONValid(newValue) })
@@ -125,10 +128,10 @@ const CodeEditorJSON: React.FunctionComponent<CodeEditorJSONProps> = ({
         value={localValue.value ?? ''}
         onChange={handleChange}
         label={label}
-        error={showError}
+        error={shouldBeInErrorMode}
         {...props}
       />
-      {!label && <FieldError padding={12}>{showError && error}</FieldError>}
+      <FieldError showError={shouldDisplayInlineError} value={error} />
     </div>
   )
 }

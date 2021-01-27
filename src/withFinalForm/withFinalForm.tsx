@@ -2,10 +2,10 @@ import { isFunction, isNil, omit } from 'lodash'
 import * as React from 'react'
 import { UseFieldConfig } from 'react-final-form'
 
-import { useThemeVariant } from '@habx/ui-core'
-
 import { FieldError } from '../FieldError'
+import { REQUIRED_FIELD_ERROR } from '../FieldError/FieldError'
 import useFinalFormField from '../useFinalFormField'
+import { UseFinalFormFieldValue } from '../useFinalFormField/useFinalFormField.interface'
 import useTranslate from '../useTranslate'
 
 import {
@@ -88,7 +88,7 @@ const withFinalForm = <
 
     const validate = React.useCallback(
       async (value, allValues, meta) => {
-        let error: string | undefined = undefined
+        let error = undefined
 
         if (
           propsRef.current.required &&
@@ -97,7 +97,7 @@ const withFinalForm = <
             (Array.isArray(value) && value.length === 0))
         ) {
           error = propsRef.current.label
-            ? `(${t('errors.required.short', {}, { upperFirst: false })})`
+            ? REQUIRED_FIELD_ERROR
             : t('errors.required.full')
         }
 
@@ -137,7 +137,6 @@ const withFinalForm = <
 
   return React.forwardRef<Element, FieldComponentProps>((props, ref) => {
     const fieldProps = useFieldProps(props)
-    const theme = useThemeVariant()
 
     const fieldValue = useFinalFormField<InputValue>(
       props.name,
@@ -145,7 +144,14 @@ const withFinalForm = <
       hookConfig
     )
 
-    const { label, showError, error, input, ...rest } = React.useMemo(
+    const {
+      label,
+      shouldBeInErrorMode,
+      shouldDisplayInlineError,
+      error,
+      input,
+      ...rest
+    } = React.useMemo<UseFinalFormFieldValue<InputValue>>(
       () => inputConfig.mapFieldValueToProps?.(fieldValue) ?? fieldValue,
       [fieldValue]
     )
@@ -163,15 +169,10 @@ const withFinalForm = <
           {...input}
           {...rest}
           validate={inputConfig.isArray ? fieldProps.validate : undefined}
-          error={showError}
+          error={shouldBeInErrorMode}
           label={label}
-          labelColor={showError ? theme.colors.error.base : null}
         />
-        {!label && (
-          <FieldError padding={inputConfig.errorPadding}>
-            {showError && error}
-          </FieldError>
-        )}
+        <FieldError showError={shouldDisplayInlineError} value={error} />
       </div>
     )
   })
