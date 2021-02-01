@@ -1,6 +1,6 @@
 import { get, isNil, isFunction, every, includes, isString } from 'lodash'
 import * as React from 'react'
-import { useField } from 'react-final-form'
+import { FieldInputProps, FieldMetaState, useField } from 'react-final-form'
 
 import { stringifyColor, useThemeVariant } from '@habx/ui-core'
 
@@ -101,41 +101,14 @@ const useLabel = ({
   }, [label, shouldBeInErrorMode, error, required, errorColor, t])
 }
 
-const useFinalFormField = <
-  FieldValue extends unknown,
-  Props extends UseFinalFormReceivedProps<FieldValue> = {}
->(
-  baseName: string,
-  props: Props,
-  inputConfig: InputHookConfig = {}
-): UseFinalFormFieldValue<FieldValue> => {
-  const sectionContext = React.useContext(FormSectionContext)
-  const name = joinNames(sectionContext.name, baseName)
-
-  const { input, meta } = useField<FieldValue>(name, props)
-  const theme = useThemeVariant()
-
-  const { disabled, required, label: rawLabel } = props
-
-  const formStatus = React.useContext(FormContext)
-
-  useFieldStatus({
-    error: meta.error,
-    dirty: meta.dirty,
-    path: sectionContext.path,
-    formStatus,
-  })
-
-  const error = React.useMemo(() => {
-    const rawError = meta.error ?? meta.submitError
-
-    if (isString(rawError)) {
-      return rawError
-    }
-
-    return null
-  }, [meta.error, meta.submitError])
-
+/**
+ * Wrapper to handle inputConfig.changeOnBlur behavior
+ */
+const useFieldValue = <FieldValue extends unknown>(
+  input: FieldInputProps<FieldValue>,
+  meta: FieldMetaState<FieldValue>,
+  inputConfig: InputHookConfig
+) => {
   const [localValue, setLocalValue] = React.useState(input.value)
 
   React.useEffect(() => {
@@ -181,9 +154,6 @@ const useFinalFormField = <
     },
     [input, inputConfig]
   )
-  const fieldShowError = isFunction(props.shouldShowError)
-    ? !!props.shouldShowError(meta)
-    : true
 
   const value = React.useMemo(() => {
     if (inputConfig.changeOnBlur) {
@@ -194,6 +164,50 @@ const useFinalFormField = <
 
     return input.value
   }, [input.value, inputConfig.changeOnBlur, localValue])
+
+  return [value, handleChange] as const
+}
+
+const useFinalFormField = <
+  FieldValue extends unknown,
+  Props extends UseFinalFormReceivedProps<FieldValue> = {}
+>(
+  baseName: string,
+  props: Props | undefined,
+  inputConfig: InputHookConfig = {}
+): UseFinalFormFieldValue<FieldValue> => {
+  const sectionContext = React.useContext(FormSectionContext)
+  const name = joinNames(sectionContext.name, baseName)
+
+  const { input, meta } = useField<FieldValue>(name, props)
+  const theme = useThemeVariant()
+
+  const { disabled, required, label: rawLabel } = props || {}
+
+  const formStatus = React.useContext(FormContext)
+
+  useFieldStatus({
+    error: meta.error,
+    dirty: meta.dirty,
+    path: sectionContext.path,
+    formStatus,
+  })
+
+  const error = React.useMemo(() => {
+    const rawError = meta.error ?? meta.submitError
+
+    if (isString(rawError)) {
+      return rawError
+    }
+
+    return null
+  }, [meta.error, meta.submitError])
+
+  const [value, setValue] = useFieldValue(input, meta, inputConfig)
+
+  const fieldShowError = isFunction(props?.shouldShowError)
+    ? !!props?.shouldShowError(meta)
+    : true
 
   const shouldBeInErrorMode =
     fieldShowError && !formStatus.disabled && formStatus.showErrors && !!error
@@ -215,7 +229,7 @@ const useFinalFormField = <
     input,
     meta,
     label,
-    onChange: handleChange,
+    onChange: setValue,
     value,
     disabled: isNil(disabled) ? formStatus.disabled : disabled,
     shouldDisplayInlineError,
