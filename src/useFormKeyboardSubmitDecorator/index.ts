@@ -1,0 +1,1 @@
+export { useFormKeyboardSubmitDecorator } from './useFormKeyboardSubmitDecorator'

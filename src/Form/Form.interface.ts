@@ -1,9 +1,8 @@
 import { FormProps as FinalFormProps, FormRenderProps } from 'react-final-form'
 
-interface AdditionalProps<Values, InitialValues> {
+interface FormAdditionalProps<Values, InitialValues> {
   disabled?: boolean
   shouldShowErrors?: (props: FormRenderProps<Values, InitialValues>) => boolean
-  saveWithKeyboard?: boolean
   language?: 'fr' | 'en'
 }
 
@@ -11,7 +10,7 @@ export interface FormProps<
   Values = Record<string, any>,
   InitialValues = Partial<Values>
 > extends FinalFormProps<Values, InitialValues>,
-    AdditionalProps<Values, InitialValues> {
+    FormAdditionalProps<Values, InitialValues> {
   render: Required<FormRenderProps<Values, InitialValues>>['render']
 }
 
@@ -19,7 +18,7 @@ export interface FormContentProps<
   Values = Record<string, any>,
   InitialValues = Partial<Values>
 > extends FormRenderProps<Values, InitialValues>,
-    AdditionalProps<Values, InitialValues> {
+    FormAdditionalProps<Values, InitialValues> {
   render: Required<FormRenderProps<Values, InitialValues>>['render']
 }
 

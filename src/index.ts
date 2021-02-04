@@ -13,7 +13,12 @@ export {
 } from './withFinalForm'
 export { useFinalFormField } from './useFinalFormField'
 export { useStatus } from './useStatus'
+
+/*
+  Decorators
+ */
 export { useFormAutoSubmitDecorator } from './useFormAutoSubmitDecorator'
+export { useFormKeyboardSubmitDecorator } from './useFormKeyboardSubmitDecorator'
 
 /*
   Utils
