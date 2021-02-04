@@ -1,18 +1,19 @@
 import { isFunction, some } from 'lodash'
 import * as React from 'react'
 
-import useSSRLayoutEffect from '../_internal/useSSRLayoutEffect'
-import useUniqID from '../_internal/useUniqID'
+import { useSSRLayoutEffect } from '../_internal/useSSRLayoutEffect'
+import { useUniqID } from '../_internal/useUniqID'
 import { FormContext } from '../Form'
-import joinNames from '../utils/joinNames'
+import { joinNames } from '../utils/joinNames'
 
-import FormSectionContext from './FormSection.context'
-import FormSectionProps, {
+import { FormSectionContext } from './FormSection.context'
+import {
+  FormSectionProps,
   FormSectionStatusProps,
   FormSectionRenderProps,
 } from './FormSection.interface'
 
-const FormSection: React.FunctionComponent<FormSectionProps> = ({
+export const FormSection: React.FunctionComponent<FormSectionProps> = ({
   id,
   name,
   rootName,
@@ -70,5 +71,3 @@ const FormSection: React.FunctionComponent<FormSectionProps> = ({
     </FormSectionContext.Provider>
   )
 }
-
-export default FormSection

@@ -1,4 +1,4 @@
-const joinNames = (
+export const joinNames = (
   path: string,
   newName: string | number | undefined
 ): string => {
@@ -16,5 +16,3 @@ const joinNames = (
 
   return `${path}.${newName}`
 }
-
-export default joinNames

@@ -1,3 +1,1 @@
-import useFinalFormField from './useFinalFormField'
-
-export default useFinalFormField
+export { useFinalFormField } from './useFinalFormField'

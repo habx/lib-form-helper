@@ -105,7 +105,7 @@ Each `FormSection` is aware of the errors of the fields inside them.
 ```typescript jsx
 import * as React from 'react'
 
-export default interface FormSectionProps {
+export interface FormSectionProps {
   name: string
   children?: React.ReactNode | ((status: FormSectionStatus) => JSX.Element)
 }

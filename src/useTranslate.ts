@@ -5,5 +5,3 @@ import { messageIds } from './Form'
 export const { useTranslate, IntlProvider } = buildIntl<messageIds>({
   prefix: 'form-helper',
 })
-
-export default useTranslate

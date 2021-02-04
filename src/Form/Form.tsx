@@ -3,14 +3,16 @@ import { isFunction, forEach } from 'lodash'
 import * as React from 'react'
 import { withTypes } from 'react-final-form'
 
-import FormSectionContext, {
+import {
+  FormSectionContext,
   DEFAULT_SECTION_CONTEXT,
 } from '../FormSection/FormSection.context'
-import useKeyboardSave from '../useKeyboardSave'
+import { useKeyboardSave } from '../useKeyboardSave'
 import { IntlProvider } from '../useTranslate'
 
-import FormContext from './Form.context'
-import FormProps, {
+import { FormContext } from './Form.context'
+import {
+  FormProps,
   FormContextProps,
   FormStatusActions,
   SectionWatcher,
@@ -116,7 +118,7 @@ function FormContent<Values, InitialValues>({
   )
 }
 
-function Form<Values, InitialValues = Partial<Values>>({
+export function Form<Values, InitialValues = Partial<Values>>({
   disabled = false,
   render,
   mutators,
@@ -141,5 +143,3 @@ function Form<Values, InitialValues = Partial<Values>>({
     />
   )
 }
-
-export default Form

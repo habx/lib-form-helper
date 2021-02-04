@@ -1,6 +1,6 @@
 import * as React from 'react'
 
-const useUniqID = (): number => {
+export const useUniqID = (): number => {
   const idRef = React.useRef<number>()
 
   if (idRef.current === undefined) {
@@ -9,5 +9,3 @@ const useUniqID = (): number => {
 
   return idRef.current
 }
-
-export default useUniqID
