@@ -7,4 +7,6 @@ export const DEFAULT_SECTION_CONTEXT: SectionContextProps = {
   path: [],
 }
 
-export default React.createContext<SectionContextProps>(DEFAULT_SECTION_CONTEXT)
+export const FormSectionContext = React.createContext<SectionContextProps>(
+  DEFAULT_SECTION_CONTEXT
+)

@@ -1,6 +1,6 @@
 import * as React from 'react'
 
-const useKeyboardSave = (
+export const useKeyboardSave = (
   callback?: (
     event?: Partial<
       Pick<React.SyntheticEvent, 'preventDefault' | 'stopPropagation'>
@@ -24,5 +24,3 @@ const useKeyboardSave = (
     }
   }, [callback])
 }
-
-export default useKeyboardSave

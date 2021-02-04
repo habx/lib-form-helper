@@ -1,6 +1,6 @@
 import * as React from 'react'
 
-export default interface FormSectionProps {
+export interface FormSectionProps {
   id?: string
   name?: string
   rootName?: string

@@ -1,6 +1,6 @@
 import { isEqual } from 'lodash'
 
-const asyncDebounce = <D, Params extends any[]>(
+export const asyncDebounce = <D, Params extends any[]>(
   func: (...params: Params) => Promise<D> | D | undefined,
   time: number
 ) => {
@@ -30,5 +30,3 @@ const asyncDebounce = <D, Params extends any[]>(
     })
   }
 }
-
-export default asyncDebounce

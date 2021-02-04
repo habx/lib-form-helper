@@ -1,17 +1,17 @@
 import { some } from 'lodash'
 import * as React from 'react'
 
-import useSSRLayoutEffect from '../_internal/useSSRLayoutEffect'
-import useUniqID from '../_internal/useUniqID'
+import { useSSRLayoutEffect } from '../_internal/useSSRLayoutEffect'
+import { useUniqID } from '../_internal/useUniqID'
 import { FormContext } from '../Form'
 import {
   FormSectionRenderProps,
   FormSectionStatusProps,
 } from '../FormSection/FormSection.interface'
 
-import FormSectionWatcherProps from './FormSectionWatcher.interface'
+import { FormSectionWatcherProps } from './FormSectionWatcher.interface'
 
-const FormSectionWatcher: React.FunctionComponent<FormSectionWatcherProps> = ({
+export const FormSectionWatcher: React.FunctionComponent<FormSectionWatcherProps> = ({
   id,
   children,
 }) => {
@@ -48,5 +48,3 @@ const FormSectionWatcher: React.FunctionComponent<FormSectionWatcherProps> = ({
 
   return children(renderPropsStatus)
 }
-
-export default FormSectionWatcher

@@ -4,13 +4,13 @@ import { FieldInputProps, FieldMetaState, useField } from 'react-final-form'
 
 import { stringifyColor, useThemeVariant } from '@habx/ui-core'
 
-import useSSRLayoutEffect from '../_internal/useSSRLayoutEffect'
-import useUniqID from '../_internal/useUniqID'
+import { useSSRLayoutEffect } from '../_internal/useSSRLayoutEffect'
+import { useUniqID } from '../_internal/useUniqID'
 import { REQUIRED_FIELD_ERROR } from '../FieldError/FieldError'
 import { FormContext, FormContextProps } from '../Form'
 import { FormSectionContext } from '../FormSection'
-import useTranslate from '../useTranslate'
-import joinNames from '../utils/joinNames'
+import { useTranslate } from '../useTranslate'
+import { joinNames } from '../utils/joinNames'
 
 import {
   InputHookConfig,
@@ -168,7 +168,7 @@ const useFieldValue = <FieldValue extends unknown>(
   return [value, handleChange] as const
 }
 
-const useFinalFormField = <
+export const useFinalFormField = <
   FieldValue extends unknown,
   Props extends UseFinalFormReceivedProps<FieldValue> = {}
 >(
@@ -238,5 +238,3 @@ const useFinalFormField = <
     errorColor,
   }
 }
-
-export default useFinalFormField

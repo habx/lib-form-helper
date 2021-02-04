@@ -4,9 +4,9 @@ import { UseFieldConfig } from 'react-final-form'
 
 import { FieldError } from '../FieldError'
 import { REQUIRED_FIELD_ERROR } from '../FieldError/FieldError'
-import useFinalFormField from '../useFinalFormField'
+import { useFinalFormField } from '../useFinalFormField'
 import { UseFinalFormFieldValue } from '../useFinalFormField/useFinalFormField.interface'
-import useTranslate from '../useTranslate'
+import { useTranslate } from '../useTranslate'
 
 import {
   FieldContentReceivedProps,
@@ -21,7 +21,7 @@ import {
 const defaultFormat = (value?: any) => (value === undefined ? '' : value)
 const defaultParse = (value?: any) => (value === '' ? undefined : value)
 
-const withFinalForm = <
+export const withFinalForm = <
   InputValue extends unknown,
   AdditionalProps extends object = {},
   Element extends HTMLElement = HTMLDivElement,
@@ -177,5 +177,3 @@ const withFinalForm = <
     )
   })
 }
-
-export default withFinalForm

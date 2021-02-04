@@ -7,11 +7,10 @@ interface AdditionalProps<Values, InitialValues> {
   language?: 'fr' | 'en'
 }
 
-export default interface FormProps<
+export interface FormProps<
   Values = Record<string, any>,
   InitialValues = Partial<Values>
->
-  extends FinalFormProps<Values, InitialValues>,
+> extends FinalFormProps<Values, InitialValues>,
     AdditionalProps<Values, InitialValues> {
   render: Required<FormRenderProps<Values, InitialValues>>['render']
 }
@@ -19,8 +18,7 @@ export default interface FormProps<
 export interface FormContentProps<
   Values = Record<string, any>,
   InitialValues = Partial<Values>
->
-  extends FormRenderProps<Values, InitialValues>,
+> extends FormRenderProps<Values, InitialValues>,
     AdditionalProps<Values, InitialValues> {
   render: Required<FormRenderProps<Values, InitialValues>>['render']
 }

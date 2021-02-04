@@ -22,7 +22,7 @@ const createState = (
   }
 }
 
-export default ({
+export const useFormattedNumber = ({
   factor,
   intl,
   onChange,

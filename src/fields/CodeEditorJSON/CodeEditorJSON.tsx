@@ -3,9 +3,9 @@ import AceEditor from 'react-ace'
 
 import { withLabel } from '@habx/ui-core'
 
-import useUniqID from '../../_internal/useUniqID'
+import { useUniqID } from '../../_internal/useUniqID'
 import { FieldError } from '../../FieldError'
-import useFinalFormField from '../../useFinalFormField'
+import { useFinalFormField } from '../../useFinalFormField'
 import { ValidationCallback } from '../../withFinalForm'
 
 import {

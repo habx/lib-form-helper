@@ -1,1 +1,1 @@
-export { default as useFormattedNumber } from './number.hook'
+export { useFormattedNumber } from './number.hook'
