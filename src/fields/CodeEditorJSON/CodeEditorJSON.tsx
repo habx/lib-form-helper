@@ -56,6 +56,7 @@ const CodeEditorJSON: React.FunctionComponent<CodeEditorJSONProps> = ({
   name,
   validate,
   label: rawLabel,
+  disabled: rawDisabled,
   ...props
 }) => {
   const [localValue, setLocalValue] = React.useState<{
@@ -79,10 +80,12 @@ const CodeEditorJSON: React.FunctionComponent<CodeEditorJSONProps> = ({
     input,
     error,
     label,
+    disabled,
     shouldDisplayInlineError,
     shouldBeInErrorMode,
   } = useFinalFormField<string | null>(name, {
     label: rawLabel,
+    disabled: rawDisabled,
     validate: localValidate,
     parse: (value: string) => {
       if (!value) {
@@ -130,6 +133,7 @@ const CodeEditorJSON: React.FunctionComponent<CodeEditorJSONProps> = ({
         label={label}
         error={shouldBeInErrorMode}
         {...props}
+        disabled={disabled}
       />
       <FieldError showError={shouldDisplayInlineError} value={error} />
     </div>

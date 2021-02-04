@@ -7,7 +7,6 @@ import {
   FormSectionContext,
   DEFAULT_SECTION_CONTEXT,
 } from '../FormSection/FormSection.context'
-import { useKeyboardSave } from '../useKeyboardSave'
 import { IntlProvider } from '../useTranslate'
 
 import { FormContext } from './Form.context'
@@ -80,18 +79,14 @@ const useStatuses = (): FormStatusActions => {
 
 function FormContent<Values, InitialValues>({
   render,
-  form,
   shouldShowErrors,
-  saveWithKeyboard,
   language = 'fr',
   ...props
 }: FormContentProps<Values, InitialValues>) {
   const statusActions = useStatuses()
 
-  useKeyboardSave(saveWithKeyboard ? props.handleSubmit : undefined)
-
   const showErrors = isFunction(shouldShowErrors)
-    ? shouldShowErrors({ form, ...props })
+    ? shouldShowErrors(props)
     : true
 
   const statusContext = React.useMemo<FormContextProps>(
@@ -111,7 +106,7 @@ function FormContent<Values, InitialValues>({
     >
       <FormContext.Provider value={statusContext}>
         <FormSectionContext.Provider value={DEFAULT_SECTION_CONTEXT}>
-          {render({ ...props, form })}
+          {render(props)}
         </FormSectionContext.Provider>
       </FormContext.Provider>
     </IntlProvider>
