@@ -80,6 +80,7 @@ const useStatuses = (): FormStatusActions => {
 function FormContent<Values, InitialValues>({
   render,
   language = 'fr',
+  defaultErrorBehavior,
   ...props
 }: FormContentProps<Values, InitialValues>) {
   const statusActions = useStatuses()
@@ -88,6 +89,7 @@ function FormContent<Values, InitialValues>({
     () => ({
       ...statusActions,
       disabled: props.submitting || props.disabled,
+      defaultErrorBehavior,
       language,
     }),
     [statusActions, props.submitting, props.disabled, language]
@@ -111,6 +113,7 @@ export function Form<Values, InitialValues = Partial<Values>>({
   disabled = false,
   render,
   mutators,
+  defaultErrorBehavior,
   ...props
 }: FormProps<Values, InitialValues>) {
   const { Form: FinalForm } = withTypes<Values, InitialValues>()
@@ -127,6 +130,7 @@ export function Form<Values, InitialValues = Partial<Values>>({
           {...renderProps}
           render={render}
           disabled={disabled}
+          defaultErrorBehavior={defaultErrorBehavior}
         />
       )}
     />

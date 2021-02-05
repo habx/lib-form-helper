@@ -165,11 +165,14 @@ export const useFinalFormField = <
 
   const { input, meta } = useField<FieldValue>(name, props)
   const theme = useThemeVariant()
-
-  const { disabled, required, label: rawLabel, errorBehavior = 'touched' } =
-    props || {}
-
   const formStatus = React.useContext(FormContext)
+
+  const {
+    disabled,
+    required,
+    label: rawLabel,
+    errorBehavior = formStatus.defaultErrorBehavior ?? 'touched',
+  } = props || {}
 
   useFieldStatus({
     error: meta.error,
@@ -180,6 +183,10 @@ export const useFinalFormField = <
 
   const error = React.useMemo(() => {
     const rawError = meta.error ?? meta.submitError
+
+    if (!rawError) {
+      return null
+    }
 
     if (isString(rawError)) {
       return rawError
@@ -204,20 +211,12 @@ export const useFinalFormField = <
         return !!meta.dirty
       }
 
-      case 'after-submit': {
-        return false
-      }
-
       case 'never': {
         return false
       }
 
       case 'always': {
         return true
-      }
-
-      default: {
-        return false
       }
     }
   }, [
@@ -253,5 +252,6 @@ export const useFinalFormField = <
     shouldBeInErrorMode,
     error,
     errorColor,
+    errorBehavior,
   }
 }

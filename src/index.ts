@@ -11,7 +11,7 @@ export {
   FormatterCallback,
   ParserCallback,
 } from './withFinalForm'
-export { useFinalFormField } from './useFinalFormField'
+export { useFinalFormField, FieldErrorBehavior } from './useFinalFormField'
 export { useStatus } from './useStatus'
 
 /*

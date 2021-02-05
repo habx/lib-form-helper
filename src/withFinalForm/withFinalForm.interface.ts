@@ -61,6 +61,7 @@ export interface InputHOCConfig<InputValue, Props, FieldValue>
   ) => Props
 
   /**
+   * Error behavior to apply to this field in none is specified in the props
    * See FieldErrorBehavior for more information
    */
   errorBehavior?: FieldErrorBehavior

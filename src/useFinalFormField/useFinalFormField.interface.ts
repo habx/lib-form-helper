@@ -30,11 +30,6 @@ export type FieldErrorBehavior =
    */
   | 'touched'
 
-  /**
-   * The error should only be displayed if the form has been submitted since the error occurred
-   */
-  | 'after-submit'
-
 export interface InputHookConfig {
   changeOnBlur?: boolean
 }
@@ -44,8 +39,12 @@ export interface UseFinalFormReceivedProps<FieldType>
   label?: string
   required?: boolean
   disabled?: boolean
+
+  /**
+   * Error behavior to apply to this field
+   * See FieldErrorBehavior for more information
+   */
   errorBehavior?: FieldErrorBehavior
-  shouldShowError?: (a: any) => boolean
 }
 
 export interface UseFinalFormFieldValue<FieldType> {
@@ -68,4 +67,10 @@ export interface UseFinalFormFieldValue<FieldType> {
 
   errorColor: string
   error: any
+
+  /**
+   * Error behavior applied to this field
+   * See FieldErrorBehavior for more information
+   */
+  errorBehavior: FieldErrorBehavior
 }
