@@ -1,5 +1,5 @@
 import arrayMutators from 'final-form-arrays'
-import { isFunction, forEach } from 'lodash'
+import { forEach } from 'lodash'
 import * as React from 'react'
 import { withTypes } from 'react-final-form'
 
@@ -79,24 +79,20 @@ const useStatuses = (): FormStatusActions => {
 
 function FormContent<Values, InitialValues>({
   render,
-  shouldShowErrors,
   language = 'fr',
+  defaultErrorBehavior,
   ...props
 }: FormContentProps<Values, InitialValues>) {
   const statusActions = useStatuses()
-
-  const showErrors = isFunction(shouldShowErrors)
-    ? shouldShowErrors(props)
-    : true
 
   const statusContext = React.useMemo<FormContextProps>(
     () => ({
       ...statusActions,
       disabled: props.submitting || props.disabled,
-      showErrors,
+      defaultErrorBehavior,
       language,
     }),
-    [statusActions, props.submitting, props.disabled, showErrors, language]
+    [statusActions, props.submitting, props.disabled, language]
   )
 
   return (
@@ -117,6 +113,7 @@ export function Form<Values, InitialValues = Partial<Values>>({
   disabled = false,
   render,
   mutators,
+  defaultErrorBehavior,
   ...props
 }: FormProps<Values, InitialValues>) {
   const { Form: FinalForm } = withTypes<Values, InitialValues>()
@@ -133,6 +130,7 @@ export function Form<Values, InitialValues = Partial<Values>>({
           {...renderProps}
           render={render}
           disabled={disabled}
+          defaultErrorBehavior={defaultErrorBehavior}
         />
       )}
     />

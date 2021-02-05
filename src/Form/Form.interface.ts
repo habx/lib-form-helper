@@ -1,9 +1,16 @@
 import { FormProps as FinalFormProps, FormRenderProps } from 'react-final-form'
 
+import { FieldErrorBehavior } from '../useFinalFormField'
+
 interface FormAdditionalProps<Values, InitialValues> {
   disabled?: boolean
-  shouldShowErrors?: (props: FormRenderProps<Values, InitialValues>) => boolean
   language?: 'fr' | 'en'
+
+  /**
+   * Error behavior to apply to the fields of this form if none is given to useFinalFormField
+   * See FieldErrorBehavior for more information
+   */
+  defaultErrorBehavior?: FieldErrorBehavior
 }
 
 export interface FormProps<
@@ -52,6 +59,6 @@ export interface FormStatusActions {
 
 export interface FormContextProps extends FormStatusActions {
   disabled?: boolean
-  showErrors: boolean
+  defaultErrorBehavior?: FieldErrorBehavior
   language: 'fr' | 'en'
 }

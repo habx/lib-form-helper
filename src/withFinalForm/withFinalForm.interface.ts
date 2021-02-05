@@ -1,6 +1,7 @@
 import { FieldMetaState } from 'react-final-form'
 
 import {
+  FieldErrorBehavior,
   InputHookConfig,
   UseFinalFormFieldValue,
   UseFinalFormReceivedProps,
@@ -58,6 +59,12 @@ export interface InputHOCConfig<InputValue, Props, FieldValue>
   mapFieldValueToProps?: (
     fieldValue: UseFinalFormFieldValue<FieldValue>
   ) => Props
+
+  /**
+   * Error behavior to apply to this field in none is specified in the props
+   * See FieldErrorBehavior for more information
+   */
+  errorBehavior?: FieldErrorBehavior
 }
 
 export interface FieldContentReceivedProps<InputValue>

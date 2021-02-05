@@ -1,4 +1,4 @@
-import { get, isNil, isFunction, every, includes, isString } from 'lodash'
+import { get, isNil, every, includes, isString } from 'lodash'
 import * as React from 'react'
 import { FieldInputProps, FieldMetaState, useField } from 'react-final-form'
 
@@ -65,41 +65,24 @@ const useLabel = ({
   required?: boolean
   label?: string
   errorColor: string
-}) => {
-  const t = useTranslate()
+}) =>
+  React.useMemo(() => {
+    if (label && required) {
+      if (shouldBeInErrorMode && error === REQUIRED_FIELD_ERROR) {
+        return (
+          <React.Fragment>
+            {label} <span style={{ color: errorColor }}>*</span>
+          </React.Fragment>
+        )
+      }
 
-  return React.useMemo(() => {
-    if (!label) {
-      return undefined
-    }
-
-    if (!shouldBeInErrorMode || !error) {
       if (required) {
         return `${label} *`
       }
-
-      return label
     }
 
-    if (error === REQUIRED_FIELD_ERROR) {
-      return (
-        <React.Fragment>
-          {label} <span style={{ color: errorColor }}>*</span>
-        </React.Fragment>
-      )
-    }
-
-    if (error && typeof error === 'object') {
-      return label
-        ? `${label} (${t('errors.on.child', {}, { upperFirst: false })})`
-        : t('errors.on.child', {}, { upperFirst: false })
-    }
-
-    if (error && typeof error !== 'object') {
-      return `${label} : ${error}`
-    }
-  }, [label, shouldBeInErrorMode, error, required, errorColor, t])
-}
+    return label
+  }, [error, errorColor, label, required, shouldBeInErrorMode])
 
 /**
  * Wrapper to handle inputConfig.changeOnBlur behavior
@@ -176,15 +159,20 @@ export const useFinalFormField = <
   props: Props | undefined,
   inputConfig: InputHookConfig = {}
 ): UseFinalFormFieldValue<FieldValue> => {
+  const t = useTranslate()
   const sectionContext = React.useContext(FormSectionContext)
   const name = joinNames(sectionContext.name, baseName)
 
   const { input, meta } = useField<FieldValue>(name, props)
   const theme = useThemeVariant()
-
-  const { disabled, required, label: rawLabel } = props || {}
-
   const formStatus = React.useContext(FormContext)
+
+  const {
+    disabled,
+    required,
+    label: rawLabel,
+    errorBehavior = formStatus.defaultErrorBehavior ?? 'touched',
+  } = props || {}
 
   useFieldStatus({
     error: meta.error,
@@ -196,21 +184,49 @@ export const useFinalFormField = <
   const error = React.useMemo(() => {
     const rawError = meta.error ?? meta.submitError
 
+    if (!rawError) {
+      return null
+    }
+
     if (isString(rawError)) {
       return rawError
     }
 
-    return null
-  }, [meta.error, meta.submitError])
+    return t('errors.on.child')
+  }, [meta.error, meta.submitError, t])
 
   const [value, setValue] = useFieldValue(input, meta, inputConfig)
 
-  const fieldShowError = isFunction(props?.shouldShowError)
-    ? !!props?.shouldShowError(meta)
-    : true
+  const shouldBeInErrorMode = React.useMemo(() => {
+    if (!error || formStatus.disabled) {
+      return false
+    }
 
-  const shouldBeInErrorMode =
-    fieldShowError && !formStatus.disabled && formStatus.showErrors && !!error
+    switch (errorBehavior) {
+      case 'touched': {
+        return !!meta.touched && !meta.active
+      }
+
+      case 'dirty': {
+        return !!meta.dirty
+      }
+
+      case 'never': {
+        return false
+      }
+
+      case 'always': {
+        return true
+      }
+    }
+  }, [
+    error,
+    errorBehavior,
+    formStatus.disabled,
+    meta.touched,
+    meta.active,
+    meta.dirty,
+  ])
 
   const shouldDisplayInlineError =
     shouldBeInErrorMode && error !== REQUIRED_FIELD_ERROR
@@ -236,5 +252,6 @@ export const useFinalFormField = <
     shouldBeInErrorMode,
     error,
     errorColor,
+    errorBehavior,
   }
 }

@@ -51,6 +51,7 @@ export const withFinalForm = <
     format: rawFormat,
     parse: rawParse,
     validate: rawValidate,
+    errorBehavior: rawErrorBehavior,
     ...props
   }: FieldComponentProps) => {
     const t = useTranslate()
@@ -132,7 +133,9 @@ export const withFinalForm = <
       [t]
     )
 
-    return { ...props, format, parse, validate }
+    const errorBehavior = rawErrorBehavior ?? inputConfig.errorBehavior
+
+    return { ...props, format, parse, validate, errorBehavior }
   }
 
   return React.forwardRef<Element, FieldComponentProps>((props, ref) => {
@@ -149,6 +152,7 @@ export const withFinalForm = <
       shouldBeInErrorMode,
       shouldDisplayInlineError,
       error,
+      errorBehavior,
       input,
       ...rest
     } = React.useMemo<UseFinalFormFieldValue<InputValue>>(
@@ -172,7 +176,11 @@ export const withFinalForm = <
           error={shouldBeInErrorMode}
           label={label}
         />
-        <FieldError showError={shouldDisplayInlineError} value={error} />
+        <FieldError
+          showError={shouldDisplayInlineError}
+          value={error}
+          errorBehavior={errorBehavior}
+        />
       </div>
     )
   })

@@ -83,6 +83,7 @@ const CodeEditorJSON: React.FunctionComponent<CodeEditorJSONProps> = ({
     disabled,
     shouldDisplayInlineError,
     shouldBeInErrorMode,
+    errorBehavior,
   } = useFinalFormField<string | null>(name, {
     label: rawLabel,
     disabled: rawDisabled,
@@ -135,7 +136,11 @@ const CodeEditorJSON: React.FunctionComponent<CodeEditorJSONProps> = ({
         {...props}
         disabled={disabled}
       />
-      <FieldError showError={shouldDisplayInlineError} value={error} />
+      <FieldError
+        showError={shouldDisplayInlineError}
+        errorBehavior={errorBehavior}
+        value={error}
+      />
     </div>
   )
 }

@@ -5,6 +5,31 @@ import {
   UseFieldConfig,
 } from 'react-final-form'
 
+/**
+ * Describes when the error should be displayed
+ */
+export type FieldErrorBehavior =
+  /**
+   * The error should always be displayed
+   */
+  | 'always'
+
+  /**
+   * The error should never be displayed
+   */
+  | 'never'
+
+  /**
+   * The error should only be displayed if the field has been edited
+   */
+  | 'dirty'
+
+  /**
+   * The error should only be displayed if the field has been touched and is currently not focused
+   * This is the default behavior
+   */
+  | 'touched'
+
 export interface InputHookConfig {
   changeOnBlur?: boolean
 }
@@ -14,7 +39,12 @@ export interface UseFinalFormReceivedProps<FieldType>
   label?: string
   required?: boolean
   disabled?: boolean
-  shouldShowError?: (meta: FieldMetaState<any>) => boolean
+
+  /**
+   * Error behavior to apply to this field
+   * See FieldErrorBehavior for more information
+   */
+  errorBehavior?: FieldErrorBehavior
 }
 
 export interface UseFinalFormFieldValue<FieldType> {
@@ -37,4 +67,10 @@ export interface UseFinalFormFieldValue<FieldType> {
 
   errorColor: string
   error: any
+
+  /**
+   * Error behavior applied to this field
+   * See FieldErrorBehavior for more information
+   */
+  errorBehavior: FieldErrorBehavior
 }
