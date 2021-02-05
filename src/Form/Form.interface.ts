@@ -2,7 +2,6 @@ import { FormProps as FinalFormProps, FormRenderProps } from 'react-final-form'
 
 interface FormAdditionalProps<Values, InitialValues> {
   disabled?: boolean
-  shouldShowErrors?: (props: FormRenderProps<Values, InitialValues>) => boolean
   language?: 'fr' | 'en'
 }
 
@@ -52,6 +51,5 @@ export interface FormStatusActions {
 
 export interface FormContextProps extends FormStatusActions {
   disabled?: boolean
-  showErrors: boolean
   language: 'fr' | 'en'
 }
