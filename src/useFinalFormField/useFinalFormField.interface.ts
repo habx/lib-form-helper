@@ -36,7 +36,7 @@ export interface InputHookConfig {
 
 export interface UseFinalFormReceivedProps<FieldType>
   extends UseFieldConfig<FieldType> {
-  label?: string
+  label?: React.ReactNode
   required?: boolean
   disabled?: boolean
 

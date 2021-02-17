@@ -63,7 +63,7 @@ const useLabel = ({
   error: string | null
   shouldBeInErrorMode: boolean
   required?: boolean
-  label?: string
+  label?: React.ReactNode
   errorColor: string
 }) =>
   React.useMemo(() => {
