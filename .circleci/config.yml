@@ -1,7 +1,3 @@
-# --------------------------------------------------- #
-# https://github.com/habx/devops-template-circleci    #
-# ----------- DO NOT EDIT BELOW THIS LINE ----------- #
-# --------------------------------------------------- #
 version: 2.1
 
 # --- Anchor alias ---- #
@@ -12,36 +8,28 @@ alias:
     docker:
       - image: circleci/node:14.13.1
         user: root
-  - &docker_buildpack_deps_configuration
-    docker:
-      - image: circleci/buildpack-deps:stretch
-        user: root
-  - &docker_buildpack_deps_python_configuration
-    docker:
-      - image: circleci/python
-        user: root
 # - Jobs filters - #
-  - &filters_ignore_tags
-    tags:
-      ignore: /.*/
-  - &filters_ignore_branches
-    branches:
-      ignore: /.*/
   - &filters_allow_tags
     tags:
       only: /^v.*/
-  - &filters_allow_branch_dev
+  - &filters_ignore_branches
     branches:
-      only:
-        - dev
+      ignore: /.*/
+  - &filters_ignore_tags
+    tags:
+      ignore: /.*/
 # - Step - #
-  - &preconfig
+  - &preconfig-github-pkg
     run:
       name: Preconfigure environment ~/.npmrc
       command: |
         echo "@habx:registry=https://npm.pkg.github.com/" > ~/.npmrc
         echo "//npm.pkg.github.com/:_authToken=${GITHUB_TOKEN}" >> ~/.npmrc
-
+  - &preconfig-npmjs
+    run:
+      name: Preconfigure environment ~/.npmrc
+      command: |
+        echo "//registry.npmjs.org/:_authToken=${NPM_TOKEN}" > ~/.npmrc
 # - Node modules - #
   - &install_node_modules_with_cache
     node/with-cache:
@@ -70,7 +58,6 @@ jobs:
     <<: *docker_node14_configuration
     steps:
       - checkout
-      - *preconfig
       - *install_node_modules_with_cache_production
       - *install_node_modules_with_cache
       - run: export NODE_ENV=production; npm run build
@@ -83,23 +70,16 @@ jobs:
     <<: *docker_node14_configuration
     steps:
       - checkout
-      - *preconfig
       - *install_node_modules_with_cache
       - attach_workspace:
           at: ~/project
-      - *preconfig
       - *install_node_modules_with_cache
       - run: npm run storybook:build
-      - persist_to_workspace:
-          root: ~/project
-          paths:
-            - .storybook-static
 
   lint:
     <<: *docker_node14_configuration
     steps:
       - checkout
-      - *preconfig
       - *install_node_modules_with_cache
       - run: npm run lint
 
@@ -107,36 +87,29 @@ jobs:
     <<: *docker_node14_configuration
     steps:
       - checkout
-      - *preconfig
       - *install_node_modules_with_cache
       - run: npm run test
 
-  tests-puppeteer:
-    <<: *docker_node14_configuration
-    parallelism: 1
-    steps:
-      - checkout
-      - attach_workspace:
-          at: ~/project
-      - *preconfig
-      - *install_node_modules_with_cache
-      - run:
-          name: apt update (fix missing deps libproxy1v5_0.4.14-2+deb9u1_amd64.deb)
-          command: |
-            apt-get -y update
-      - puppeteer/install
-      - run:
-          name: Puppeteer test
-          command: |
-            npm run test
-  npm-publish:
+  github-pkg-publish:
     <<: *docker_node14_configuration
     steps:
       - checkout
       - attach_workspace:
           at: ~/project
-      - *preconfig
+      - *preconfig-github-pkg
       - *install_node_modules_with_cache
+      - run: rm .npmrc || echo ".npmrc not found"
+      - run: npm publish
+
+  npmjs-publish:
+    <<: *docker_node14_configuration
+    steps:
+      - checkout
+      - attach_workspace:
+          at: ~/project
+      - *preconfig-npmjs
+      - *install_node_modules_with_cache
+      - run: jq -M 'del(.publishConfig)' package.json > _package.json; mv _package.json package.json
       - run: npm publish
 
   storybook-publish:
@@ -145,7 +118,6 @@ jobs:
       - checkout
       - attach_workspace:
           at: ~/project
-      - *preconfig
       - *install_node_modules_with_cache
       - run: npm run storybook:deploy
 
@@ -155,7 +127,7 @@ jobs:
       - checkout
       - attach_workspace:
           at: ~/project
-      - *preconfig
+      - *preconfig-npmjs
       - *install_node_modules_with_cache
       - run:
           name: Install and configure dependencies
@@ -164,10 +136,8 @@ jobs:
       - run:
           name: Deploy docs to gh-pages branch
           command: npm run build:documentation && gh-pages --dist docs --repo https://${GITHUB_TOKEN}@github.com/${CIRCLE_REPOSITORY_URL#"git@github.com:"} --silent --message "[SKIP CI] CircleCI build ${CIRCLE_BUILD_NUM} pushed to Github Pages"
-
 orbs:
   node: circleci/node@1.0.1
-  puppeteer: threetreeslight/puppeteer@0.1.2
 # --- END --- #
 # --------------------------------------------------- #
 # -------------- DEFINE YOUR WORKFLOW --------------- #
@@ -176,22 +146,22 @@ workflows:
   build:
     jobs:
       - build:
-          context: default_env_vars
+          context: ts-lib-client-public
           filters:
             <<: *filters_allow_tags
       - lint:
-          context: default_env_vars
+          context: ts-lib-client-public
           filters:
             <<: *filters_allow_tags
       - tests:
-          context: default_env_vars
+          context: ts-lib-client-public
           requires:
             - build
             - lint
           filters:
             <<: *filters_allow_tags
-      - npm-publish:
-          context: default_env_vars
+      - npmjs-publish:
+          context: ts-lib-client-public
           requires:
             - build
             - lint
@@ -199,4 +169,12 @@ workflows:
           filters:
             <<: *filters_allow_tags
             <<: *filters_ignore_branches
-
+      - github-pkg-publish:
+          context: ts-lib-client-public
+          requires:
+            - build
+            - lint
+            - tests
+          filters:
+            <<: *filters_allow_tags
+            <<: *filters_ignore_branches
