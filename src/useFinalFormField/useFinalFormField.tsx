@@ -77,7 +77,7 @@ const useLabel = ({
       }
 
       if (required) {
-        return `${label} *`
+        return <React.Fragment>{label} *</React.Fragment>
       }
     }
 
