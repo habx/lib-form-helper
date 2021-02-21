@@ -4,4 +4,4 @@ const BaseCodeEditorJSON = React.lazy(() => import('./CodeEditorJSON'))
 
 export { CodeEditorJSONProps } from './CodeEditorJSON.interface'
 
-export const CodeEditorJSON = React.memo(BaseCodeEditorJSON)
+export const CodeEditorJSON = BaseCodeEditorJSON

@@ -145,4 +145,4 @@ const CodeEditorJSON: React.FunctionComponent<CodeEditorJSONProps> = ({
   )
 }
 
-export default CodeEditorJSON
+export default React.memo(CodeEditorJSON)
