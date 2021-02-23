@@ -2,7 +2,7 @@ import { FormProps as FinalFormProps, FormRenderProps } from 'react-final-form'
 
 import { FieldErrorBehavior } from '../useFinalFormField'
 
-interface FormAdditionalProps<Values, InitialValues> {
+interface FormAdditionalProps {
   disabled?: boolean
   language?: 'fr' | 'en'
 
@@ -17,7 +17,7 @@ export interface FormProps<
   Values = Record<string, any>,
   InitialValues = Partial<Values>
 > extends FinalFormProps<Values, InitialValues>,
-    FormAdditionalProps<Values, InitialValues> {
+    FormAdditionalProps {
   render: Required<FormRenderProps<Values, InitialValues>>['render']
 }
 
@@ -25,7 +25,7 @@ export interface FormContentProps<
   Values = Record<string, any>,
   InitialValues = Partial<Values>
 > extends FormRenderProps<Values, InitialValues>,
-    FormAdditionalProps<Values, InitialValues> {
+    FormAdditionalProps {
   render: Required<FormRenderProps<Values, InitialValues>>['render']
 }
 

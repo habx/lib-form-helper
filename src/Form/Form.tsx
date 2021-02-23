@@ -92,7 +92,13 @@ function FormContent<Values, InitialValues>({
       defaultErrorBehavior,
       language,
     }),
-    [statusActions, props.submitting, props.disabled, language]
+    [
+      statusActions,
+      props.submitting,
+      props.disabled,
+      defaultErrorBehavior,
+      language,
+    ]
   )
 
   return (
