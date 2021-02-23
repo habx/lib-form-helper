@@ -57,7 +57,7 @@
     "@habx/config-ci-front": "^0.4.1",
     "@habx/eslint-config-client": "^6.0.0",
     "@habx/lib-client-intl": "^1.5.0",
-    "@habx/ui-core": "^5.19.0",
+    "@habx/ui-core": "^5.20.1",
     "@types/jest": "^26.0.20",
     "@types/lodash": "^4.14.168",
     "@types/react": "^17.0.2",
