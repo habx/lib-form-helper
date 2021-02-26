@@ -139,24 +139,24 @@ workflows:
   build:
     jobs:
       - lint:
-          context: default_env_vars
+          context: ts-lib-client-public
           filters:
             <<: *filters_allow_tags
       - build:
-          context: default_env_vars
+          context: ts-lib-client-public
           requires:
             - lint
           filters:
             <<: *filters_allow_tags
       - tests:
-          context: default_env_vars
+          context: ts-lib-client-public
           requires:
             - build
             - lint
           filters:
             <<: *filters_allow_tags
       - github-pkg-publish:
-          context: default_env_vars
+          context: ts-lib-client-public
           requires:
             - build
             - lint
@@ -165,7 +165,7 @@ workflows:
             <<: *filters_allow_tags
             <<: *filters_ignore_branches
       - npmjs-publish:
-          context: default_env_vars
+          context: ts-lib-client-public
           requires:
             - build
             - lint
