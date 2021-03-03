@@ -1,29 +1,31 @@
 import { isEqual } from 'lodash'
 
-export const asyncDebounce = <D, Params extends any[]>(
-  func: (...params: Params) => Promise<D> | D | undefined,
+export const asyncDebounce = <D, Value>(
+  func: (value: Value, ...params: any[]) => Promise<D> | D | undefined,
   time: number
 ) => {
-  let memoizedParams: Params | undefined = undefined
+  let memoizedValue: Value | undefined = undefined
   let memoizedResult: Promise<D> | D | undefined = undefined
 
-  return (...params: Params) => {
-    return new Promise<D | undefined>((resolve) => {
-      // if same params return memoized value and avoid call function
-      if (memoizedParams && isEqual(memoizedParams, params)) {
-        return resolve(memoizedResult)
-      }
+  return (value: Value, ...params: any[]) => {
+    // if same params return memoized value and avoid call function
+    if (memoizedValue && isEqual(value, memoizedValue)) {
+      return memoizedResult
+    }
 
+    return new Promise<D | undefined>((resolve) => {
       // reset memoized value at each call
-      memoizedParams = params
+      memoizedValue = value
       memoizedResult = undefined
+      const promiseParams = [value, ...params] as const
 
       const resolveDebounce = () => {
         // flush old promises if out of date
-        if (!isEqual(memoizedParams, params)) {
+        if (!isEqual(memoizedValue, value)) {
           resolve(undefined)
+          return
         }
-        memoizedResult = func(...(memoizedParams ?? ([] as any)))
+        memoizedResult = func(...promiseParams)
         return resolve(memoizedResult as D)
       }
       setTimeout(resolveDebounce, time)
