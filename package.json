@@ -45,7 +45,7 @@
     "final-form": "^4.20.2",
     "final-form-arrays": "^3.0.2",
     "lodash": "^4.17.21",
-    "react": "^17.0.1",
+    "react": "^17.0.2",
     "react-final-form": "^6.5.3",
     "styled-components": "^5.2.1"
   },
@@ -70,7 +70,7 @@
     "jest": "^26.6.3",
     "lint-staged": "^10.5.4",
     "lodash": "^4.17.21",
-    "react": "^17.0.1",
+    "react": "^17.0.2",
     "react-final-form": "^6.5.3",
     "rimraf": "^3.0.2",
     "rollup-plugin-typescript2": "^0.30.0",
