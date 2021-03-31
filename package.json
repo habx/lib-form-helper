@@ -47,7 +47,7 @@
     "lodash": "^4.17.21",
     "react": "^17.0.2",
     "react-final-form": "^6.5.3",
-    "styled-components": "^5.2.2"
+    "styled-components": "^5.2.3"
   },
   "dependencies": {
     "brace": "^0.11.1",
