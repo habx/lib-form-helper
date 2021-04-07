@@ -70,14 +70,15 @@ const useLabel = ({
     if (label && required) {
       if (shouldBeInErrorMode && error === REQUIRED_FIELD_ERROR) {
         return (
-          <React.Fragment>
-            {label} <span style={{ color: errorColor }}>*</span>
-          </React.Fragment>
+          <>
+            {label}&nbsp;
+            <span style={{ color: errorColor }}>*</span>
+          </>
         )
       }
 
       if (required) {
-        return <React.Fragment>{label} *</React.Fragment>
+        return <>{label}&nbsp;*</>
       }
     }
 
