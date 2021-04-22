@@ -12,6 +12,7 @@ const FieldErrorContent = styled(Text)`
   overflow: hidden;
   text-overflow: ellipsis;
   height: calc(1em + 8px);
+  line-height: 1;
 `
 
 export const REQUIRED_FIELD_ERROR = 'REQUIRED_FIELD_ERROR'
