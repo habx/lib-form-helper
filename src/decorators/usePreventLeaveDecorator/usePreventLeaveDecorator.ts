@@ -6,7 +6,7 @@ import { confirm } from '@habx/ui-core'
 
 import { useTranslate } from '../../useTranslate'
 
-export const usePreventLeaveDecorator = (history: History) => {
+export const usePreventLeaveDecorator = (history?: History) => {
   const t = useTranslate()
   const pristineRef = React.useRef(false)
 
@@ -26,6 +26,9 @@ export const usePreventLeaveDecorator = (history: History) => {
   }, [])
 
   React.useEffect(() => {
+    if (!history) {
+      return
+    }
     const unblock = history.block((location) => {
       if (!pristineRef.current) {
         const confirmLeaving = async () => {
