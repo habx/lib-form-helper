@@ -19,7 +19,10 @@ export { useStatus } from './useStatus'
  */
 export { useFormAutoSubmitDecorator } from './decorators/useFormAutoSubmitDecorator'
 export { useFormKeyboardSubmitDecorator } from './decorators/useFormKeyboardSubmitDecorator'
-export { usePreventLeaveDecorator } from './decorators/usePreventLeaveDecorator'
+export {
+  usePreventLeaveDecorator,
+  UsePreventLeaveDecoratorOptions,
+} from './decorators/usePreventLeaveDecorator'
 
 /*
   Utils
