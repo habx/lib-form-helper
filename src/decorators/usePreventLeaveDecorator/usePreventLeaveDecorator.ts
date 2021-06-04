@@ -4,10 +4,15 @@ import * as React from 'react'
 
 import { confirm } from '@habx/ui-core'
 
-import { useTranslate } from '../../useTranslate'
+export interface UsePreventLeaveDecoratorOptions {
+  message?: string
+}
+const DEFAULT_MESSAGE = 'Quitter sans sauvegarder les modifications ?'
 
-export const usePreventLeaveDecorator = (history?: History) => {
-  const t = useTranslate()
+export const usePreventLeaveDecorator = (
+  history?: History,
+  options?: UsePreventLeaveDecoratorOptions
+) => {
   const pristineRef = React.useRef(false)
 
   React.useEffect(() => {
@@ -33,7 +38,7 @@ export const usePreventLeaveDecorator = (history?: History) => {
       if (!pristineRef.current) {
         const confirmLeaving = async () => {
           const hasConfirmed = await confirm(
-            t('decorators.preventLeaving.message')
+            options?.message ?? DEFAULT_MESSAGE
           )
           if (hasConfirmed) {
             unblock()
