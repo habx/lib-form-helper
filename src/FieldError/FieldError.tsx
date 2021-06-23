@@ -8,11 +8,8 @@ import { FieldErrorBehavior } from '../useFinalFormField'
 const FieldErrorContent = styled(Text)`
   color: ${theme.color('error')};
   padding-top: 8px;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  height: calc(1em + 8px);
-  line-height: 1;
+  min-height: calc(1em + 8px);
+  line-height: 1.2;
 `
 
 export const REQUIRED_FIELD_ERROR = 'REQUIRED_FIELD_ERROR'
