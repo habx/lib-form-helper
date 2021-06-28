@@ -1,7 +1,7 @@
 export type messageIds = 'errors.required.full' | 'errors.on.child'
 
 export const fr: Record<messageIds, string> = {
-  'errors.required.full': 'ce champs est requis',
+  'errors.required.full': 'ce champ est requis',
   'errors.on.child': 'contient des erreurs',
 }
 
