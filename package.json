@@ -59,7 +59,7 @@
     "@habx/lib-client-intl": "^1.5.0",
     "@habx/ui-core": "^5.39.0",
     "@types/jest": "^26.0.23",
-    "@types/lodash": "^4.14.170",
+    "@types/lodash": "^4.14.171",
     "@types/react": "^17.0.13",
     "@types/react-router": "^5.1.15",
     "@types/styled-components": "^5.1.11",
