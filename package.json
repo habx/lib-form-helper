@@ -41,7 +41,7 @@
   },
   "peerDependencies": {
     "@habx/lib-client-intl": "^1.5.0",
-    "@habx/ui-core": "^5.41.2",
+    "@habx/ui-core": "^5.42.0",
     "final-form": "^4.20.2",
     "final-form-arrays": "^3.0.2",
     "lodash": "^4.17.21",
@@ -57,7 +57,7 @@
     "@habx/config-ci-front": "^0.16.0",
     "@habx/eslint-config-client": "^6.2.0",
     "@habx/lib-client-intl": "^1.5.0",
-    "@habx/ui-core": "^5.41.2",
+    "@habx/ui-core": "^5.42.0",
     "@types/jest": "^26.0.24",
     "@types/lodash": "^4.14.171",
     "@types/react": "^17.0.15",
