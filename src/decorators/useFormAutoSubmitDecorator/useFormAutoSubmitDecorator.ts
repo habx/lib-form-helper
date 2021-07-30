@@ -32,32 +32,29 @@ export const useFormAutoSubmitDecorator = (
     const debouncedSubmit = debounce(submit, debounceDuration)
 
     const subscriber: Subscriber<FormState<any>> = (state) => {
-      /*
-       * The current value is equal to the initial value we don't want to subscribe
-       */
-      if (state.pristine) {
-        return
-      }
+      const dirty = Object.keys(state.dirtyFieldsSinceLastSubmit).length
 
-      const hasDebouncedDirtyField = debouncedFields.some(
-        (field) => state.dirtyFields[field]
-      )
-      if (hasDebouncedDirtyField) {
-        debouncedSubmit()
-      } else {
-        debouncedSubmit.cancel()
-        submit()
+      if (dirty) {
+        const shouldDebounce = debouncedFields.some(
+          (field) => state.dirtyFieldsSinceLastSubmit[field]
+        )
+
+        if (shouldDebounce) {
+          debouncedSubmit()
+        } else {
+          debouncedSubmit.cancel()
+          submit()
+        }
       }
     }
 
     return form.subscribe(subscriber, {
+      dirtyFieldsSinceLastSubmit: true,
       /*
-       * We need to listen to "values" even if we are not using it explicitly
-       * Otherwise, debounced field will only be triggered once
+       * Listen to `values` even if we are not using it explicitly.
+       * Otherwise, debounced fields will only be submitted once.
        */
       values: true,
-      pristine: true,
-      dirtyFields: true,
     })
   }, [])
 }
