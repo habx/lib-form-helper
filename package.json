@@ -55,7 +55,7 @@
   },
   "devDependencies": {
     "@habx/config-ci-front": "^0.17.0",
-    "@habx/eslint-config-client": "^6.2.0",
+    "@habx/eslint-config-client": "^6.3.0",
     "@habx/lib-client-intl": "^1.5.0",
     "@habx/ui-core": "^5.43.1",
     "@types/jest": "^26.0.24",

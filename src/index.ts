@@ -1,5 +1,5 @@
 /*
-  Final Form Helpers
+ *Final Form Helpers
  */
 export { Form, FormContext } from './Form'
 export { FormSection } from './FormSection'
@@ -15,7 +15,7 @@ export { useFinalFormField, FieldErrorBehavior } from './useFinalFormField'
 export { useStatus } from './useStatus'
 
 /*
-  Decorators
+ *Decorators
  */
 export { useFormAutoSubmitDecorator } from './decorators/useFormAutoSubmitDecorator'
 export { useFormKeyboardSubmitDecorator } from './decorators/useFormKeyboardSubmitDecorator'
@@ -25,13 +25,13 @@ export {
 } from './decorators/usePreventLeaveDecorator'
 
 /*
-  Utils
+ *Utils
  */
 export { asyncDebounce } from './utils/asyncDebounce'
 export { joinNames } from './utils/joinNames'
 
 /*
-  Fields
+ *Fields
  */
 export { CodeEditorJSON, CodeEditorJSONProps } from './fields/CodeEditorJSON'
 

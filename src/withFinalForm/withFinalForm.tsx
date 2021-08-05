@@ -21,167 +21,168 @@ import {
 const defaultFormat = (value?: any) => (value === undefined ? '' : value)
 const defaultParse = (value?: any) => (value === '' ? undefined : value)
 
-export const withFinalForm = <
-  InputValue extends unknown,
-  AdditionalProps extends object = {},
-  Element extends HTMLElement = HTMLDivElement,
-  FieldValue = any
->(
-  inputConfig: InputHOCConfig<FieldValue, any, InputValue> = {}
-) => <Props extends object>(WrappedComponent: React.ComponentType<Props>) => {
-  type BaseProps = AdditionalProps &
-    FieldContentReceivedProps<InputValue> &
-    Omit<Props, 'value' | 'onChange'> &
-    Omit<
-      UseFieldConfig<InputValue>,
-      'value' | keyof FieldTransformationProps<any, any>
-    >
+export const withFinalForm =
+  <
+    InputValue extends unknown,
+    AdditionalProps extends object = {},
+    Element extends HTMLElement = HTMLDivElement,
+    FieldValue = any
+  >(
+    inputConfig: InputHOCConfig<FieldValue, any, InputValue> = {}
+  ) =>
+  <Props extends object>(WrappedComponent: React.ComponentType<Props>) => {
+    type BaseProps = AdditionalProps &
+      FieldContentReceivedProps<InputValue> &
+      Omit<Props, 'value' | 'onChange'> &
+      Omit<
+        UseFieldConfig<InputValue>,
+        'value' | keyof FieldTransformationProps<any, any>
+      >
 
-  type FieldComponentProps = Omit<
-    BaseProps,
-    keyof FieldTransformationProps<InputValue, BaseProps>
-  > &
-    FieldTransformationProps<InputValue, BaseProps>
-
-  const hookConfig = {
-    changeOnBlur: inputConfig.changeOnBlur,
-  }
-
-  const useFieldProps = ({
-    format: rawFormat,
-    parse: rawParse,
-    validate: rawValidate,
-    errorBehavior: rawErrorBehavior,
-    ...props
-  }: FieldComponentProps) => {
-    const t = useTranslate()
-    const propsRef = React.useRef<BaseProps>(props as BaseProps)
-    const callbackRef = React.useRef<
+    type FieldComponentProps = Omit<
+      BaseProps,
+      keyof FieldTransformationProps<InputValue, BaseProps>
+    > &
       FieldTransformationProps<InputValue, BaseProps>
-    >()
 
-    propsRef.current = props as BaseProps
-    callbackRef.current = {
+    const hookConfig = {
+      changeOnBlur: inputConfig.changeOnBlur,
+    }
+
+    const useFieldProps = ({
       format: rawFormat,
       parse: rawParse,
       validate: rawValidate,
-    } as FieldTransformationProps<InputValue, BaseProps>
+      errorBehavior: rawErrorBehavior,
+      ...props
+    }: FieldComponentProps) => {
+      const t = useTranslate()
+      const propsRef = React.useRef<BaseProps>(props as BaseProps)
+      const callbackRef =
+        React.useRef<FieldTransformationProps<InputValue, BaseProps>>()
 
-    const format = React.useCallback((value) => {
-      const fieldFormattedValue = isFunction(inputConfig.format)
-        ? inputConfig.format(value, propsRef.current)
-        : defaultFormat(value)
+      propsRef.current = props as BaseProps
+      callbackRef.current = {
+        format: rawFormat,
+        parse: rawParse,
+        validate: rawValidate,
+      } as FieldTransformationProps<InputValue, BaseProps>
 
-      return isFunction(callbackRef.current?.format)
-        ? callbackRef.current!.format(fieldFormattedValue, propsRef.current)
-        : fieldFormattedValue
-    }, [])
+      const format = React.useCallback((value) => {
+        const fieldFormattedValue = isFunction(inputConfig.format)
+          ? inputConfig.format(value, propsRef.current)
+          : defaultFormat(value)
 
-    const parse = React.useCallback((value) => {
-      const fieldParsedValue = isFunction(inputConfig.parse)
-        ? inputConfig.parse(value, propsRef.current)
-        : defaultParse(value)
+        return isFunction(callbackRef.current?.format)
+          ? callbackRef.current!.format(fieldFormattedValue, propsRef.current)
+          : fieldFormattedValue
+      }, [])
 
-      return isFunction(callbackRef.current?.parse)
-        ? callbackRef.current!.parse(fieldParsedValue, propsRef.current)
-        : fieldParsedValue
-    }, [])
+      const parse = React.useCallback((value) => {
+        const fieldParsedValue = isFunction(inputConfig.parse)
+          ? inputConfig.parse(value, propsRef.current)
+          : defaultParse(value)
 
-    const validate = React.useCallback(
-      async (value, allValues, meta) => {
-        let error = undefined
+        return isFunction(callbackRef.current?.parse)
+          ? callbackRef.current!.parse(fieldParsedValue, propsRef.current)
+          : fieldParsedValue
+      }, [])
 
-        if (
-          propsRef.current.required &&
-          (isNil(value) ||
-            value === '' ||
-            (Array.isArray(value) && value.length === 0))
-        ) {
-          error = propsRef.current.label
-            ? REQUIRED_FIELD_ERROR
-            : t('errors.required.full')
-        }
+      const validate = React.useCallback(
+        async (value, allValues, meta) => {
+          let error = undefined
 
-        if (!error && inputConfig.validate) {
-          const componentError = await inputConfig.validate(
-            value,
-            allValues,
-            meta,
-            propsRef.current
-          )
-
-          if (componentError) {
-            error = componentError
+          if (
+            propsRef.current.required &&
+            (isNil(value) ||
+              value === '' ||
+              (Array.isArray(value) && value.length === 0))
+          ) {
+            error = propsRef.current.label
+              ? REQUIRED_FIELD_ERROR
+              : t('errors.required.full')
           }
-        }
 
-        if (!error && callbackRef.current?.validate) {
-          const instanceError = await callbackRef.current.validate(
-            value,
-            allValues,
-            meta,
-            propsRef.current
-          )
+          if (!error && inputConfig.validate) {
+            const componentError = await inputConfig.validate(
+              value,
+              allValues,
+              meta,
+              propsRef.current
+            )
 
-          if (instanceError) {
-            error = instanceError
+            if (componentError) {
+              error = componentError
+            }
           }
-        }
 
-        return error
-      },
-      [t]
-    )
+          if (!error && callbackRef.current?.validate) {
+            const instanceError = await callbackRef.current.validate(
+              value,
+              allValues,
+              meta,
+              propsRef.current
+            )
 
-    const errorBehavior = rawErrorBehavior ?? inputConfig.errorBehavior
+            if (instanceError) {
+              error = instanceError
+            }
+          }
 
-    return { ...props, format, parse, validate, errorBehavior }
+          return error
+        },
+        [t]
+      )
+
+      const errorBehavior = rawErrorBehavior ?? inputConfig.errorBehavior
+
+      return { ...props, format, parse, validate, errorBehavior }
+    }
+
+    return React.forwardRef<Element, FieldComponentProps>((props, ref) => {
+      const fieldProps = useFieldProps(props)
+
+      const fieldValue = useFinalFormField<InputValue>(
+        props.name,
+        fieldProps,
+        hookConfig
+      )
+
+      const {
+        label,
+        shouldBeInErrorMode,
+        shouldDisplayInlineError,
+        error,
+        errorBehavior,
+        input,
+        ...rest
+      } = React.useMemo<UseFinalFormFieldValue<InputValue>>(
+        () => inputConfig.mapFieldValueToProps?.(fieldValue) ?? fieldValue,
+        [fieldValue]
+      )
+
+      return (
+        <div>
+          <WrappedComponent
+            ref={ref}
+            {...(omit(props, [
+              'format',
+              'parse',
+              'validate',
+              'shouldShowError',
+            ]) as Props)}
+            {...input}
+            {...rest}
+            validate={inputConfig.isArray ? fieldProps.validate : undefined}
+            error={shouldBeInErrorMode}
+            label={label}
+          />
+          <FieldError
+            showError={shouldDisplayInlineError}
+            value={error}
+            errorBehavior={errorBehavior}
+          />
+        </div>
+      )
+    })
   }
-
-  return React.forwardRef<Element, FieldComponentProps>((props, ref) => {
-    const fieldProps = useFieldProps(props)
-
-    const fieldValue = useFinalFormField<InputValue>(
-      props.name,
-      fieldProps,
-      hookConfig
-    )
-
-    const {
-      label,
-      shouldBeInErrorMode,
-      shouldDisplayInlineError,
-      error,
-      errorBehavior,
-      input,
-      ...rest
-    } = React.useMemo<UseFinalFormFieldValue<InputValue>>(
-      () => inputConfig.mapFieldValueToProps?.(fieldValue) ?? fieldValue,
-      [fieldValue]
-    )
-
-    return (
-      <div>
-        <WrappedComponent
-          ref={ref}
-          {...(omit(props, [
-            'format',
-            'parse',
-            'validate',
-            'shouldShowError',
-          ]) as Props)}
-          {...input}
-          {...rest}
-          validate={inputConfig.isArray ? fieldProps.validate : undefined}
-          error={shouldBeInErrorMode}
-          label={label}
-        />
-        <FieldError
-          showError={shouldDisplayInlineError}
-          value={error}
-          errorBehavior={errorBehavior}
-        />
-      </div>
-    )
-  })
-}
