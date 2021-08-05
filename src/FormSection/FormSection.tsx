@@ -27,10 +27,10 @@ export const FormSection: React.FunctionComponent<FormSectionProps> = ({
     error: {},
   })
 
-  const sectionsPath = React.useMemo(() => [...parentSection.path, uniqID], [
-    parentSection.path,
-    uniqID,
-  ])
+  const sectionsPath = React.useMemo(
+    () => [...parentSection.path, uniqID],
+    [parentSection.path, uniqID]
+  )
 
   const sectionContext = React.useMemo(
     () => ({
