@@ -14,17 +14,6 @@ import {
   InputHOCConfig,
 } from './withFinalForm.interface'
 
-/**
- * Duplicate final-form default parse & format
- * https://github.com/final-form/react-final-form/blob/464f1c7855e93899630df0ad897c322995601849/src/useField.js#L24
- */
-const defaultFormat = (value?: any) => (value === undefined ? '' : value)
-/**
- * Avoid removing property when empty string is passed.
- * https://github.com/final-form/react-final-form/issues/130
- */
-const defaultParse = (value?: any) => value
-
 export const withFinalForm =
   <
     InputValue extends unknown,
@@ -73,9 +62,12 @@ export const withFinalForm =
       } as FieldTransformationProps<InputValue, BaseProps>
 
       const format = React.useCallback((value) => {
+        // Default format method comes directly from [React Final Form](https://github.com/final-form/react-final-form/blob/464f1c7855e93899630df0ad897c322995601849/src/useField.js#L24)
         const fieldFormattedValue = isFunction(inputConfig.format)
           ? inputConfig.format(value, propsRef.current)
-          : defaultFormat(value)
+          : value === undefined
+          ? ''
+          : value
 
         return isFunction(callbackRef.current?.format)
           ? callbackRef.current!.format(fieldFormattedValue, propsRef.current)
@@ -83,9 +75,12 @@ export const withFinalForm =
       }, [])
 
       const parse = React.useCallback((value) => {
+        // Default parse method tries to mitigate [this issue](https://github.com/final-form/react-final-form/issues/130)
         const fieldParsedValue = isFunction(inputConfig.parse)
           ? inputConfig.parse(value, propsRef.current)
-          : defaultParse(value)
+          : value === ''
+          ? propsRef.current.initialValue && ''
+          : value
 
         return isFunction(callbackRef.current?.parse)
           ? callbackRef.current!.parse(fieldParsedValue, propsRef.current)
