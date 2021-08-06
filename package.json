@@ -60,7 +60,7 @@
     "@habx/ui-core": "^5.44.0",
     "@types/jest": "^26.0.24",
     "@types/lodash": "^4.14.172",
-    "@types/react": "^17.0.15",
+    "@types/react": "^17.0.16",
     "@types/react-router": "^5.1.16",
     "@types/styled-components": "^5.1.12",
     "bili": "^5.0.5",
