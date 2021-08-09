@@ -1,6 +1,5 @@
-import { isFunction, isNil, omit } from 'lodash'
+import { isFunction, isNil } from 'lodash'
 import * as React from 'react'
-import { UseFieldConfig } from 'react-final-form'
 
 import { FieldError } from '../FieldError'
 import { REQUIRED_FIELD_ERROR } from '../FieldError/FieldError'
@@ -9,9 +8,9 @@ import { UseFinalFormFieldValue } from '../useFinalFormField/useFinalFormField.i
 import { useTranslate } from '../useTranslate'
 
 import {
-  FieldContentReceivedProps,
+  FieldReceivedProps,
   FieldTransformationProps,
-  InputHOCConfig,
+  WithFinalFormOptions,
 } from './withFinalForm.interface'
 
 export const withFinalForm =
@@ -21,75 +20,58 @@ export const withFinalForm =
     Element extends HTMLElement = HTMLDivElement,
     FieldValue = any
   >(
-    inputConfig: InputHOCConfig<FieldValue, any, InputValue> = {}
+    options: WithFinalFormOptions<InputValue, FieldValue> = {}
   ) =>
   <Props extends object>(WrappedComponent: React.ComponentType<Props>) => {
-    type BaseProps = AdditionalProps &
-      FieldContentReceivedProps<InputValue> &
-      Omit<Props, 'value' | 'onChange'> &
+    type BaseProps = Omit<Props & AdditionalProps, 'value' | 'onChange'> &
       Omit<
-        UseFieldConfig<InputValue>,
-        'value' | keyof FieldTransformationProps<any, any>
+        FieldReceivedProps<InputValue>,
+        'value' | keyof FieldTransformationProps<any, any, any>
       >
 
-    type FieldComponentProps = Omit<
-      BaseProps,
-      keyof FieldTransformationProps<InputValue, BaseProps>
-    > &
-      FieldTransformationProps<InputValue, BaseProps>
+    type ComponentProps = BaseProps &
+      FieldTransformationProps<InputValue, FieldValue, BaseProps>
 
-    const hookConfig = {
-      changeOnBlur: inputConfig.changeOnBlur,
-    }
-
-    const useFieldProps = ({
-      format: rawFormat,
-      parse: rawParse,
-      validate: rawValidate,
-      errorBehavior: rawErrorBehavior,
-      ...props
-    }: FieldComponentProps) => {
+    return React.forwardRef<Element, ComponentProps>((props, ref) => {
+      const fieldPropsRef = React.useRef<UseFinalFormFieldValue<FieldValue>>()
+      const propsRef = React.useRef(props)
       const t = useTranslate()
-      const propsRef = React.useRef<BaseProps>(props as BaseProps)
-      const callbackRef =
-        React.useRef<FieldTransformationProps<InputValue, BaseProps>>()
 
-      propsRef.current = props as BaseProps
-      callbackRef.current = {
-        format: rawFormat,
-        parse: rawParse,
-        validate: rawValidate,
-      } as FieldTransformationProps<InputValue, BaseProps>
+      propsRef.current = props
 
       const format = React.useCallback((value) => {
-        // Default format method comes directly from [React Final Form](https://github.com/final-form/react-final-form/blob/464f1c7855e93899630df0ad897c322995601849/src/useField.js#L24)
-        const fieldFormattedValue = isFunction(inputConfig.format)
-          ? inputConfig.format(value, propsRef.current)
-          : value === undefined
-          ? ''
-          : value
+        let result = value
 
-        return isFunction(callbackRef.current?.format)
-          ? callbackRef.current!.format(fieldFormattedValue, propsRef.current)
-          : fieldFormattedValue
+        // The default format comes directly from [React Final Form](https://github.com/final-form/react-final-form/blob/464f1c7855e93899630df0ad897c322995601849/src/useField.js#L24).
+        if (isFunction(options.format)) {
+          result = options.format(value, propsRef.current)
+        } else if (value === undefined) {
+          result = ''
+        }
+
+        return isFunction(propsRef.current?.format)
+          ? propsRef.current.format(result, propsRef.current)
+          : result
       }, [])
 
       const parse = React.useCallback((value) => {
-        // Default parse method tries to mitigate [this issue](https://github.com/final-form/react-final-form/issues/130)
-        const fieldParsedValue = isFunction(inputConfig.parse)
-          ? inputConfig.parse(value, propsRef.current)
-          : value === ''
-          ? propsRef.current.initialValue && ''
-          : value
+        let result = value
 
-        return isFunction(callbackRef.current?.parse)
-          ? callbackRef.current!.parse(fieldParsedValue, propsRef.current)
-          : fieldParsedValue
+        // Override the default parse method in an attempt to mitigate [this issue](https://github.com/final-form/react-final-form/issues/130).
+        if (isFunction(options.parse)) {
+          result = options.parse(value, propsRef.current)
+        } else if (value === '') {
+          result = fieldPropsRef.current?.meta.initial && ''
+        }
+
+        return isFunction(propsRef.current?.parse)
+          ? propsRef.current.parse(result, propsRef.current)
+          : result
       }, [])
 
       const validate = React.useCallback(
         async (value, allValues, meta) => {
-          let error = undefined
+          let error: string | undefined
 
           if (
             propsRef.current.required &&
@@ -102,8 +84,8 @@ export const withFinalForm =
               : t('errors.required.full')
           }
 
-          if (!error && inputConfig.validate) {
-            const componentError = await inputConfig.validate(
+          if (!error && options.validate) {
+            const componentError = await options.validate(
               value,
               allValues,
               meta,
@@ -115,8 +97,8 @@ export const withFinalForm =
             }
           }
 
-          if (!error && callbackRef.current?.validate) {
-            const instanceError = await callbackRef.current.validate(
+          if (!error && propsRef.current?.validate) {
+            const instanceError = await propsRef.current.validate(
               value,
               allValues,
               meta,
@@ -133,53 +115,49 @@ export const withFinalForm =
         [t]
       )
 
-      const errorBehavior = rawErrorBehavior ?? inputConfig.errorBehavior
-
-      return { ...props, format, parse, validate, errorBehavior }
-    }
-
-    return React.forwardRef<Element, FieldComponentProps>((props, ref) => {
-      const fieldProps = useFieldProps(props)
-
-      const fieldValue = useFinalFormField<InputValue>(
+      const fieldProps = useFinalFormField<FieldValue>(
         props.name,
-        fieldProps,
-        hookConfig
+        {
+          ...props,
+          errorBehavior: props.errorBehavior ?? options.errorBehavior,
+          format,
+          parse,
+          validate,
+        },
+        {
+          changeOnBlur: options.changeOnBlur,
+        }
       )
 
+      fieldPropsRef.current = fieldProps
+
       const {
-        label,
-        shouldBeInErrorMode,
-        shouldDisplayInlineError,
         error,
         errorBehavior,
         input,
+        shouldBeInErrorMode,
+        shouldDisplayInlineError,
         ...rest
-      } = React.useMemo<UseFinalFormFieldValue<InputValue>>(
-        () => inputConfig.mapFieldValueToProps?.(fieldValue) ?? fieldValue,
-        [fieldValue]
+      } = React.useMemo<UseFinalFormFieldValue<FieldValue>>(
+        () => options.mapFieldValueToProps?.(fieldProps) ?? fieldProps,
+        [fieldProps]
       )
 
       return (
         <div>
           <WrappedComponent
             ref={ref}
-            {...(omit(props, [
-              'format',
-              'parse',
-              'validate',
-              'shouldShowError',
-            ]) as Props)}
+            {...(props as Props)}
             {...input}
             {...rest}
-            validate={inputConfig.isArray ? fieldProps.validate : undefined}
             error={shouldBeInErrorMode}
-            label={label}
+            validate={options.isArray ? validate : undefined}
           />
+
           <FieldError
+            errorBehavior={errorBehavior}
             showError={shouldDisplayInlineError}
             value={error}
-            errorBehavior={errorBehavior}
           />
         </div>
       )
