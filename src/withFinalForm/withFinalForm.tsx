@@ -57,7 +57,12 @@ export const withFinalForm =
       const parse = React.useCallback((value) => {
         let result = value
 
-        // Override the default parse method in an attempt to mitigate [this issue](https://github.com/final-form/react-final-form/issues/130).
+        /*
+         * Overrides the default parse method in an attempt to mitigate [this issue](https://github.com/final-form/react-final-form/issues/130).
+         * The idea is, to check when the input field is empty, whether an initial value was set:
+         *   - in the absence of an initial value, we return `undefined` in order for Final Form to compute an accurate pristine state.
+         *   - if a value was originally provided, we return the empty string. This is especially useful for tools that ignores `undefined` values while updating an existing state (e.g. `@apollo/client`).
+         */
         if (isFunction(options.parse)) {
           result = options.parse(value, propsRef.current)
         } else if (value === '') {
