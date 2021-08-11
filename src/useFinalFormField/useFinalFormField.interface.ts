@@ -34,8 +34,8 @@ export interface InputHookConfig {
   changeOnBlur?: boolean
 }
 
-export interface UseFinalFormReceivedProps<FieldType>
-  extends UseFieldConfig<FieldType> {
+export interface UseFinalFormReceivedProps<FieldValue>
+  extends UseFieldConfig<FieldValue> {
   label?: React.ReactNode
   required?: boolean
   disabled?: boolean
@@ -47,13 +47,13 @@ export interface UseFinalFormReceivedProps<FieldType>
   errorBehavior?: FieldErrorBehavior
 }
 
-export interface UseFinalFormFieldValue<FieldType> {
-  input: FieldInputProps<FieldType, HTMLElement>
-  meta: FieldMetaState<FieldType>
+export interface UseFinalFormFieldValue<FieldValue> {
+  input: FieldInputProps<FieldValue, HTMLElement>
+  meta: FieldMetaState<FieldValue>
   label?: React.ReactNode
   disabled?: boolean
-  onChange: (value: FieldType, ...args: any[]) => void
-  value: FieldType
+  onChange: (value: FieldValue, ...args: any[]) => void
+  value: FieldValue
 
   /**
    * Should the error be displayed in the `FieldError` component

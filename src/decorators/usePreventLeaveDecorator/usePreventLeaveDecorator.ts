@@ -1,6 +1,6 @@
 import { Decorator, FormState, Subscriber } from 'final-form'
-import { History } from 'history'
 import * as React from 'react'
+import type { useHistory } from 'react-router'
 
 import { confirm } from '@habx/ui-core'
 
@@ -10,7 +10,7 @@ export interface UsePreventLeaveDecoratorOptions {
 const DEFAULT_MESSAGE = 'Quitter sans sauvegarder les modifications ?'
 
 export const usePreventLeaveDecorator = (
-  history?: History,
+  history?: ReturnType<typeof useHistory>,
   options?: UsePreventLeaveDecoratorOptions
 ) => {
   const pristineRef = React.useRef(false)

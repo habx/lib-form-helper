@@ -14,36 +14,51 @@ export type ValidationCallback<FieldValue, Props> = (
   props: Props
 ) => string | undefined | Promise<string | undefined>
 
-export type FormatterCallback<InputValue, Props, FieldValue = any> = (
-  value: FieldValue | undefined,
-  props: Props
-) => InputValue | undefined
+export type FormatterCallback<
+  InputValue,
+  Props,
+  FieldValue = any
+> = FieldTransform<FieldValue, InputValue, Props>
 
-export type ParserCallback<InputValue, Props, FieldValue = any> = (
-  value: InputValue,
-  props: Props
-) => FieldValue | undefined
+export type ParserCallback<
+  InputValue,
+  Props,
+  FieldValue = any
+> = FieldTransform<InputValue, FieldValue, Props>
 
-export interface InputHOCConfig<InputValue, Props, FieldValue>
-  extends InputHookConfig {
+export interface FieldReceivedProps<InputValue>
+  extends UseFinalFormReceivedProps<InputValue> {
+  name: string
+}
+
+export interface FieldTransform<From, To, Props> {
+  (value: From | undefined, props: Props): To | undefined
+}
+
+/** @internal */
+export interface FieldTransformationProps<InputValue, FieldValue, Props> {
   /**
-   * https://final-form.org/docs/react-final-form/types/FieldProps#validat
+   * https://final-form.org/docs/react-final-form/types/FieldProps#validate
    * Pass props as last param
    */
-  validate?: ValidationCallback<FieldValue, Props>
+  validate?: ValidationCallback<InputValue, Props>
 
   /**
    * https://final-form.org/docs/react-final-form/types/FieldProps#format
    * Pass props as last param
    */
-  format?: FormatterCallback<InputValue, Props, FieldValue>
+  format?: FieldTransform<FieldValue, InputValue, Props>
 
   /**
    * https://final-form.org/docs/react-final-form/types/FieldProps#parse
    * Pass props as last param
    */
-  parse?: ParserCallback<InputValue, Props, FieldValue>
+  parse?: FieldTransform<InputValue, FieldValue, Props>
+}
 
+export interface WithFinalFormOptions<InputValue, FieldValue, Props = any>
+  extends InputHookConfig,
+    FieldTransformationProps<InputValue, FieldValue, Props> {
   /**
    * Adapt behavior for array values
    * https://github.com/final-form/react-final-form-arrays
@@ -54,7 +69,6 @@ export interface InputHOCConfig<InputValue, Props, FieldValue>
    * Map field values returned by useFinalFormField to input props
    * Should return all passed fields if not overwritten
    * otherwise they won't be passed down to the input
-   * @param fieldValue
    */
   mapFieldValueToProps?: (
     fieldValue: UseFinalFormFieldValue<FieldValue>
@@ -65,15 +79,4 @@ export interface InputHOCConfig<InputValue, Props, FieldValue>
    * See FieldErrorBehavior for more information
    */
   errorBehavior?: FieldErrorBehavior
-}
-
-export interface FieldContentReceivedProps<InputValue>
-  extends UseFinalFormReceivedProps<InputValue> {
-  name: string
-}
-
-export interface FieldTransformationProps<InputValue, Props> {
-  validate?: ValidationCallback<InputValue, Props>
-  format?: FormatterCallback<InputValue, Props>
-  parse?: ParserCallback<InputValue, Props>
 }

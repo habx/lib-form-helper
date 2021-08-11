@@ -5,12 +5,7 @@ export { Form, FormContext } from './Form'
 export { FormSection } from './FormSection'
 export { FieldError } from './FieldError'
 export { FormSectionWatcher } from './FormSectionWatcher'
-export {
-  withFinalForm,
-  ValidationCallback,
-  FormatterCallback,
-  ParserCallback,
-} from './withFinalForm'
+export * from './withFinalForm'
 export { useFinalFormField, FieldErrorBehavior } from './useFinalFormField'
 export { useStatus } from './useStatus'
 
