@@ -10,11 +10,11 @@ export const usePreventLeaveDecorator = (
   history?: ReturnType<typeof useHistory>,
   options?: UsePreventLeaveDecoratorOptions
 ) => {
-  const dirtySinceLastSubmitRef = React.useRef(false)
+  const shouldPreventLeaving = React.useRef(false)
 
   React.useEffect(() => {
     const preventNavigation = (e: BeforeUnloadEvent) => {
-      if (dirtySinceLastSubmitRef.current) {
+      if (shouldPreventLeaving.current) {
         e.preventDefault()
         e.returnValue = ''
         return ''
@@ -32,7 +32,7 @@ export const usePreventLeaveDecorator = (
     }
 
     const unblock = history.block((location) => {
-      if (dirtySinceLastSubmitRef.current) {
+      if (shouldPreventLeaving.current) {
         const confirmLeaving = async () => {
           const hasConfirmed = await confirm(
             options?.message ?? DEFAULT_MESSAGE
@@ -55,11 +55,19 @@ export const usePreventLeaveDecorator = (
 
   return React.useCallback<Decorator<any, any>>((form) => {
     const subscriber: Subscriber<FormState<any>> = (state) => {
-      dirtySinceLastSubmitRef.current = state.dirtySinceLastSubmit
+      /*
+       * dirtySinceLastSubmit is false until we submit the form when dirty keeps initial initialValues
+       * for references
+       */
+      shouldPreventLeaving.current = state.submitSucceeded
+        ? state.dirtySinceLastSubmit
+        : state.dirty
     }
 
     return form.subscribe(subscriber, {
       dirtySinceLastSubmit: true,
+      dirty: true,
+      submitSucceeded: true,
     })
   }, [])
 }
