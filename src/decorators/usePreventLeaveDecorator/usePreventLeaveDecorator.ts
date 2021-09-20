@@ -56,16 +56,16 @@ export const usePreventLeaveDecorator = (
   return React.useCallback<Decorator<any, any>>((form) => {
     const subscriber: Subscriber<FormState<any>> = (state) => {
       /*
-       * dirtySinceLastSubmit is false until we submit the form when dirty keeps initial initialValues
+       * modifiedSinceLastSubmit is false until we submit the form when dirty keeps initial initialValues
        * for references
        */
       shouldPreventLeaving.current = state.submitSucceeded
-        ? state.dirtySinceLastSubmit
+        ? state.modifiedSinceLastSubmit
         : state.dirty
     }
 
     return form.subscribe(subscriber, {
-      dirtySinceLastSubmit: true,
+      modifiedSinceLastSubmit: true,
       dirty: true,
       submitSucceeded: true,
     })
