@@ -60,24 +60,21 @@ export const usePreventLeaveDecorator = (
        * for references
        */
       shouldPreventLeaving.current =
-        options?.shouldPreventLeaving?.(state) ?? !state.pristine
+        options?.shouldPreventLeaving?.(state) ?? state.dirty
     }
 
-    return form.subscribe(
-      subscriber,
-      options?.subscription ?? { pristine: true }
-    )
+    return form.subscribe(subscriber, options?.subscription ?? { dirty: true })
   }, [])
 }
 
 export interface UsePreventLeaveDecoratorOptions {
   message?: string
   /**
-   * @default { pristine: true }
+   * @default { dirty: true }
    */
   subscription?: FormSubscription
   /**
-   * @default ({ pristine }) => !pristine
+   * @default ({ dirty }) => dirty
    */
   shouldPreventLeaving?: (state: FormState<any>) => boolean
 }
