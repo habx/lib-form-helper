@@ -1,4 +1,4 @@
-import { Decorator, FormState, Subscriber } from 'final-form'
+import { Decorator, FormState, FormSubscription, Subscriber } from 'final-form'
 import * as React from 'react'
 import type { useHistory } from 'react-router'
 
@@ -55,23 +55,22 @@ export const usePreventLeaveDecorator = (
 
   return React.useCallback<Decorator<any, any>>((form) => {
     const subscriber: Subscriber<FormState<any>> = (state) => {
-      /*
-       * dirtySinceLastSubmit is false until we submit the form when dirty keeps initial initialValues
-       * for references
-       */
-      shouldPreventLeaving.current = state.submitSucceeded
-        ? state.dirtySinceLastSubmit
-        : state.dirty
+      shouldPreventLeaving.current =
+        options?.shouldPreventLeaving?.(state) ?? state.dirty
     }
 
-    return form.subscribe(subscriber, {
-      dirtySinceLastSubmit: true,
-      dirty: true,
-      submitSucceeded: true,
-    })
+    return form.subscribe(subscriber, options?.subscription ?? { dirty: true })
   }, [])
 }
 
 export interface UsePreventLeaveDecoratorOptions {
   message?: string
+  /**
+   * @default { dirty: true }
+   */
+  subscription?: FormSubscription
+  /**
+   * @default ({ dirty }) => dirty
+   */
+  shouldPreventLeaving?: (state: FormState<any>) => boolean
 }
