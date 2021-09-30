@@ -6,7 +6,7 @@ import { confirm } from '@habx/ui-core'
 
 const DEFAULT_MESSAGE = 'Quitter sans sauvegarder les modifications ?'
 
-export const usePreventLeaveDecorator = (
+export const usePreventLeaveDecorator = <Params = any>(
   history?: ReturnType<typeof useHistory>,
   options?: UsePreventLeaveDecoratorOptions
 ) => {
@@ -53,8 +53,8 @@ export const usePreventLeaveDecorator = (
     return unblock
   }, [])
 
-  return React.useCallback<Decorator<any, any>>((form) => {
-    const subscriber: Subscriber<FormState<any>> = (state) => {
+  return React.useCallback<Decorator<Params, Partial<Params>>>((form) => {
+    const subscriber: Subscriber<FormState<Params>> = (state) => {
       shouldPreventLeaving.current =
         options?.shouldPreventLeaving?.(state) ?? state.dirty
     }
