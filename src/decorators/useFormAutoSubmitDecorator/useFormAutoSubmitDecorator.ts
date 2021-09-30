@@ -16,13 +16,13 @@ export type UseFormAutoSubmitDecoratorConfig = {
 
 const DEFAULT_DEBOUNCE_DURATION = 500
 
-export const useFormAutoSubmitDecorator = (
+export const useFormAutoSubmitDecorator = <Params = any>(
   config: UseFormAutoSubmitDecoratorConfig = {}
 ) => {
   const configRef = React.useRef(config)
   configRef.current = config
 
-  return React.useCallback<Decorator<any, any>>((form) => {
+  return React.useCallback<Decorator<Params, Partial<Params>>>((form) => {
     const {
       debouncedFields = [],
       debounceDuration = DEFAULT_DEBOUNCE_DURATION,
