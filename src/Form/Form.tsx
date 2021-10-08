@@ -81,6 +81,7 @@ function FormContent<Values, InitialValues>({
   render,
   language = 'fr',
   defaultErrorBehavior,
+  disableWhileSubmitting,
   ...props
 }: FormContentProps<Values, InitialValues>) {
   const statusActions = useStatuses()
@@ -88,7 +89,7 @@ function FormContent<Values, InitialValues>({
   const statusContext = React.useMemo<FormContextProps>(
     () => ({
       ...statusActions,
-      disabled: props.submitting || props.disabled,
+      disabled: (disableWhileSubmitting && props.submitting) || props.disabled,
       defaultErrorBehavior,
       language,
     }),

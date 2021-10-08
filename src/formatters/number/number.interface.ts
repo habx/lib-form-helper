@@ -1,3 +1,5 @@
+import * as React from 'react'
+
 import { IntlShape } from '@habx/lib-client-intl'
 
 export type Sign = ParsedNumber['sign']
@@ -16,6 +18,8 @@ export interface Options extends FormatOptions {
 
   /** The parsed value. */
   value?: number | null
+
+  inputRef?: React.MutableRefObject<HTMLInputElement> | null
 }
 
 export interface ParsedNumber {
