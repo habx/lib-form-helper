@@ -52,10 +52,12 @@ export const useFormattedNumber = ({
 
   const cursorPositionRef = React.useRef(0)
   React.useEffect(() => {
-    inputRef?.current.setSelectionRange(
-      cursorPositionRef.current,
-      cursorPositionRef.current
-    )
+    if (cursorPositionRef.current) {
+      inputRef?.current.setSelectionRange(
+        cursorPositionRef.current,
+        cursorPositionRef.current
+      )
+    }
   }, [state.formatted])
 
   const handleChange = React.useCallback(
