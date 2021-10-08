@@ -11,6 +11,13 @@ interface FormAdditionalProps {
    * See FieldErrorBehavior for more information
    */
   defaultErrorBehavior?: FieldErrorBehavior
+
+  /**
+   * @default true
+   * Disable form submission if form is in submitting state
+   * Useful for usage with useFormAutoSubmitDecorator
+   */
+  disableWhileSubmitting?: boolean
 }
 
 export interface FormProps<
