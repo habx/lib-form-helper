@@ -1,3 +1,6 @@
 export { useFinalFormField } from './useFinalFormField'
 
-export { FieldErrorBehavior } from './useFinalFormField.interface'
+export {
+  FieldErrorBehavior,
+  UseFinalFormReceivedProps,
+} from './useFinalFormField.interface'
