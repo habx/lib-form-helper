@@ -60,7 +60,7 @@
     "@types/lodash": "^4.14.178",
     "@types/react": "^17.0.38",
     "@types/react-router": "^5.1.17",
-    "@types/styled-components": "^5.1.18",
+    "@types/styled-components": "^5.1.19",
     "bili": "^5.0.5",
     "full-icu": "^1.4.0",
     "husky": "^4.3.8",
