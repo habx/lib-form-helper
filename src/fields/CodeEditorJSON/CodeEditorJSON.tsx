@@ -1,4 +1,8 @@
 import * as React from 'react'
+import 'brace'
+import 'brace/mode/javascript'
+import 'brace/theme/github'
+import 'ace-builds'
 import AceEditor from 'react-ace'
 
 import { withLabel } from '@habx/ui-core'
@@ -13,10 +17,6 @@ import {
   InnerCodeEditorJSONProps,
 } from './CodeEditorJSON.interface'
 import { CodeEditorJSONContainer } from './CodeEditorJSON.style'
-
-import 'brace'
-import 'brace/mode/javascript'
-import 'brace/theme/github'
 
 const isJSONValid = (value: string): boolean => {
   if (!value) {
