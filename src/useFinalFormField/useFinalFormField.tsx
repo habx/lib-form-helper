@@ -119,7 +119,7 @@ const useFieldValue = <FieldValue extends unknown>(
     }
   }, [input.value]) // eslint-disable-line
 
-  const handleChange = React.useCallback(
+  const handleChange = React.useCallback<typeof input.onChange>(
     (newRawValue) => {
       let newValue = newRawValue
       if (newRawValue?.target) {

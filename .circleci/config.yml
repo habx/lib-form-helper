@@ -38,7 +38,7 @@ alias:
     node/install-packages:
       cache-version: "{{ .Environment.CACHE_VERSION }}"
       include-branch-in-cache-key: false
-      override-ci-command: npm ci --no-audit
+      override-ci-command: npm ci --no-audit --legacy-peer-deps
 
   - &instalGhPagesDep
     run:
