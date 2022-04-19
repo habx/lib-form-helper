@@ -39,7 +39,7 @@ export const withFinalForm =
 
       propsRef.current = props
 
-      const format = React.useCallback((value) => {
+      const format = React.useCallback((value: any) => {
         let result = value
 
         // The default format comes directly from [React Final Form](https://github.com/final-form/react-final-form/blob/464f1c7855e93899630df0ad897c322995601849/src/useField.js#L24).
@@ -54,7 +54,7 @@ export const withFinalForm =
           : result
       }, [])
 
-      const parse = React.useCallback((value) => {
+      const parse = React.useCallback((value: any) => {
         let result = value
 
         /*
@@ -74,7 +74,7 @@ export const withFinalForm =
           : result
       }, [])
 
-      const validate = React.useCallback(
+      const validate = React.useCallback<NonNullable<typeof options.validate>>(
         async (value, allValues, meta) => {
           let error: string | undefined
 

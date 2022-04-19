@@ -36,9 +36,10 @@ export interface FormContentProps<
   render: Required<FormRenderProps<Values, InitialValues>>['render']
 }
 
+export type FieldStatusType = 'error' | 'dirty'
 export type SectionCallback = (
   fieldID: number,
-  type: 'error' | 'dirty',
+  type: FieldStatusType,
   value: any
 ) => void
 

@@ -14,7 +14,6 @@ import {
   FormProps,
   FormContextProps,
   FormStatusActions,
-  SectionWatcher,
   Section,
   SectionCallback,
   FormContentProps,
@@ -29,7 +28,9 @@ const useStatuses = (): FormStatusActions => {
     [sectionId: string]: { [watcherId: number]: SectionCallback }
   }>({})
 
-  const handleSectionSubscription = React.useCallback((sectionUId, section) => {
+  const handleSectionSubscription = React.useCallback<
+    FormStatusActions['subscribeSection']
+  >((sectionUId, section) => {
     sections.current[sectionUId] = section
 
     return () => {
@@ -37,31 +38,29 @@ const useStatuses = (): FormStatusActions => {
     }
   }, [])
 
-  const handleSectionWatcherSubscription = React.useCallback(
-    (sectionWatcher: SectionWatcher) => {
-      sectionsWatchers.current[sectionWatcher.sectionId] = {
-        ...(sectionsWatchers.current[sectionWatcher.sectionId] || {}),
-        [sectionWatcher.watcherId]: sectionWatcher.callback,
+  const handleSectionWatcherSubscription = React.useCallback<
+    FormStatusActions['subscribeSectionWatcher']
+  >((sectionWatcher) => {
+    sectionsWatchers.current[sectionWatcher.sectionId] = {
+      ...(sectionsWatchers.current[sectionWatcher.sectionId] || {}),
+      [sectionWatcher.watcherId]: sectionWatcher.callback,
+    }
+  }, [])
+
+  const handleFieldStatusChange = React.useCallback<
+    FormStatusActions['setFieldStatus']
+  >((fieldID, sectionsPath, type, value) => {
+    forEach(sectionsPath, (sectionUId) => {
+      const section = sections.current[sectionUId]
+      if (section) {
+        section.callback(fieldID, type, value)
+
+        forEach(sectionsWatchers.current[section.id], (watcherCallback) => {
+          watcherCallback(fieldID, type, value)
+        })
       }
-    },
-    []
-  )
-
-  const handleFieldStatusChange = React.useCallback(
-    (fieldID, sectionsPath, type, value) => {
-      forEach(sectionsPath, (sectionUId) => {
-        const section = sections.current[sectionUId]
-        if (section) {
-          section.callback(fieldID, type, value)
-
-          forEach(sectionsWatchers.current[section.id], (watcherCallback) => {
-            watcherCallback(fieldID, type, value)
-          })
-        }
-      })
-    },
-    []
-  )
+    })
+  }, [])
 
   return React.useMemo(
     () => ({
