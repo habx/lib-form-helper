@@ -4,6 +4,7 @@ import type { useHistory } from 'react-router'
 
 import { confirm } from '@habx/ui-core'
 
+const DEFAULT_CONFIRM = 'Quitter'
 const DEFAULT_MESSAGE = 'Quitter sans sauvegarder les modifications ?'
 
 export const usePreventLeaveDecorator = <Params = any>(
@@ -34,9 +35,11 @@ export const usePreventLeaveDecorator = <Params = any>(
     const unblock = history.block((location) => {
       if (shouldPreventLeaving.current) {
         const confirmLeaving = async () => {
-          const hasConfirmed = await confirm(
-            options?.message ?? DEFAULT_MESSAGE
-          )
+          const hasConfirmed = await confirm({
+            cancelLabel: options?.cancelLabel,
+            confirmLabel: options?.confirmLabel ?? DEFAULT_CONFIRM,
+            message: options?.message ?? DEFAULT_MESSAGE,
+          })
 
           if (hasConfirmed) {
             unblock()
@@ -64,6 +67,8 @@ export const usePreventLeaveDecorator = <Params = any>(
 }
 
 export interface UsePreventLeaveDecoratorOptions {
+  cancelLabel?: string
+  confirmLabel?: string
   message?: string
   /**
    * @default { dirty: true }
