@@ -54,7 +54,7 @@
     "react-final-form": "^6.5.9"
   },
   "devDependencies": {
-    "@habx/config-ci-front": "^2.0.0",
+    "@habx/config-ci-front": "^2.2.0",
     "@habx/eslint-config-client": "^6.6.0",
     "@types/jest": "^27.4.0",
     "@types/lodash": "^4.14.178",
