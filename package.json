@@ -57,7 +57,7 @@
     "@habx/config-ci-front": "^2.0.0",
     "@habx/eslint-config-client": "^6.6.0",
     "@types/jest": "^27.4.0",
-    "@types/lodash": "^4.14.178",
+    "@types/lodash": "^4.14.182",
     "@types/react": "^18.0.5",
     "@types/react-router": "^5.1.18",
     "@types/styled-components": "^5.1.25",
