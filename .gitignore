@@ -33,3 +33,4 @@ npm-debug.log
 
 .storybook-static/
 schema.graphql
+junit.xml
