@@ -1,29 +1,29 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuites name="jest tests" tests="12" failures="0" errors="0" time="1.919">
-  <testsuite name="Number parse" errors="0" failures="0" skipped="0" timestamp="2022-05-09T07:02:59" time="1.729" tests="12">
+<testsuites name="jest tests" tests="12" failures="0" errors="0" time="1.646">
+  <testsuite name="Number parse" errors="0" failures="0" skipped="0" timestamp="2022-05-09T07:38:27" time="1.343" tests="12">
     <testcase classname="Number parse handles missing values" name="Number parse handles missing values" time="0.002">
     </testcase>
-    <testcase classname="Number parse handles invalid values" name="Number parse handles invalid values" time="0">
+    <testcase classname="Number parse handles invalid values" name="Number parse handles invalid values" time="0.001">
     </testcase>
     <testcase classname="Number parse handles integers" name="Number parse handles integers" time="0.001">
     </testcase>
-    <testcase classname="Number parse handles floating point numbers" name="Number parse handles floating point numbers" time="0.004">
+    <testcase classname="Number parse handles floating point numbers" name="Number parse handles floating point numbers" time="0.001">
     </testcase>
-    <testcase classname="Number parse handles signed numbers" name="Number parse handles signed numbers" time="0.002">
+    <testcase classname="Number parse handles signed numbers" name="Number parse handles signed numbers" time="0.001">
     </testcase>
-    <testcase classname="Number parse handles mixed values" name="Number parse handles mixed values" time="0">
+    <testcase classname="Number parse handles mixed values" name="Number parse handles mixed values" time="0.001">
     </testcase>
-    <testcase classname="Number parse handles applying a factor" name="Number parse handles applying a factor" time="0.001">
+    <testcase classname="Number parse handles applying a factor" name="Number parse handles applying a factor" time="0">
     </testcase>
     <testcase classname="Number format handles missing values" name="Number format handles missing values" time="0">
     </testcase>
-    <testcase classname="Number format handles invalid values" name="Number format handles invalid values" time="0">
+    <testcase classname="Number format handles invalid values" name="Number format handles invalid values" time="0.002">
     </testcase>
     <testcase classname="Number format handles precision" name="Number format handles precision" time="0">
     </testcase>
     <testcase classname="Number format handles applying a factor" name="Number format handles applying a factor" time="0">
     </testcase>
-    <testcase classname="Number format handles using a locale" name="Number format handles using a locale" time="0.012">
+    <testcase classname="Number format handles using a locale" name="Number format handles using a locale" time="0.01">
     </testcase>
   </testsuite>
 </testsuites>
