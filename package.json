@@ -72,7 +72,7 @@
     "lodash": "^4.17.21",
     "react": "^18.1.0",
     "rimraf": "^3.0.2",
-    "rollup-plugin-typescript2": "^0.31.2",
+    "rollup-plugin-typescript2": "^0.32.1",
     "ts-jest": "^28.0.3",
     "tslib": "^2.4.0",
     "typedoc": "^0.22.17",
