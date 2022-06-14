@@ -66,7 +66,7 @@
     "full-icu": "^1.4.0",
     "husky": "^4.3.8",
     "jest": "^28.1.0",
-    "jest-environment-jsdom": "^28.1.0",
+    "jest-environment-jsdom": "^28.1.1",
     "jest-junit": "^13.2.0",
     "lint-staged": "^12.5.0",
     "lodash": "^4.17.21",
