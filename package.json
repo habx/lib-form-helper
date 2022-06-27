@@ -12,9 +12,12 @@
     "build:esm": "tsc",
     "build:watch": "npm run clean && tsc --watch",
     "build": "npm run clean && npm run build:esm && npm run build:cjs",
+    "build-ci": "npm run clean && npm run build:esm && npm run build:cjs",
+    "publish:tsdoc": "npm run build:documentation && gh-pages --dist docs --repo https://${GITHUB_TOKEN}@github.com/${CIRCLE_REPOSITORY_URL#\"git@github.com:\"} --silent --message \"[SKIP CI] CircleCI build ${CIRCLE_BUILD_NUM} pushed to Github Pages\"",
     "clean": "rimraf ./dist",
     "lint": "eslint \"src/**\"",
-    "test": "node --icu-data-dir node_modules/full-icu node_modules/.bin/jest --config ./jest.config.js"
+    "test": "node --icu-data-dir node_modules/full-icu node_modules/.bin/jest --config ./jest.config.js",
+    "test-ci": "node --icu-data-dir node_modules/full-icu node_modules/.bin/jest --config ./jest.config.js"
   },
   "files": [
     "dist"
