@@ -65,7 +65,7 @@
     "@types/react-router": "^5.1.18",
     "@types/styled-components": "^5.1.25",
     "bili": "^5.0.5",
-    "eslint": "^8.18.0",
+    "eslint": "^8.19.0",
     "full-icu": "^1.4.0",
     "husky": "^4.3.8",
     "jest": "^28.1.2",
