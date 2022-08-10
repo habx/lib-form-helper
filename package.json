@@ -63,7 +63,7 @@
     "@types/lodash": "^4.14.182",
     "@types/react": "^18.0.17",
     "@types/react-router": "^5.1.18",
-    "@types/styled-components": "^5.1.25",
+    "@types/styled-components": "^5.1.26",
     "bili": "^5.0.5",
     "eslint": "^8.21.0",
     "full-icu": "^1.4.0",
