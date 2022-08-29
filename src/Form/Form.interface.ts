@@ -22,7 +22,7 @@ interface FormAdditionalProps {
 
 export interface FormProps<
   Values = Record<string, any>,
-  InitialValues = Partial<Values>
+  InitialValues extends Partial<Values> = Partial<Values>
 > extends FinalFormProps<Values, InitialValues>,
     FormAdditionalProps {
   render: Required<FormRenderProps<Values, InitialValues>>['render']

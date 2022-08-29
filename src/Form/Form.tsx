@@ -108,14 +108,17 @@ function FormContent<Values, InitialValues>({
     >
       <FormContext.Provider value={statusContext}>
         <FormSectionContext.Provider value={DEFAULT_SECTION_CONTEXT}>
-          {render(props)}
+          {render(props as any)}
         </FormSectionContext.Provider>
       </FormContext.Provider>
     </IntlProvider>
   )
 }
 
-export function Form<Values, InitialValues = Partial<Values>>({
+export function Form<
+  Values,
+  InitialValues extends Partial<Values> = Partial<Values>
+>({
   disabled = false,
   render,
   mutators,
