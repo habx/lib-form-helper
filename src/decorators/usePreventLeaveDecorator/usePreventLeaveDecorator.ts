@@ -35,13 +35,14 @@ export const usePreventLeaveDecorator = <Params = any>(
     const unblock = history.block((location) => {
       if (shouldPreventLeaving.current) {
         const confirmLeaving = async () => {
-          const hasConfirmed = await confirm({
+          const confirmation = await confirm({
             cancelLabel: options?.cancelLabel,
             confirmLabel: options?.confirmLabel ?? DEFAULT_CONFIRM,
             message: options?.message ?? DEFAULT_MESSAGE,
+            title: options?.title,
           })
 
-          if (hasConfirmed) {
+          if (confirmation) {
             unblock()
             history.push(location)
           }
@@ -68,14 +69,16 @@ export const usePreventLeaveDecorator = <Params = any>(
 
 export interface UsePreventLeaveDecoratorOptions {
   cancelLabel?: string
+  confirmIcon?: React.ReactElement
   confirmLabel?: string
-  message?: string
-  /**
-   * @default { dirty: true }
-   */
-  subscription?: FormSubscription
+  message?: React.ReactNode
   /**
    * @default ({ dirty }) => dirty
    */
   shouldPreventLeaving?: (state: FormState<any>) => boolean
+  /**
+   * @default { dirty: true }
+   */
+  subscription?: FormSubscription
+  title?: string
 }
