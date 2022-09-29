@@ -61,7 +61,7 @@
     "@habx/eslint-config-client": "^6.9.2",
     "@types/jest": "^29.0.3",
     "@types/lodash": "^4.14.185",
-    "@types/react": "^18.0.20",
+    "@types/react": "^18.0.21",
     "@types/react-router": "^5.1.19",
     "@types/styled-components": "^5.1.26",
     "bili": "^5.0.5",
