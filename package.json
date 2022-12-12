@@ -59,7 +59,7 @@
   "devDependencies": {
     "@habx/config-ci-front": "^3.8.1",
     "@habx/eslint-config-client": "^6.10.0",
-    "@types/jest": "^29.2.3",
+    "@types/jest": "^29.2.4",
     "@types/lodash": "^4.14.191",
     "@types/react": "^18.0.26",
     "@types/react-router": "^5.1.19",
